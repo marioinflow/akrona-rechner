@@ -74,8 +74,9 @@ export async function POST(request: NextRequest) {
     }
 
     // ── PDF generieren ──
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pdfBuffer = await renderToBuffer(
-      React.createElement(AkronaPDF, { data: body })
+      React.createElement(AkronaPDF, { data: body }) as any
     );
 
     const resend = getResend();
