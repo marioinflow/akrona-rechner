@@ -84,9 +84,9 @@ export async function POST(request: NextRequest) {
 
     // ── E-Mail an Nutzer (mit PDF) ──
     await resend.emails.send({
-      from: 'Akrona GmbH <onboarding@resend.dev>',
+      from: 'Akrona GmbH <noreply@akrona.de>',
       to: email,
-      replyTo: process.env.AKRONA_EMAIL ?? 'info@akrona-gmbh.de',
+      replyTo: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
       subject: 'Ihre Finanzierungsauswertung von Akrona GmbH',
       attachments: [
         {
@@ -149,8 +149,8 @@ export async function POST(request: NextRequest) {
 
     // ── Interne Benachrichtigung ──
     await resend.emails.send({
-      from: 'Akrona GmbH <onboarding@resend.dev>',
-      to: process.env.AKRONA_EMAIL ?? 'info@akrona-gmbh.de',
+      from: 'Akrona GmbH <noreply@akrona.de>',
+      to: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
       subject: `🔔 Neuer Lead: ${vorname} ${nachname} – ${typLabel}`,
       html: `<div style="font-family:Arial,sans-serif;padding:24px;max-width:500px;">
         <h2 style="color:#0A3D2C;margin:0 0 16px;">Neuer Lead eingegangen</h2>
