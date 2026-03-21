@@ -15,7 +15,7 @@ const MAKLERGEBUEHREN = [
 
 const DEFAULT: BaufinanzierungEingaben = {
   nettoeinkommen: 3500,
-  eigenkapital: 50000,
+  eigenkapital: 0,
   haushaltsgroesse: 2,
   laufzeit: 20,
   status: 'angestellt',
@@ -110,7 +110,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   }, []);
 
   const berechnen = () => {
-    if (!form.nettoeinkommen || !form.eigenkapital) return;
+    if (!form.nettoeinkommen) return;
     setLoading(true);
     setTimeout(() => {
       setErgebnis(berechneBaufinanzierung(form));
@@ -118,7 +118,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
     }, 300);
   };
 
-  const canCalc = !!(form.nettoeinkommen && form.eigenkapital);
+  const canCalc = !!form.nettoeinkommen;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -138,8 +138,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="3.500" style={IS} onFocus={onFocus} onBlur={onBlur} />
               </div>
               <div>
-                <Label>Eigenkapital (€) *</Label>
-                <input type="number" value={form.eigenkapital || ''} onChange={(e) => update('eigenkapital', Number(e.target.value))} placeholder="50.000" style={IS} onFocus={onFocus} onBlur={onBlur} />
+                <Label>Eigenkapital (€)</Label>
+                <input type="number" value={form.eigenkapital || ''} onChange={(e) => update('eigenkapital', Number(e.target.value))} placeholder="0" style={IS} onFocus={onFocus} onBlur={onBlur} />
               </div>
               <div>
                 <Label>Haushaltsgröße *</Label>
