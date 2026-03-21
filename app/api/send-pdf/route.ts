@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const maxDuration = 60;
 import { Resend } from 'resend';
 import { renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
       pdfBuffer = Buffer.from(raw);
     } catch (e) {
       console.error('[Step 2] PDF generation error:', e);
-      return NextResponse.json({ success: false, error: 'PDF-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.' }, { status: 500 });
+      return NextResponse.json({ success: false, error: `PDF-Fehler: ${e instanceof Error ? e.message : String(e)}` }, { status: 500 });
     }
 
     const resend = getResend();
