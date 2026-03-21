@@ -72,7 +72,7 @@ const s = StyleSheet.create({
   bonitaetSub: { fontSize: 9, color: C.muted, marginTop: 3 },
 
   // ── Tilgungsplan ──
-  planHeader: { flexDirection: 'row', backgroundColor: C.darkGreen, padding: '8 12', borderRadius: '4 4 0 0' },
+  planHeader: { flexDirection: 'row', backgroundColor: C.darkGreen, padding: '8 12', borderTopLeftRadius: 4, borderTopRightRadius: 4 },
   planHeaderCell: { fontSize: 9, color: C.white, fontFamily: 'Helvetica-Bold', flex: 1, textAlign: 'right' },
   planHeaderCellFirst: { textAlign: 'left' },
   planRow: { flexDirection: 'row', padding: '8 12', borderBottom: `1px solid ${C.border}` },
