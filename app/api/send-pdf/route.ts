@@ -44,25 +44,32 @@ export async function POST(request: NextRequest) {
     const typLabel = typ === 'baufinanzierung' ? 'Baufinanzierung' : 'Privatkredit';
 
     // ── Supabase: Lead speichern ──
-    const { data: lead, error: dbError } = await supabaseClient
-      .from('leads')
-      .insert({
-        vorname, nachname, email,
-        rechner_typ: typ,
-        consent_datenschutz: consents.datenschutz,
-        consent_kontakt: consents.kontakt,
-        consent_newsletter: consents.newsletter,
-        consent_ip: ip,
-        eingaben, ergebnis,
-        bonitaet_score: bonitaetScore,
-        bonitaet_label: bonitaetLabel,
-      })
-      .select('id')
-      .single();
+    let lead: { id: string };
+    try {
+      const { data, error: dbError } = await supabaseClient
+        .from('leads')
+        .insert({
+          vorname, nachname, email,
+          rechner_typ: typ,
+          consent_datenschutz: consents.datenschutz,
+          consent_kontakt: consents.kontakt,
+          consent_newsletter: consents.newsletter,
+          consent_ip: ip,
+          eingaben, ergebnis,
+          bonitaet_score: bonitaetScore,
+          bonitaet_label: bonitaetLabel,
+        })
+        .select('id')
+        .single();
 
-    if (dbError) {
-      console.error('Supabase error:', dbError);
-      return NextResponse.json({ success: false, error: 'Speicherfehler. Bitte versuchen Sie es erneut.' }, { status: 500 });
+      if (dbError) {
+        console.error('[Step 1] Supabase insert error:', dbError);
+        return NextResponse.json({ success: false, error: `Speicherfehler: ${dbError.message}` }, { status: 500 });
+      }
+      lead = data;
+    } catch (e) {
+      console.error('[Step 1] Supabase exception:', e);
+      return NextResponse.json({ success: false, error: 'Supabase-Verbindungsfehler. Bitte versuchen Sie es erneut.' }, { status: 500 });
     }
 
     // Newsletter bei Opt-in
@@ -74,15 +81,23 @@ export async function POST(request: NextRequest) {
     }
 
     // ── PDF generieren ──
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfBuffer = await renderToBuffer(
-      React.createElement(AkronaPDF, { data: body }) as any
-    );
+    let pdfBuffer: Buffer;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const raw = await renderToBuffer(
+        React.createElement(AkronaPDF, { data: body }) as any
+      );
+      pdfBuffer = Buffer.from(raw);
+    } catch (e) {
+      console.error('[Step 2] PDF generation error:', e);
+      return NextResponse.json({ success: false, error: 'PDF-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.' }, { status: 500 });
+    }
 
     const resend = getResend();
     const dateiname = `Akrona_Finanzierungsauswertung_${vorname}_${nachname}.pdf`.replace(/\s+/g, '_');
 
     // ── E-Mail an Nutzer (mit PDF) ──
+    try {
     await resend.emails.send({
       from: 'Akrona GmbH <noreply@akrona.de>',
       to: email,
@@ -91,7 +106,7 @@ export async function POST(request: NextRequest) {
       attachments: [
         {
           filename: dateiname,
-          content: Buffer.from(pdfBuffer),
+          content: pdfBuffer,
         },
       ],
       html: `<!DOCTYPE html>
@@ -146,25 +161,34 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`,
     });
+    } catch (e) {
+      console.error('[Step 3] Resend error:', e);
+      return NextResponse.json({ success: false, error: 'E-Mail-Versand fehlgeschlagen. Bitte versuchen Sie es erneut.' }, { status: 500 });
+    }
 
     // ── Interne Benachrichtigung ──
-    await resend.emails.send({
-      from: 'Akrona GmbH <noreply@akrona.de>',
-      to: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
-      subject: `🔔 Neuer Lead: ${vorname} ${nachname} – ${typLabel}`,
-      html: `<div style="font-family:Arial,sans-serif;padding:24px;max-width:500px;">
-        <h2 style="color:#0A3D2C;margin:0 0 16px;">Neuer Lead eingegangen</h2>
-        <table cellpadding="6" cellspacing="0" style="width:100%;">
-          <tr><td style="color:#6b6b6b;width:120px;">Name:</td><td><strong>${vorname} ${nachname}</strong></td></tr>
-          <tr><td style="color:#6b6b6b;">E-Mail:</td><td><a href="mailto:${email}">${email}</a></td></tr>
-          <tr><td style="color:#6b6b6b;">Typ:</td><td>${typLabel}</td></tr>
-          <tr><td style="color:#6b6b6b;">Bonität:</td><td>${bonitaetLabel}</td></tr>
-          <tr><td style="color:#6b6b6b;">Max. Kredit:</td><td><strong>${fEuro(maxKredit)}</strong></td></tr>
-          <tr><td style="color:#6b6b6b;">Newsletter:</td><td>${consents.newsletter ? 'Ja' : 'Nein'}</td></tr>
-          <tr><td style="color:#6b6b6b;">Zeitpunkt:</td><td>${new Date().toLocaleString('de-DE')}</td></tr>
-        </table>
-      </div>`,
-    });
+    try {
+      await resend.emails.send({
+        from: 'Akrona GmbH <noreply@akrona.de>',
+        to: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
+        subject: `Neuer Lead: ${vorname} ${nachname} - ${typLabel}`,
+        html: `<div style="font-family:Arial,sans-serif;padding:24px;max-width:500px;">
+          <h2 style="color:#0A3D2C;margin:0 0 16px;">Neuer Lead eingegangen</h2>
+          <table cellpadding="6" cellspacing="0" style="width:100%;">
+            <tr><td style="color:#6b6b6b;width:120px;">Name:</td><td><strong>${vorname} ${nachname}</strong></td></tr>
+            <tr><td style="color:#6b6b6b;">E-Mail:</td><td><a href="mailto:${email}">${email}</a></td></tr>
+            <tr><td style="color:#6b6b6b;">Typ:</td><td>${typLabel}</td></tr>
+            <tr><td style="color:#6b6b6b;">Bonität:</td><td>${bonitaetLabel}</td></tr>
+            <tr><td style="color:#6b6b6b;">Max. Kredit:</td><td><strong>${fEuro(maxKredit)}</strong></td></tr>
+            <tr><td style="color:#6b6b6b;">Newsletter:</td><td>${consents.newsletter ? 'Ja' : 'Nein'}</td></tr>
+            <tr><td style="color:#6b6b6b;">Zeitpunkt:</td><td>${new Date().toLocaleString('de-DE')}</td></tr>
+          </table>
+        </div>`,
+      });
+    } catch (e) {
+      console.error('[Step 4] Internal notification error:', e);
+      // Nicht kritisch — trotzdem Erfolg zurückgeben
+    }
 
     // pdf_sent markieren
     await supabaseClient
@@ -175,9 +199,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, leadId: lead.id, message: 'Ihre Auswertung wurde per E-Mail versendet.' });
 
   } catch (err) {
-    console.error('send-pdf error:', err);
+    console.error('[Unhandled] send-pdf error:', err);
     return NextResponse.json(
-      { success: false, error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.' },
+      { success: false, error: `Unbekannter Fehler: ${err instanceof Error ? err.message : String(err)}` },
       { status: 500 }
     );
   }
