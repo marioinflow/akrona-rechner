@@ -187,7 +187,7 @@ export function berechneBaufinanzierung(
     const gst = bundesland ? GRUNDERWERBSTEUER[bundesland] ?? 0.05 : 0.05;
     grunderwerbsteuerBetrag = Math.round(kaufpreis * gst);
     maklergebuehrBetrag = Math.round(kaufpreis * (maklergebuehr / 100));
-    const notar = Math.round(kaufpreis * 0.015); // ~1,5% Notar + Grundbuch
+    const notar = Math.round(kaufpreis * 0.02); // ~2,0% Notar (1,8%) + Grundbuch (0,2%)
     nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notar;
     gesamtkaufkosten = kaufpreis + nebenkosten;
   }
