@@ -26,17 +26,10 @@ const STATUS_MULTIPLIKATOR: Record<string, number> = {
   rente: 0.9,
 };
 
-function getBonitaetLabel(score: number, typ: 'bau' | 'privat'): BonitaetLabel {
-  if (typ === 'bau') {
-    if (score >= 6) return 'Sehr gut';
-    if (score >= 3) return 'Mittel';
-    return 'Basis';
-  } else {
-    // Privatkredit hat max. 8 Punkte (kein EK-Faktor) — Schwelle daher niedriger
-    if (score >= 6) return 'Sehr gut';
-    if (score >= 3) return 'Mittel';
-    return 'Basis';
-  }
+function getBonitaetLabel(score: number): BonitaetLabel {
+  if (score >= 6) return 'Sehr gut';
+  if (score >= 3) return 'Mittel';
+  return 'Basis';
 }
 
 function getZinssatz(score: number, typ: 'bau' | 'privat'): number {
@@ -131,34 +124,31 @@ export function berechneBaufinanzierung(
     kaufpreis,
     bundesland,
     maklergebuehr = 0,
+    tilgungssatz: tilgungssatzEingabe,
   } = eingaben;
 
+  const tilgungssatz = tilgungssatzEingabe ?? 0.02;
   const haushaltsAbzug = HAUSHALTSABZUG[Math.min(haushaltsgroesse, 5)] ?? 1100;
   const multiplikator = STATUS_MULTIPLIKATOR[status] ?? 1.0;
 
   const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
   const maxKredit = Math.round((verfuegbaresEinkommen * 100) / 1000) * 1000;
 
-  // Bonitäts-Score
+  // ── Bonitäts-Score (Algorithmus unverändert) ──
   let score = 0;
 
-  // Beschäftigung
   if (status === 'beamter') score += 3;
   else if (status === 'angestellt') score += 2;
   else if (status === 'rente') score += 1;
-  // selbstständig → 0
 
-  // Eigenkapital-Quote: gegen Kaufpreis messen (wenn bekannt) — realistischer
   const referenzwert = (kaufpreis && kaufpreis > 0) ? kaufpreis : maxKredit;
   const ekQuote = referenzwert > 0 ? eigenkapital / referenzwert : 0;
   if (ekQuote >= 0.2) score += 2;
   else if (ekQuote >= 0.1) score += 1;
 
-  // Haushaltsgröße
   if (haushaltsgroesse <= 2) score += 2;
   else if (haushaltsgroesse === 3) score += 1;
 
-  // Einkommensbelastung: tatsächlichen Kreditbedarf bewerten
   const tatsaecklicherKredit = (kaufpreis && kaufpreis > eigenkapital)
     ? Math.min(kaufpreis - eigenkapital, maxKredit)
     : maxKredit;
@@ -167,17 +157,17 @@ export function berechneBaufinanzierung(
   if (belastung < 0.25) score += 2;
   else if (belastung <= 0.38) score += 1;
 
-  // Konservativ-Bonus: kauft deutlich unter seinen Möglichkeiten
   const kaufkraftPrelim = maxKredit + eigenkapital;
   if (kaufpreis && kaufpreis > 0 && kaufpreis < kaufkraftPrelim * 0.70) score += 1;
 
-  const bonitaetLabel = getBonitaetLabel(score, 'bau');
+  const bonitaetLabel = getBonitaetLabel(score);
   const zinssatz = getZinssatz(score, 'bau');
 
-  const monatsRate = maxKredit * (zinssatz + 0.02) / 12;
+  // Monatsrate mit user-gewähltem Tilgungssatz
+  const monatsRate = maxKredit * (zinssatz + tilgungssatz) / 12;
   const kaufkraft = maxKredit + eigenkapital;
 
-  // Nebenkosten bei Kaufpreis
+  // Nebenkosten
   let grunderwerbsteuerBetrag: number | undefined;
   let maklergebuehrBetrag: number | undefined;
   let nebenkosten: number | undefined;
@@ -187,12 +177,12 @@ export function berechneBaufinanzierung(
     const gst = bundesland ? GRUNDERWERBSTEUER[bundesland] ?? 0.05 : 0.05;
     grunderwerbsteuerBetrag = Math.round(kaufpreis * gst);
     maklergebuehrBetrag = Math.round(kaufpreis * (maklergebuehr / 100));
-    const notar = Math.round(kaufpreis * 0.02); // ~2,0% Notar (1,8%) + Grundbuch (0,2%)
+    const notar = Math.round(kaufpreis * 0.02);
     nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notar;
     gesamtkaufkosten = kaufpreis + nebenkosten;
   }
 
-  const tilgungsplan = berechneTilgungsplan(maxKredit, zinssatz, laufzeit);
+  const tilgungsplan = berechneTilgungsplan(maxKredit, zinssatz, laufzeit, tilgungssatz);
 
   return {
     maxKredit,
@@ -223,7 +213,6 @@ export function berechnePrivatkredit(
 
   const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
 
-  // Bonitäts-Score (ohne EK-Faktor)
   let score = 0;
 
   if (status === 'beamter') score += 3;
@@ -233,12 +222,10 @@ export function berechnePrivatkredit(
   if (haushaltsgroesse <= 2) score += 2;
   else if (haushaltsgroesse === 3) score += 1;
 
-  // Einkommensbelastung: Referenzzinssatz 6,9 % (Mitte) für Vorabschätzung
   const refMonatszins = 0.069 / 12;
   const maxMonatsRate = verfuegbaresEinkommen * 0.33;
   const refMaxKredit = maxMonatsRate * (1 - Math.pow(1 + refMonatszins, -laufzeit)) / refMonatszins;
 
-  // Wenn Wunschkredit angegeben: tatsächliche Rate bewerten — nicht das Maximum
   const beurteilungsKredit = (wunschkredit && wunschkredit > 0)
     ? Math.min(wunschkredit, refMaxKredit)
     : refMaxKredit;
@@ -250,10 +237,9 @@ export function berechnePrivatkredit(
   if (belastung < 0.20) score += 2;
   else if (belastung <= 0.33) score += 1;
 
-  // Bonus: konservatives Borgen (Wunschkredit < 50 % des Maximums)
   if (wunschkredit && wunschkredit > 0 && wunschkredit < refMaxKredit * 0.5) score += 1;
 
-  const bonitaetLabel = getBonitaetLabel(score, 'privat');
+  const bonitaetLabel = getBonitaetLabel(score);
   const zinssatz = getZinssatz(score, 'privat');
 
   const monatszins = zinssatz / 12;

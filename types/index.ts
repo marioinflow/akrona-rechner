@@ -13,6 +13,11 @@ export interface BaufinanzierungEingaben {
   kaufpreis?: number;
   bundesland?: string;
   maklergebuehr?: 0 | 1.19 | 2.38 | 3.57;
+  /* Neue Felder */
+  wohnsitzland?: string;
+  staatsangehoerigkeit?: string;
+  tilgungssatz?: number;
+  finanzierungsanteil?: 100 | 80 | 60;
 }
 
 export interface PrivatkreditEingaben {
