@@ -1,16 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { berechnePrivatkredit, formatEuro } from '@/lib/berechnung';
-import type { PrivatkreditEingaben, PrivatkreditErgebnis, BonitaetLabel } from '@/types';
+import type { PrivatkreditEingaben, PrivatkreditErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
-
-const BONITAET_OPTIONEN: { label: string; value: BonitaetLabel | undefined }[] = [
-  { label: 'Auto', value: undefined },
-  { label: 'Sehr gut', value: 'Sehr gut' },
-  { label: 'Mittel', value: 'Mittel' },
-  { label: 'Basis', value: 'Basis' },
-];
 
 const DEFAULT: PrivatkreditEingaben = {
   nettoeinkommen: 0,
@@ -18,7 +11,6 @@ const DEFAULT: PrivatkreditEingaben = {
   haushaltsgroesse: 1,
   laufzeit: 60,
   status: 'angestellt',
-  bonitaetOverride: undefined,
 };
 
 const IS: React.CSSProperties = {
@@ -79,7 +71,8 @@ function SelectWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ position: 'relative' }}>
       {children}
-      <svg width="14" height="14" fill="none" stroke="#6b6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+      <svg width="14" height="14" fill="none" stroke="#6b6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
         <polyline points="4 6 8 10 12 6" />
       </svg>
     </div>
@@ -92,23 +85,37 @@ interface Props {
 
 export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
   const [form, setForm] = useState<PrivatkreditEingaben>(DEFAULT);
+  const [ergebnis, setErgebnis] = useState<PrivatkreditErgebnis | null>(null);
+  const [formChanged, setFormChanged] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
-  const ergebnis = useMemo<PrivatkreditErgebnis | null>(() => {
-    if (!form.nettoeinkommen || form.nettoeinkommen <= 0) return null;
-    return berechnePrivatkredit(form);
-  }, [form]);
-
-  const update = <K extends keyof PrivatkreditEingaben>(
+  const update = useCallback(<K extends keyof PrivatkreditEingaben>(
     key: K,
     value: PrivatkreditEingaben[K]
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    if (ergebnis) setFormChanged(true);
+    setValidationError('');
+  }, [ergebnis]);
+
+  const berechnen = () => {
+    if (!form.nettoeinkommen || form.nettoeinkommen <= 0) {
+      setValidationError('Bitte geben Sie Ihr monatliches Nettoeinkommen ein.');
+      return;
+    }
+    const haushaltsAbzug = { 1: 0, 2: 350, 3: 600, 4: 850, 5: 1100 }[form.haushaltsgroesse] ?? 1100;
+    if (form.nettoeinkommen <= haushaltsAbzug) {
+      setValidationError(`Das Nettoeinkommen liegt unter dem Haushaltsabzug von ${formatEuro(haushaltsAbzug)}. Eine Finanzierung ist nicht möglich.`);
+      return;
+    }
+    setErgebnis(berechnePrivatkredit(form));
+    setFormChanged(false);
+    setValidationError('');
   };
 
   const zinsenMonatlich = ergebnis
     ? Math.round(ergebnis.aktuellerKredit * ergebnis.zinssatz / 12)
     : 0;
-
   const zinsgesamt = ergebnis
     ? ergebnis.gesamtkosten - ergebnis.aktuellerKredit
     : 0;
@@ -116,12 +123,10 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      {/* ════════════════════════════════
-          FORM — 8 Spalten
-      ════════════════════════════════ */}
+      {/* ════════════════════ FORM — 8 Spalten ════════════════════ */}
       <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* SEKTION 1 */}
+        {/* 01: Persönliche Daten */}
         <SectionCard step="01" title="Persönliche Daten">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -147,39 +152,6 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               </SelectWrapper>
             </div>
 
-            {/* Bonitäts-Override */}
-            <div className="sm:col-span-2">
-              <FieldLabel>Bonität (Simulation)</FieldLabel>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {BONITAET_OPTIONEN.map((opt) => {
-                  const isActive = form.bonitaetOverride === opt.value;
-                  return (
-                    <button
-                      key={opt.label}
-                      type="button"
-                      onClick={() => update('bonitaetOverride', opt.value as BonitaetLabel | undefined)}
-                      style={{
-                        flex: 1,
-                        height: '36px',
-                        border: `1.5px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`,
-                        borderRadius: '8px',
-                        backgroundColor: isActive ? 'rgba(10,93,63,0.06)' : '#F7F5F0',
-                        fontSize: '12px',
-                        fontWeight: isActive ? 700 : 500,
-                        color: isActive ? '#0A5D3F' : '#6b6b6b',
-                        cursor: 'pointer',
-                        transition: 'border-color 0.15s, background-color 0.15s',
-                      }}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#0A3D2C'; }}
-                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#E8E2D9'; }}
-                    >
-                      {opt.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
             <div className="sm:col-span-2">
               <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
               <div style={{ position: 'relative' }}>
@@ -197,7 +169,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
           </div>
         </SectionCard>
 
-        {/* SEKTION 2 */}
+        {/* 02: Kreditwunsch */}
         <SectionCard step="02" title="Kreditwunsch" subtitle="Optional — leer lassen für maximalen Kreditrahmen">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -228,60 +200,46 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
           </div>
         </SectionCard>
 
-        {/* Ergebnis-Zusammenfassung (nur wenn Ergebnis vorhanden) */}
-        {ergebnis && (
-          <div
-            className="fade-in-up"
-            style={{
-              border: '1px solid #E8E2D9',
-              borderRadius: '18px',
-              padding: '28px',
-              backgroundColor: '#fff',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-            }}
-          >
-            <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 18px' }}>
-              Vollständige Auswertung
-            </h4>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <tbody>
-                {[
-                  { label: 'Produkttyp', value: 'Privatkredit' },
-                  { label: 'Bonität', value: ergebnis.bonitaetLabel },
-                  { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
-                  { label: 'Max. Kreditrahmen', value: formatEuro(ergebnis.maxKredit) },
-                  { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
-                  { label: 'Monatliche Rate', value: formatEuro(ergebnis.monatsRate), bold: true },
-                  { label: 'Laufzeit', value: `${form.laufzeit} Monate` },
-                  { label: 'Zinsen monatlich', value: formatEuro(zinsenMonatlich) },
-                  { label: 'Zinskosten gesamt', value: formatEuro(zinsgesamt) },
-                  { label: 'Gesamtbetrag', value: formatEuro(ergebnis.gesamtkosten), bold: true },
-                ].map((row) => (
-                  <tr key={row.label} style={{ borderBottom: '1px solid #F0EDE8' }}>
-                    <td style={{ padding: '9px 4px', fontSize: '13px', color: '#6b6b6b' }}>{row.label}</td>
-                    <td style={{ padding: '9px 4px', fontSize: '13px', textAlign: 'right', fontWeight: row.bold ? 700 : 500, color: row.bold ? '#0A3D2C' : '#1a1a1a' }}>{row.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p style={{ fontSize: '11px', color: '#6b6b6b', marginTop: '14px', fontStyle: 'italic' }}>
-              Unverbindliche Beispielrechnung — keine Finanzierungszusage.
-            </p>
+        {/* ── Validierungsfehler ── */}
+        {validationError && (
+          <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '14px 18px' }}>
+            <p style={{ fontSize: '13px', color: '#991b1b', margin: 0 }}>{validationError}</p>
           </div>
         )}
+
+        {/* ── Berechnen-Button ── */}
+        <button
+          onClick={berechnen}
+          style={{
+            width: '100%', height: '56px',
+            backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C',
+            color: formChanged ? '#0A3D2C' : '#fff',
+            border: 'none', borderRadius: '14px',
+            fontSize: '16px', fontWeight: 800,
+            cursor: 'pointer', letterSpacing: '0.03em',
+            transition: 'transform 0.1s ease, opacity 0.1s ease, background-color 0.2s ease',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" transform="scale(0.75) translate(3,3)" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+          {formChanged ? 'Neu berechnen' : ergebnis ? 'Neu berechnen' : 'Jetzt berechnen'}
+        </button>
       </div>
 
-      {/* ════════════════════════════════
-          RESULTS PANEL — 4 Spalten
-      ════════════════════════════════ */}
+      {/* ════════════════════ RESULTS PANEL — 4 Spalten, sticky ════════════════════ */}
       <div className="lg:col-span-4">
         <div
           className="slide-in-right"
           style={{
-            position: 'sticky',
-            top: '88px',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
+            position: 'sticky', top: '88px',
+            backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
             backgroundColor: 'rgba(255,255,255,0.9)',
             border: '1px solid rgba(232,226,217,0.9)',
             borderRadius: '20px',
@@ -289,14 +247,15 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             overflow: 'hidden',
           }}
         >
-          {ergebnis ? (
+          {ergebnis && !formChanged ? (
             <div className="fade-in">
               <div style={{ backgroundColor: '#0A3D2C', padding: '18px 24px' }}>
                 <p style={{ fontSize: '10px', fontWeight: 800, color: 'rgba(212,175,55,0.85)', textTransform: 'uppercase', letterSpacing: '0.18em', margin: 0 }}>
-                  IHRE KONDITIONEN
+                  IHRE ERSTEINSCHÄTZUNG
                 </p>
               </div>
 
+              {/* Rate */}
               <div style={{ padding: '22px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 5px', fontWeight: 500 }}>Monatliche Rate</p>
                 <p style={{ fontSize: '44px', fontWeight: 800, color: '#0A3D2C', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 5px' }}>
@@ -307,14 +266,13 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                 </p>
               </div>
 
+              {/* Kennzahlen */}
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 {[
                   { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
                   { label: 'Max. Kreditrahmen', value: formatEuro(ergebnis.maxKredit) },
-                  { label: 'Zinsen monatlich', value: formatEuro(zinsenMonatlich) },
                   { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
-                  { label: 'Zinskosten gesamt', value: formatEuro(zinsgesamt) },
-                  { label: 'Gesamtbetrag', value: formatEuro(ergebnis.gesamtkosten) },
+                  { label: 'Zinsen mtl.', value: formatEuro(zinsenMonatlich) },
                 ].map((item) => (
                   <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F7F5F0' }}>
                     <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item.label}</span>
@@ -323,53 +281,137 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                 ))}
               </div>
 
+              {/* Bonität — subtil */}
               <div style={{ padding: '14px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 <BonitaetBadge label={ergebnis.bonitaetLabel} score={ergebnis.bonitaetScore} zinssatz={ergebnis.zinssatz} size="sm" />
               </div>
 
+              {/* CTA */}
               <div style={{ padding: '18px 24px' }}>
                 <button
                   onClick={() => onLeadTrigger(ergebnis, form)}
-                  style={{ width: '100%', height: '48px', backgroundColor: '#0A3D2C', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.03em', transition: 'transform 0.1s ease, opacity 0.1s ease', marginBottom: '12px' }}
+                  style={{ width: '100%', height: '48px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em', transition: 'transform 0.1s ease, opacity 0.1s ease', marginBottom: '12px' }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                   onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
                   onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
                 >
-                  Unverbindlich anfragen
+                  Vollständige Auswertung erhalten
                 </button>
-                <div style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                  <svg width="11" height="13" fill="none" stroke="#0A5D3F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="1.5" y="5.5" width="8" height="7" rx="1.5" />
-                    <path d="M3.5 5.5V3.5a2.5 2.5 0 015 0v2" />
-                  </svg>
-                  <p style={{ fontSize: '11px', color: '#6b6b6b', margin: 0 }}>SSL-gesichert · 100 % kostenlos</p>
-                </div>
+                <p style={{ fontSize: '11px', color: '#6b6b6b', textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
+                  Detailauswertung & Beratung — kostenlos per E-Mail
+                </p>
               </div>
             </div>
           ) : (
-            <div style={{ padding: '40px 24px', textAlign: 'center' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: '#F7F5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                <svg width="24" height="24" fill="none" stroke="#0A5D3F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
+            /* Placeholder / Formular geändert */
+            <div style={{ padding: '36px 24px', textAlign: 'center' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: formChanged ? 'rgba(212,175,55,0.12)' : '#F7F5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', border: formChanged ? '2px solid rgba(212,175,55,0.4)' : 'none' }}>
+                <svg width="24" height="24" fill="none" stroke={formChanged ? '#D4AF37' : '#0A5D3F'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </div>
-              <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 8px' }}>Ergebnis erscheint hier</p>
-              <p style={{ fontSize: '13px', color: '#6b6b6b', lineHeight: 1.6, margin: 0 }}>
-                Geben Sie Ihr Nettoeinkommen ein — Ihre Konditionen werden sofort berechnet.
+              <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 8px' }}>
+                {formChanged ? 'Eingaben geändert' : 'Bereit zur Berechnung'}
               </p>
-              <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {['Monatliche Rate', 'Kreditrahmen', 'Zinssatz', 'Gesamtbetrag'].map((item) => (
-                  <div key={item} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', backgroundColor: '#F7F5F0' }}>
-                    <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item}</span>
-                    <span style={{ width: '60px', height: '12px', borderRadius: '4px', backgroundColor: '#E8E2D9', display: 'inline-block' }} />
-                  </div>
-                ))}
-              </div>
+              <p style={{ fontSize: '13px', color: '#6b6b6b', lineHeight: 1.6, margin: '0 0 20px' }}>
+                {formChanged
+                  ? 'Klicken Sie auf „Neu berechnen" um Ihre aktualisierten Konditionen zu sehen.'
+                  : 'Füllen Sie das Formular aus und klicken Sie auf „Jetzt berechnen".'}
+              </p>
+              <button
+                onClick={berechnen}
+                style={{ width: '100%', height: '44px', backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C', color: formChanged ? '#0A3D2C' : '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+                onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                {formChanged ? 'Neu berechnen' : 'Jetzt berechnen'}
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* ════════════════════ TEASER KOSTEN-ÜBERSICHT ════════════════════ */}
+      {ergebnis && !formChanged && (
+        <div className="lg:col-span-12 fade-in-up">
+          <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+            <div style={{ padding: '24px 28px 18px' }}>
+              <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
+                Kosten-Übersicht
+              </h4>
+              <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
+                Vorschau · {form.laufzeit} Monate · {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {formatEuro(ergebnis.aktuellerKredit)} Kreditbetrag
+              </p>
+            </div>
+
+            {/* Sichtbare Zeilen */}
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#F7F5F0' }}>
+                    {['Kennzahl', 'Betrag'].map((h, i) => (
+                      <th key={h} style={{ padding: '10px 20px', fontSize: '11px', fontWeight: 700, color: '#0A3D2C', textAlign: i === 0 ? 'left' : 'right', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: 'Monatliche Rate', value: formatEuro(ergebnis.monatsRate) },
+                    { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
+                  ].map((row, i) => (
+                    <tr key={row.label} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #F0EDE8' }}>
+                      <td style={{ padding: '10px 20px', fontWeight: 600, color: '#0A3D2C' }}>{row.label}</td>
+                      <td style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 700 }}>{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Blur-Overlay über Rest */}
+            <div style={{ position: 'relative' }}>
+              {[
+                { label: 'Zinskosten gesamt', value: formatEuro(zinsgesamt) },
+                { label: 'Gesamtbetrag', value: formatEuro(ergebnis.gesamtkosten) },
+                { label: 'Effektiver Jahreszins', value: `${(ergebnis.zinssatz * 100).toFixed(2)} %` },
+              ].map((row, i) => (
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', borderBottom: '1px solid #F0EDE8', backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#0A3D2C' }}>{row.label}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700 }}>{row.value}</span>
+                </div>
+              ))}
+
+              {/* CTA-Overlay */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.96) 50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '24px' }}>
+                <div style={{ textAlign: 'center', maxWidth: '420px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#0A3D2C', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                    <svg width="18" height="20" fill="none" stroke="#D4AF37" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="8" width="13" height="12" rx="2" /><path d="M7 8V5a4 4 0 018 0v3" />
+                    </svg>
+                  </div>
+                  <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 6px' }}>
+                    Vollständige Auswertung + persönliche Beratung
+                  </p>
+                  <p style={{ fontSize: '13px', color: '#6b6b6b', margin: '0 0 16px', lineHeight: 1.5 }}>
+                    Mit allen Kosten, Zinsentwicklung und individueller Einschätzung — kostenlos per E-Mail.
+                  </p>
+                  <button
+                    onClick={() => onLeadTrigger(ergebnis, form)}
+                    style={{ height: '44px', padding: '0 28px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.1s ease, opacity 0.1s ease' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+                    onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                  >
+                    Jetzt kostenlos erhalten
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
