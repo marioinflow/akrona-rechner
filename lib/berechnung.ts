@@ -6,87 +6,51 @@ import type {
   PrivatkreditErgebnis,
   TilgungsPunkt,
 } from '@/types';
+import { RECHNER_CONFIG } from '@/lib/rechner-config';
+
+// ──────────────────────────────────────────────
+// Re-Export für Backward-Kompatibilität (BaufinanzierungRechner.tsx importiert GRUNDERWERBSTEUER)
+// ──────────────────────────────────────────────
+
+export const GRUNDERWERBSTEUER = RECHNER_CONFIG.grunderwerbsteuerSaetze;
 
 // ──────────────────────────────────────────────
 // Hilfsfunktionen
 // ──────────────────────────────────────────────
 
-const HAUSHALTSABZUG: Record<number, number> = {
-  1: 0,
-  2: 350,
-  3: 600,
-  4: 850,
-  5: 1100,
-};
-
-const STATUS_MULTIPLIKATOR: Record<string, number> = {
-  angestellt: 1.0,
-  beamter: 1.1,
-  selbststaendig: 0.85,
-  rente: 0.9,
-};
-
 function getBonitaetLabel(score: number): BonitaetLabel {
-  if (score >= 6) return 'Sehr gut';
-  if (score >= 3) return 'Mittel';
+  if (score >= RECHNER_CONFIG.bewertungsSchranken.sehrGut) return 'Sehr gut';
+  if (score >= RECHNER_CONFIG.bewertungsSchranken.mittel) return 'Mittel';
   return 'Basis';
 }
 
-function getZinssatz(score: number, typ: 'bau' | 'privat'): number {
-  if (typ === 'bau') {
-    if (score >= 6) return 0.036;
-    if (score >= 3) return 0.041;
-    return 0.048;
-  } else {
-    if (score >= 6) return 0.059;
-    if (score >= 3) return 0.069;
-    return 0.089;
-  }
+function getZinssatzByLabel(label: BonitaetLabel, typ: 'bau' | 'privat'): number {
+  const baender = typ === 'bau'
+    ? RECHNER_CONFIG.bauBewertungsBaender
+    : RECHNER_CONFIG.privatBewertungsBaender;
+  const band = baender.find((b) => b.label === label);
+  return band?.zinssatz ?? (typ === 'bau' ? 0.048 : 0.089);
 }
-
-// ──────────────────────────────────────────────
-// Grunderwerbsteuer nach Bundesland
-// ──────────────────────────────────────────────
-
-export const GRUNDERWERBSTEUER: Record<string, number> = {
-  'Baden-Württemberg': 0.05,
-  'Bayern': 0.035,
-  'Berlin': 0.06,
-  'Brandenburg': 0.065,
-  'Bremen': 0.05,
-  'Hamburg': 0.045,
-  'Hessen': 0.06,
-  'Mecklenburg-Vorpommern': 0.06,
-  'Niedersachsen': 0.05,
-  'Nordrhein-Westfalen': 0.065,
-  'Rheinland-Pfalz': 0.05,
-  'Saarland': 0.065,
-  'Sachsen': 0.035,
-  'Sachsen-Anhalt': 0.05,
-  'Schleswig-Holstein': 0.065,
-  'Thüringen': 0.065,
-};
 
 // ──────────────────────────────────────────────
 // Tilgungsplan generieren
 // ──────────────────────────────────────────────
 
 export function berechneTilgungsplan(
-  kredit: number,
+  darlehensbetrag: number,
   zinssatz: number,
   laufzeitJahre: number,
   tilgungssatz = 0.02
 ): TilgungsPunkt[] {
-  const jahresrate = kredit * (zinssatz + tilgungssatz);
+  if (darlehensbetrag <= 0) return [];
+
+  const jahresrate = darlehensbetrag * (zinssatz + tilgungssatz);
   const plan: TilgungsPunkt[] = [];
-  let restschuld = kredit;
+  let restschuld = darlehensbetrag;
   let gesamtZinsen = 0;
   let gesamtTilgung = 0;
 
-  const stützpunkte = [1, 5, 10, 15, laufzeitJahre].filter(
-    (j) => j <= laufzeitJahre
-  );
-  const uniqueStützpunkte = [...new Set(stützpunkte)];
+  const stuetzpunkte = new Set([1, 5, 10, 15, laufzeitJahre].filter((j) => j <= laufzeitJahre));
 
   for (let jahr = 1; jahr <= laufzeitJahre; jahr++) {
     const zinsen = restschuld * zinssatz;
@@ -95,7 +59,7 @@ export function berechneTilgungsplan(
     gesamtZinsen += zinsen;
     gesamtTilgung += tilgung;
 
-    if (uniqueStützpunkte.includes(jahr)) {
+    if (stuetzpunkte.has(jahr)) {
       plan.push({
         jahr,
         restschuld: Math.round(restschuld),
@@ -125,16 +89,40 @@ export function berechneBaufinanzierung(
     bundesland,
     maklergebuehr = 0,
     tilgungssatz: tilgungssatzEingabe,
+    bonitaetOverride,
   } = eingaben;
 
   const tilgungssatz = tilgungssatzEingabe ?? 0.02;
-  const haushaltsAbzug = HAUSHALTSABZUG[Math.min(haushaltsgroesse, 5)] ?? 1100;
-  const multiplikator = STATUS_MULTIPLIKATOR[status] ?? 1.0;
+  const haushaltsAbzug = RECHNER_CONFIG.haushaltsAbzuege[Math.min(haushaltsgroesse, 5)] ?? 1100;
+  const multiplikator = RECHNER_CONFIG.beschaeftigungsFaktoren[status] ?? 1.0;
 
+  // ── Kreditrahmen ──
   const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
-  const maxKredit = Math.round((verfuegbaresEinkommen * 100) / 1000) * 1000;
+  const maxKredit = Math.max(0, Math.round((verfuegbaresEinkommen * 100) / 1000) * 1000);
 
-  // ── Bonitäts-Score (Algorithmus unverändert) ──
+  // ── Nebenkosten & Gesamtkaufkosten ──
+  let grunderwerbsteuerBetrag: number | undefined;
+  let maklergebuehrBetrag: number | undefined;
+  let nebenkosten: number | undefined;
+  let gesamtkaufkosten: number | undefined;
+
+  if (kaufpreis && kaufpreis > 0) {
+    const gst = bundesland ? (RECHNER_CONFIG.grunderwerbsteuerSaetze[bundesland] ?? 0.05) : 0.05;
+    grunderwerbsteuerBetrag = Math.round(kaufpreis * gst);
+    maklergebuehrBetrag = Math.round(kaufpreis * (maklergebuehr / 100));
+    const notar = Math.round(kaufpreis * RECHNER_CONFIG.notarGrundbuchSatz);
+    nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notar;
+    gesamtkaufkosten = kaufpreis + nebenkosten;
+  }
+
+  // ── Finanzierungsbedarf (fachlich korrekte Trennung) ──
+  // Wenn Kaufpreis bekannt: max(0, Gesamtkaufkosten - Eigenkapital)
+  // Ohne Kaufpreis: maximaler Kreditrahmen (für Rate-Anzeige)
+  const finanzierungsbedarf = gesamtkaufkosten !== undefined
+    ? Math.max(0, gesamtkaufkosten - eigenkapital)
+    : maxKredit;
+
+  // ── Bonitäts-Score ──
   let score = 0;
 
   if (status === 'beamter') score += 3;
@@ -149,10 +137,11 @@ export function berechneBaufinanzierung(
   if (haushaltsgroesse <= 2) score += 2;
   else if (haushaltsgroesse === 3) score += 1;
 
-  const tatsaecklicherKredit = (kaufpreis && kaufpreis > eigenkapital)
+  // Belastungstest mit stabilem Referenzzinssatz (0.036 + 0.02) für reproduzierbaren Score
+  const kreditFuerBelastungstest = (kaufpreis && kaufpreis > eigenkapital)
     ? Math.min(kaufpreis - eigenkapital, maxKredit)
     : maxKredit;
-  const provisorischeRate = tatsaecklicherKredit * (0.036 + 0.02) / 12;
+  const provisorischeRate = kreditFuerBelastungstest * (0.036 + 0.02) / 12;
   const belastung = nettoeinkommen > 0 ? provisorischeRate / nettoeinkommen : 1;
   if (belastung < 0.25) score += 2;
   else if (belastung <= 0.38) score += 1;
@@ -160,33 +149,22 @@ export function berechneBaufinanzierung(
   const kaufkraftPrelim = maxKredit + eigenkapital;
   if (kaufpreis && kaufpreis > 0 && kaufpreis < kaufkraftPrelim * 0.70) score += 1;
 
-  const bonitaetLabel = getBonitaetLabel(score);
-  const zinssatz = getZinssatz(score, 'bau');
+  // ── Bonität & Zinssatz ──
+  const berechneteBonitaet = getBonitaetLabel(score);
+  const bonitaetLabel: BonitaetLabel = bonitaetOverride ?? berechneteBonitaet;
+  const zinssatz = getZinssatzByLabel(bonitaetLabel, 'bau');
 
-  // Monatsrate mit user-gewähltem Tilgungssatz
-  const monatsRate = maxKredit * (zinssatz + tilgungssatz) / 12;
+  // ── Monatliche Rate auf Basis FINANZIERUNGSBEDARF ──
+  const monatsRate = Math.round(finanzierungsbedarf * (zinssatz + tilgungssatz) / 12);
   const kaufkraft = maxKredit + eigenkapital;
 
-  // Nebenkosten
-  let grunderwerbsteuerBetrag: number | undefined;
-  let maklergebuehrBetrag: number | undefined;
-  let nebenkosten: number | undefined;
-  let gesamtkaufkosten: number | undefined;
-
-  if (kaufpreis && kaufpreis > 0) {
-    const gst = bundesland ? GRUNDERWERBSTEUER[bundesland] ?? 0.05 : 0.05;
-    grunderwerbsteuerBetrag = Math.round(kaufpreis * gst);
-    maklergebuehrBetrag = Math.round(kaufpreis * (maklergebuehr / 100));
-    const notar = Math.round(kaufpreis * 0.02);
-    nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notar;
-    gesamtkaufkosten = kaufpreis + nebenkosten;
-  }
-
-  const tilgungsplan = berechneTilgungsplan(maxKredit, zinssatz, laufzeit, tilgungssatz);
+  // ── Tilgungsplan auf Basis FINANZIERUNGSBEDARF ──
+  const tilgungsplan = berechneTilgungsplan(finanzierungsbedarf, zinssatz, laufzeit, tilgungssatz);
 
   return {
     maxKredit,
-    monatsRate: Math.round(monatsRate),
+    finanzierungsbedarf,
+    monatsRate,
     kaufkraft,
     bonitaetScore: score,
     bonitaetLabel,
@@ -206,13 +184,14 @@ export function berechneBaufinanzierung(
 export function berechnePrivatkredit(
   eingaben: PrivatkreditEingaben
 ): PrivatkreditErgebnis {
-  const { nettoeinkommen, wunschkredit, haushaltsgroesse, laufzeit, status } = eingaben;
+  const { nettoeinkommen, wunschkredit, haushaltsgroesse, laufzeit, status, bonitaetOverride } = eingaben;
 
-  const haushaltsAbzug = HAUSHALTSABZUG[Math.min(haushaltsgroesse, 5)] ?? 1100;
-  const multiplikator = STATUS_MULTIPLIKATOR[status] ?? 1.0;
+  const haushaltsAbzug = RECHNER_CONFIG.haushaltsAbzuege[Math.min(haushaltsgroesse, 5)] ?? 1100;
+  const multiplikator = RECHNER_CONFIG.beschaeftigungsFaktoren[status] ?? 1.0;
 
   const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
 
+  // ── Score ──
   let score = 0;
 
   if (status === 'beamter') score += 3;
@@ -222,6 +201,7 @@ export function berechnePrivatkredit(
   if (haushaltsgroesse <= 2) score += 2;
   else if (haushaltsgroesse === 3) score += 1;
 
+  // Belastungstest mit Referenzzinssatz 6.9%
   const refMonatszins = 0.069 / 12;
   const maxMonatsRate = verfuegbaresEinkommen * 0.33;
   const refMaxKredit = maxMonatsRate * (1 - Math.pow(1 + refMonatszins, -laufzeit)) / refMonatszins;
@@ -239,11 +219,12 @@ export function berechnePrivatkredit(
 
   if (wunschkredit && wunschkredit > 0 && wunschkredit < refMaxKredit * 0.5) score += 1;
 
-  const bonitaetLabel = getBonitaetLabel(score);
-  const zinssatz = getZinssatz(score, 'privat');
+  // ── Bonität & Zinssatz ──
+  const berechneteBonitaet = getBonitaetLabel(score);
+  const bonitaetLabel: BonitaetLabel = bonitaetOverride ?? berechneteBonitaet;
+  const zinssatz = getZinssatzByLabel(bonitaetLabel, 'privat');
 
   const monatszins = zinssatz / 12;
-
   const maxKredit = Math.round(
     maxMonatsRate * (1 - Math.pow(1 + monatszins, -laufzeit)) / monatszins
   );
@@ -252,8 +233,7 @@ export function berechnePrivatkredit(
     ? Math.min(wunschkredit, maxKredit)
     : maxKredit;
 
-  const monatsRate =
-    aktuellerKredit * monatszins /
+  const monatsRate = aktuellerKredit * monatszins /
     (1 - Math.pow(1 + monatszins, -laufzeit));
 
   const gesamtkosten = Math.round(monatsRate * laufzeit);

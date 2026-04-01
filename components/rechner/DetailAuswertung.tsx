@@ -2,6 +2,7 @@
 
 import { formatEuro } from '@/lib/berechnung';
 import { berechneTilgungsplan } from '@/lib/berechnung';
+import { RECHNER_CONFIG } from '@/lib/rechner-config';
 import type { BaufinanzierungErgebnis, BaufinanzierungEingaben } from '@/types';
 
 interface Props {
@@ -10,23 +11,28 @@ interface Props {
   onLeadTrigger: () => void;
 }
 
-const SZENARIEN = [
-  { label: 'Sehr gut', zinssatz: 0.036, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
-  { label: 'Mittel',   zinssatz: 0.041, color: '#ca8a04', bg: '#fefce8', border: '#fef08a' },
-  { label: 'Basis',    zinssatz: 0.048, color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
-];
+// Szenarien aus zentraler Config
+const SZENARIEN = RECHNER_CONFIG.bauBewertungsBaender.map((b) => ({
+  label: b.label,
+  zinssatz: b.zinssatz,
+  color: b.label === 'Sehr gut' ? '#16a34a' : b.label === 'Mittel' ? '#ca8a04' : '#dc2626',
+  bg: b.label === 'Sehr gut' ? '#f0fdf4' : b.label === 'Mittel' ? '#fefce8' : '#fef2f2',
+  border: b.label === 'Sehr gut' ? '#bbf7d0' : b.label === 'Mittel' ? '#fef08a' : '#fecaca',
+}));
 
-function RestschuldChart({ kredit, zinssatz, laufzeit, tilgungssatz }: {
-  kredit: number; zinssatz: number; laufzeit: number; tilgungssatz: number;
+function RestschuldChart({ darlehensbetrag, zinssatz, laufzeit, tilgungssatz }: {
+  darlehensbetrag: number; zinssatz: number; laufzeit: number; tilgungssatz: number;
 }) {
+  if (darlehensbetrag <= 0) return null;
+
   const W = 520;
   const H = 180;
   const PAD = { top: 16, right: 16, bottom: 32, left: 60 };
 
   const punkte: { jahr: number; restschuld: number }[] = [];
-  const jahresrate = kredit * (zinssatz + tilgungssatz);
-  let rest = kredit;
-  punkte.push({ jahr: 0, restschuld: kredit });
+  const jahresrate = darlehensbetrag * (zinssatz + tilgungssatz);
+  let rest = darlehensbetrag;
+  punkte.push({ jahr: 0, restschuld: darlehensbetrag });
   for (let j = 1; j <= laufzeit; j++) {
     const zinsen = rest * zinssatz;
     const tilgung = jahresrate - zinsen;
@@ -34,14 +40,14 @@ function RestschuldChart({ kredit, zinssatz, laufzeit, tilgungssatz }: {
     punkte.push({ jahr: j, restschuld: rest });
   }
 
-  const maxY = kredit;
+  const maxY = darlehensbetrag;
   const toX = (j: number) => PAD.left + (j / laufzeit) * (W - PAD.left - PAD.right);
   const toY = (v: number) => PAD.top + (1 - v / maxY) * (H - PAD.top - PAD.bottom);
 
   const pathD = punkte.map((p, i) => `${i === 0 ? 'M' : 'L'} ${toX(p.jahr).toFixed(1)} ${toY(p.restschuld).toFixed(1)}`).join(' ');
   const fillD = pathD + ` L ${toX(laufzeit).toFixed(1)} ${toY(0).toFixed(1)} L ${toX(0).toFixed(1)} ${toY(0).toFixed(1)} Z`;
 
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => ({ value: kredit * f, y: toY(kredit * f) }));
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => ({ value: darlehensbetrag * f, y: toY(darlehensbetrag * f) }));
   const xTicks: number[] = [];
   for (let j = 0; j <= laufzeit; j += 5) xTicks.push(j);
 
@@ -68,7 +74,7 @@ function RestschuldChart({ kredit, zinssatz, laufzeit, tilgungssatz }: {
           {j === 0 ? 'Start' : `J${j}`}
         </text>
       ))}
-      <circle cx={toX(0)} cy={toY(kredit)} r="5" fill="#0A3D2C" />
+      <circle cx={toX(0)} cy={toY(darlehensbetrag)} r="5" fill="#0A3D2C" />
       <circle cx={toX(laufzeit)} cy={toY(punkte[punkte.length - 1].restschuld)} r="5" fill="#D4AF37" />
     </svg>
   );
@@ -95,18 +101,75 @@ function DetailCard({ title, children }: { title: string; children: React.ReactN
   );
 }
 
+function SummaryRow({ label, value, bold, highlight }: { label: string; value: string; bold?: boolean; highlight?: boolean }) {
+  return (
+    <tr style={{ borderBottom: '1px solid #F0EDE8' }}>
+      <td style={{ padding: '8px 4px', fontSize: '12px', color: highlight ? '#0A3D2C' : '#6b6b6b', fontWeight: bold ? 700 : 400 }}>{label}</td>
+      <td style={{ padding: '8px 4px', fontSize: '12px', textAlign: 'right', color: highlight ? '#0A3D2C' : '#1a1a1a', fontWeight: bold ? 700 : 500 }}>{value}</td>
+    </tr>
+  );
+}
+
 export default function DetailAuswertung({ ergebnis, form, onLeadTrigger }: Props) {
   const tSatz = form.tilgungssatz ?? 0.02;
-  const tilgungsplan = berechneTilgungsplan(ergebnis.maxKredit, ergebnis.zinssatz, form.laufzeit, tSatz);
+  // Tilgungsplan und Chart auf Basis finanzierungsbedarf (korrekte Größe)
+  const darlehensbetrag = ergebnis.finanzierungsbedarf > 0 ? ergebnis.finanzierungsbedarf : ergebnis.maxKredit;
+  const tilgungsplan = berechneTilgungsplan(darlehensbetrag, ergebnis.zinssatz, form.laufzeit, tSatz);
+  const restschuldNachLaufzeit = tilgungsplan[tilgungsplan.length - 1]?.restschuld ?? 0;
+
+  const statusLabels: Record<string, string> = {
+    angestellt: 'Angestellt', beamter: 'Beamter / Beamtin',
+    selbststaendig: 'Selbstständig', rente: 'Rentner / Rentnerin',
+  };
+  const verwendungLabels: Record<string, string> = {
+    kauf: 'Kauf', neubau: 'Neubau', anschlussfinanzierung: 'Anschlussfinanzierung',
+  };
 
   return (
     <div className="fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+
+      {/* ── Vollständige Zusammenfassung ── */}
+      <DetailCard title="Ergebnis im Überblick">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              <SummaryRow label="Produkttyp" value="Baufinanzierung" />
+              <SummaryRow label="Bonität" value={ergebnis.bonitaetLabel} bold />
+              <SummaryRow label="Zinssatz p.a." value={`${(ergebnis.zinssatz * 100).toFixed(1)} %`} />
+              <SummaryRow label="Tilgungssatz p.a." value={`${(tSatz * 100).toFixed(1)} %`} />
+              <SummaryRow label="Laufzeit" value={`${form.laufzeit} Jahre`} />
+              <SummaryRow label="Max. Kreditrahmen" value={formatEuro(ergebnis.maxKredit)} bold />
+              <SummaryRow label="Kaufkraft gesamt" value={formatEuro(ergebnis.kaufkraft)} />
+            </tbody>
+          </table>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              {form.kaufpreis && form.kaufpreis > 0 ? (
+                <>
+                  <SummaryRow label="Kaufpreis" value={formatEuro(form.kaufpreis)} />
+                  <SummaryRow label="Nebenkosten" value={formatEuro(ergebnis.nebenkosten ?? 0)} />
+                  <SummaryRow label="Gesamtkaufkosten" value={formatEuro(ergebnis.gesamtkaufkosten ?? 0)} bold />
+                  <SummaryRow label="Eigenkapital" value={formatEuro(form.eigenkapital)} />
+                  <SummaryRow label="Finanzierungsbedarf" value={formatEuro(ergebnis.finanzierungsbedarf)} bold highlight />
+                </>
+              ) : (
+                <SummaryRow label="Finanzierungsbedarf" value={formatEuro(ergebnis.finanzierungsbedarf)} bold highlight />
+              )}
+              <SummaryRow label="Monatliche Rate" value={formatEuro(ergebnis.monatsRate)} bold highlight />
+              <SummaryRow label={`Restschuld (${form.laufzeit} J.)`} value={formatEuro(restschuldNachLaufzeit)} />
+            </tbody>
+          </table>
+        </div>
+        <p style={{ fontSize: '11px', color: '#6b6b6b', marginTop: '12px', fontStyle: 'italic' }}>
+          Unverbindliche Beispielrechnung — keine Finanzierungszusage einer Bank. Bonität: {ergebnis.bonitaetLabel} (Score {ergebnis.bonitaetScore}).
+        </p>
+      </DetailCard>
 
       {/* ── Hypotheken-Szenarien ── */}
       <DetailCard title="Zinsszenarien im Vergleich">
         <div className="grid grid-cols-3 gap-3">
           {SZENARIEN.map((s) => {
-            const rate = Math.round(ergebnis.maxKredit * (s.zinssatz + tSatz) / 12);
+            const rate = Math.round(darlehensbetrag * (s.zinssatz + tSatz) / 12);
             const isAktiv = s.label === ergebnis.bonitaetLabel;
             return (
               <div
@@ -175,13 +238,16 @@ export default function DetailAuswertung({ ergebnis, form, onLeadTrigger }: Prop
         </DetailCard>
       )}
 
-      {/* ── Restschuld-Chart ── */}
+      {/* ── Restschuld-Chart (auf Basis finanzierungsbedarf) ── */}
       <DetailCard title="Restschuld-Verlauf">
         <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '-8px 0 14px' }}>
           Entwicklung über {form.laufzeit} Jahre bei {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {(tSatz * 100).toFixed(1)} % Tilgung
+          {form.kaufpreis && ergebnis.finanzierungsbedarf !== ergebnis.maxKredit && (
+            <> · Basis: Finanzierungsbedarf {formatEuro(ergebnis.finanzierungsbedarf)}</>
+          )}
         </p>
         <RestschuldChart
-          kredit={ergebnis.maxKredit}
+          darlehensbetrag={darlehensbetrag}
           zinssatz={ergebnis.zinssatz}
           laufzeit={form.laufzeit}
           tilgungssatz={tSatz}
@@ -189,18 +255,18 @@ export default function DetailAuswertung({ ergebnis, form, onLeadTrigger }: Prop
         <div style={{ display: 'flex', gap: '20px', marginTop: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0A3D2C', flexShrink: 0 }} />
-            <span style={{ fontSize: '11px', color: '#6b6b6b' }}>Start: {formatEuro(ergebnis.maxKredit)}</span>
+            <span style={{ fontSize: '11px', color: '#6b6b6b' }}>Start: {formatEuro(darlehensbetrag)}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#D4AF37', flexShrink: 0 }} />
             <span style={{ fontSize: '11px', color: '#6b6b6b' }}>
-              Nach {form.laufzeit} J.: {formatEuro(tilgungsplan[tilgungsplan.length - 1]?.restschuld ?? 0)}
+              Nach {form.laufzeit} J.: {formatEuro(restschuldNachLaufzeit)}
             </span>
           </div>
         </div>
       </DetailCard>
 
-      {/* ── Tilgungsplan ── */}
+      {/* ── Tilgungsplan (auf Basis finanzierungsbedarf) ── */}
       <DetailCard title="Jahres-Tilgungsplan">
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>

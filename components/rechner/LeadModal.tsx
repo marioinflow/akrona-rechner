@@ -7,11 +7,11 @@ import type { LeadFormData } from '@/types';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  payload: Omit<LeadFormData, 'vorname' | 'nachname' | 'email' | 'consents'> | null;
+  payload: Omit<LeadFormData, 'vorname' | 'nachname' | 'email' | 'telefon' | 'consents'> | null;
 }
 
 export default function LeadModal({ isOpen, onClose, payload }: Props) {
-  const [form, setForm] = useState({ vorname: '', nachname: '', email: '' });
+  const [form, setForm] = useState({ vorname: '', nachname: '', email: '', telefon: '' });
   const [consents, setConsents] = useState({ datenschutz: false, kontakt: false, newsletter: false });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -19,10 +19,12 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
 
   if (!isOpen || !payload) return null;
 
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+
   const canSubmit =
     form.vorname.trim() &&
     form.nachname.trim() &&
-    form.email.includes('@') &&
+    emailValid &&
     consents.datenschutz &&
     consents.kontakt &&
     !loading;
@@ -36,7 +38,12 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
       const res = await fetch('/api/send-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, ...payload, consents }),
+        body: JSON.stringify({
+          ...form,
+          telefon: form.telefon.trim() || undefined,
+          ...payload,
+          consents,
+        }),
       });
       const data = await res.json();
 
@@ -149,9 +156,22 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>
+                  Telefon <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={form.telefon}
+                  onChange={(e) => setForm({ ...form, telefon: e.target.value })}
+                  placeholder="+49 123 456789"
+                  className="w-full rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                  style={{ borderColor: '#E8E2D9' }}
+                />
+              </div>
+
               {/* DSGVO */}
               <div className="space-y-3 pt-1">
-                {/* Pflicht 1 */}
                 <label className="flex gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -170,7 +190,6 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                   </span>
                 </label>
 
-                {/* Pflicht 2 */}
                 <label className="flex gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -184,7 +203,6 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                   </span>
                 </label>
 
-                {/* Optional */}
                 <label className="flex gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -221,8 +239,8 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
               <p className="text-xs text-center" style={{ color: '#6b6b6b' }}>
                 Ihre Daten werden nicht an Dritte weitergegeben. Speicherung gemäß DSGVO.{' '}
                 Widerruf jederzeit möglich unter{' '}
-                <a href="mailto:datenschutz@akrona-gmbh.de" style={{ color: '#0A3D2C' }}>
-                  datenschutz@akrona-gmbh.de
+                <a href="mailto:datenschutz@akrona.de" style={{ color: '#0A3D2C' }}>
+                  datenschutz@akrona.de
                 </a>
               </p>
             </div>

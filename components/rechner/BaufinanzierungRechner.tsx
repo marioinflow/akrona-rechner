@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { berechneBaufinanzierung, formatEuro, GRUNDERWERBSTEUER } from '@/lib/berechnung';
-import type { BaufinanzierungEingaben, BaufinanzierungErgebnis } from '@/types';
+import type { BaufinanzierungEingaben, BaufinanzierungErgebnis, BonitaetLabel } from '@/types';
 import DetailAuswertung from '@/components/rechner/DetailAuswertung';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 
@@ -36,6 +36,13 @@ const FINANZIERUNGSOPTIONEN: {
   { anteil: 60,  label: '60 %',  sublabel: 'Sicherste Option', badge: '',  approxZins: 3.6 },
 ];
 
+const BONITAET_OPTIONEN: { label: string; value: BonitaetLabel | undefined }[] = [
+  { label: 'Auto', value: undefined },
+  { label: 'Sehr gut', value: 'Sehr gut' },
+  { label: 'Mittel', value: 'Mittel' },
+  { label: 'Basis', value: 'Basis' },
+];
+
 const DEFAULT: BaufinanzierungEingaben = {
   nettoeinkommen: 0,
   eigenkapital: 0,
@@ -50,6 +57,7 @@ const DEFAULT: BaufinanzierungEingaben = {
   staatsangehoerigkeit: 'Deutschland',
   tilgungssatz: 0.02,
   finanzierungsanteil: 80,
+  bonitaetOverride: undefined,
 };
 
 const IS: React.CSSProperties = {
@@ -140,7 +148,6 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
       color: '#1a1a1a',
       textTransform: 'uppercase',
       letterSpacing: '0.08em',
-      marginBottom: '6px',
       margin: '0 0 6px',
     }}>
       {children}
@@ -187,12 +194,10 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   ) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
-      // Wenn Kaufpreis ändert + Finanzierungsoption gesetzt → Eigenkapital neu
       if (key === 'kaufpreis' && next.finanzierungsanteil !== undefined) {
         const kp = Number(value) || 0;
         next.eigenkapital = Math.round(kp * (1 - next.finanzierungsanteil / 100));
       }
-      // Eigenkapital manuell geändert → Finanzierungsoption deselektieren
       if (key === 'eigenkapital') {
         next.finanzierungsanteil = undefined;
       }
@@ -212,8 +217,9 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   const anzahlungMax = form.kaufpreis || 500000;
   const sliderFillAnzahlung = anzahlungMax > 0 ? (form.eigenkapital / anzahlungMax) * 100 : 0;
 
+  // Zinsen und Restschuld auf Basis finanzierungsbedarf (korrekt)
   const zinsenMonatlich = ergebnis
-    ? Math.round(ergebnis.maxKredit * ergebnis.zinssatz / 12)
+    ? Math.round(ergebnis.finanzierungsbedarf * ergebnis.zinssatz / 12)
     : 0;
   const restschuld = ergebnis?.tilgungsplan?.[ergebnis.tilgungsplan.length - 1]?.restschuld ?? 0;
 
@@ -287,6 +293,39 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   ))}
                 </select>
               </SelectWrapper>
+            </div>
+
+            {/* Bonitäts-Override */}
+            <div className="sm:col-span-2">
+              <FieldLabel>Bonität (Simulation)</FieldLabel>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {BONITAET_OPTIONEN.map((opt) => {
+                  const isActive = form.bonitaetOverride === opt.value;
+                  return (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => update('bonitaetOverride', opt.value as BonitaetLabel | undefined)}
+                      style={{
+                        flex: 1,
+                        height: '36px',
+                        border: `1.5px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`,
+                        borderRadius: '8px',
+                        backgroundColor: isActive ? 'rgba(10,93,63,0.06)' : '#F7F5F0',
+                        fontSize: '12px',
+                        fontWeight: isActive ? 700 : 500,
+                        color: isActive ? '#0A5D3F' : '#6b6b6b',
+                        cursor: 'pointer',
+                        transition: 'border-color 0.15s, background-color 0.15s',
+                      }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#0A3D2C'; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#E8E2D9'; }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="sm:col-span-2">
@@ -593,7 +632,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 </p>
               </div>
 
-              {/* Monatliche Rate */}
+              {/* Monatliche Rate — auf Basis finanzierungsbedarf */}
               <div style={{ padding: '22px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 5px', fontWeight: 500 }}>
                   Monatliche Rate
@@ -615,6 +654,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 {[
                   { label: 'Zinsen monatlich', value: formatEuro(zinsenMonatlich) },
                   { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
+                  ...(form.kaufpreis ? [{ label: 'Finanzierungsbedarf', value: formatEuro(ergebnis.finanzierungsbedarf) }] : []),
                   { label: `Restschuld (${form.laufzeit} J.)`, value: formatEuro(restschuld) },
                   { label: 'Max. Kredit', value: formatEuro(ergebnis.maxKredit) },
                   { label: 'Kaufkraft gesamt', value: formatEuro(ergebnis.kaufkraft) },
@@ -696,7 +736,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               </p>
 
               <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {['Zinssatz', 'Monatliche Rate', 'Max. Kredit', 'Kaufkraft'].map((item) => (
+                {['Zinssatz', 'Monatliche Rate', 'Finanzierungsbedarf', 'Kaufkraft'].map((item) => (
                   <div
                     key={item}
                     style={{

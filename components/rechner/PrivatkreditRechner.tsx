@@ -2,8 +2,15 @@
 
 import { useState, useMemo } from 'react';
 import { berechnePrivatkredit, formatEuro } from '@/lib/berechnung';
-import type { PrivatkreditEingaben, PrivatkreditErgebnis } from '@/types';
+import type { PrivatkreditEingaben, PrivatkreditErgebnis, BonitaetLabel } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
+
+const BONITAET_OPTIONEN: { label: string; value: BonitaetLabel | undefined }[] = [
+  { label: 'Auto', value: undefined },
+  { label: 'Sehr gut', value: 'Sehr gut' },
+  { label: 'Mittel', value: 'Mittel' },
+  { label: 'Basis', value: 'Basis' },
+];
 
 const DEFAULT: PrivatkreditEingaben = {
   nettoeinkommen: 0,
@@ -11,6 +18,7 @@ const DEFAULT: PrivatkreditEingaben = {
   haushaltsgroesse: 1,
   laufzeit: 60,
   status: 'angestellt',
+  bonitaetOverride: undefined,
 };
 
 const IS: React.CSSProperties = {
@@ -139,6 +147,39 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               </SelectWrapper>
             </div>
 
+            {/* Bonitäts-Override */}
+            <div className="sm:col-span-2">
+              <FieldLabel>Bonität (Simulation)</FieldLabel>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {BONITAET_OPTIONEN.map((opt) => {
+                  const isActive = form.bonitaetOverride === opt.value;
+                  return (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => update('bonitaetOverride', opt.value as BonitaetLabel | undefined)}
+                      style={{
+                        flex: 1,
+                        height: '36px',
+                        border: `1.5px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`,
+                        borderRadius: '8px',
+                        backgroundColor: isActive ? 'rgba(10,93,63,0.06)' : '#F7F5F0',
+                        fontSize: '12px',
+                        fontWeight: isActive ? 700 : 500,
+                        color: isActive ? '#0A5D3F' : '#6b6b6b',
+                        cursor: 'pointer',
+                        transition: 'border-color 0.15s, background-color 0.15s',
+                      }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#0A3D2C'; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#E8E2D9'; }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="sm:col-span-2">
               <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
               <div style={{ position: 'relative' }}>
@@ -186,6 +227,48 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             </div>
           </div>
         </SectionCard>
+
+        {/* Ergebnis-Zusammenfassung (nur wenn Ergebnis vorhanden) */}
+        {ergebnis && (
+          <div
+            className="fade-in-up"
+            style={{
+              border: '1px solid #E8E2D9',
+              borderRadius: '18px',
+              padding: '28px',
+              backgroundColor: '#fff',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+            }}
+          >
+            <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 18px' }}>
+              Vollständige Auswertung
+            </h4>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <tbody>
+                {[
+                  { label: 'Produkttyp', value: 'Privatkredit' },
+                  { label: 'Bonität', value: ergebnis.bonitaetLabel },
+                  { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
+                  { label: 'Max. Kreditrahmen', value: formatEuro(ergebnis.maxKredit) },
+                  { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
+                  { label: 'Monatliche Rate', value: formatEuro(ergebnis.monatsRate), bold: true },
+                  { label: 'Laufzeit', value: `${form.laufzeit} Monate` },
+                  { label: 'Zinsen monatlich', value: formatEuro(zinsenMonatlich) },
+                  { label: 'Zinskosten gesamt', value: formatEuro(zinsgesamt) },
+                  { label: 'Gesamtbetrag', value: formatEuro(ergebnis.gesamtkosten), bold: true },
+                ].map((row) => (
+                  <tr key={row.label} style={{ borderBottom: '1px solid #F0EDE8' }}>
+                    <td style={{ padding: '9px 4px', fontSize: '13px', color: '#6b6b6b' }}>{row.label}</td>
+                    <td style={{ padding: '9px 4px', fontSize: '13px', textAlign: 'right', fontWeight: row.bold ? 700 : 500, color: row.bold ? '#0A3D2C' : '#1a1a1a' }}>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ fontSize: '11px', color: '#6b6b6b', marginTop: '14px', fontStyle: 'italic' }}>
+              Unverbindliche Beispielrechnung — keine Finanzierungszusage.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ════════════════════════════════

@@ -4,12 +4,16 @@ import {
   Text,
   View,
   StyleSheet,
-  Font,
 } from '@react-pdf/renderer';
 import type { LeadFormData } from '@/types';
-import type { BaufinanzierungErgebnis, PrivatkreditErgebnis, BaufinanzierungEingaben, PrivatkreditEingaben } from '@/types';
+import type {
+  BaufinanzierungErgebnis,
+  PrivatkreditErgebnis,
+  BaufinanzierungEingaben,
+  PrivatkreditEingaben,
+} from '@/types';
 
-// ─── Styles ───────────────────────────────────────────
+// ─── Farben ───────────────────────────────────────────
 const C = {
   darkGreen: '#0A3D2C',
   lightGreen: '#0A5D3F',
@@ -44,7 +48,6 @@ const s = StyleSheet.create({
   pageHeaderLogo: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
   pageHeaderGold: { color: C.gold },
   pageHeaderRight: { fontSize: 9, color: C.muted, textAlign: 'right' },
-  pageNumber: { fontSize: 9, color: C.muted },
 
   sectionEyebrow: { fontSize: 9, color: C.lightGreen, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 6 },
   sectionTitle: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 20 },
@@ -53,14 +56,17 @@ const s = StyleSheet.create({
   table: { marginBottom: 20 },
   tableRow: { flexDirection: 'row', borderBottom: `1px solid ${C.border}`, paddingVertical: 9 },
   tableRowAlt: { backgroundColor: C.bg },
+  tableRowTotal: { backgroundColor: C.darkGreen },
   tableLabel: { fontSize: 10, color: C.muted, flex: 1 },
   tableValue: { fontSize: 10, color: C.text, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
+  tableLabelTotal: { fontSize: 10, color: C.white, flex: 1, fontFamily: 'Helvetica-Bold' },
+  tableValueTotal: { fontSize: 10, color: C.gold, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
 
   // ── Ergebnis-Karten ──
   resultsGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   resultCard: { flex: 1, backgroundColor: C.bg, borderRadius: 8, padding: 16 },
   resultCardLabel: { fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  resultCardValue: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
+  resultCardValue: { fontSize: 16, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
   resultCardMain: { backgroundColor: C.darkGreen, flex: 1, borderRadius: 8, padding: 16 },
   resultCardMainLabel: { fontSize: 9, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
   resultCardMainValue: { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.gold },
@@ -123,13 +129,11 @@ function CoverPage({ vorname, nachname, typ, datum }: { vorname: string; nachnam
     <Page size="A4" style={s.page}>
       <View style={s.coverPage}>
         <Text style={s.coverLogoText}>AKRONA GmbH</Text>
-        <Text style={s.coverLogoSub}>§ 34c & § 34i GewO · IHK Region Stuttgart</Text>
+        <Text style={s.coverLogoSub}>§ 34c &amp; § 34i GewO · IHK Region Stuttgart</Text>
 
         <View style={s.coverLine} />
         <Text style={s.coverEyebrow}>Persönliche Finanzierungsauswertung</Text>
-        <Text style={s.coverTitle}>
-          Ihre individuelle{'\n'}Finanzierungsanalyse
-        </Text>
+        <Text style={s.coverTitle}>Ihre individuelle{'\n'}Finanzierungsanalyse</Text>
 
         <View style={s.coverMeta}>
           {[
@@ -147,7 +151,7 @@ function CoverPage({ vorname, nachname, typ, datum }: { vorname: string; nachnam
 
         <View style={s.coverFooter}>
           <Text style={s.coverFooterText}>
-            Diese Auswertung ist eine unverbindliche Ersteinschätzung — keine Bankzusage.
+            Unverbindliche Beispielrechnung — keine verbindliche Finanzierungszusage einer Bank.
           </Text>
         </View>
       </View>
@@ -161,16 +165,28 @@ function AngabenPage({ vorname, nachname, typ, eingaben }: {
   eingaben: BaufinanzierungEingaben | PrivatkreditEingaben;
 }) {
   const rows: { label: string; value: string }[] = [];
+  const statusMap: Record<string, string> = {
+    angestellt: 'Angestellt',
+    beamter: 'Beamter / Beamtin',
+    selbststaendig: 'Selbstständig',
+    rente: 'Rentner / Rentnerin',
+  };
+  const verwendungMap: Record<string, string> = {
+    kauf: 'Kauf',
+    neubau: 'Neubau',
+    anschlussfinanzierung: 'Anschlussfinanzierung',
+  };
 
   if (typ === 'Baufinanzierung') {
     const e = eingaben as BaufinanzierungEingaben;
     rows.push(
       { label: 'Monatliches Nettoeinkommen', value: fEuro(e.nettoeinkommen) },
-      { label: 'Eigenkapital', value: fEuro(e.eigenkapital) },
+      { label: 'Eigenkapital / Anzahlung', value: fEuro(e.eigenkapital) },
       { label: 'Haushaltsgröße', value: `${e.haushaltsgroesse}${e.haushaltsgroesse >= 5 ? '+' : ''} Person(en)` },
       { label: 'Laufzeit', value: `${e.laufzeit} Jahre` },
-      { label: 'Beschäftigungsstatus', value: { angestellt: 'Angestellt', beamter: 'Beamter / Beamtin', selbststaendig: 'Selbstständig', rente: 'Rente' }[e.status] },
-      { label: 'Verwendungszweck', value: { kauf: 'Kauf', neubau: 'Neubau', anschlussfinanzierung: 'Anschlussfinanzierung' }[e.verwendungszweck] },
+      { label: 'Tilgungssatz', value: fPct(e.tilgungssatz ?? 0.02) },
+      { label: 'Beschäftigungsstatus', value: statusMap[e.status] ?? e.status },
+      { label: 'Verwendungszweck', value: verwendungMap[e.verwendungszweck] ?? e.verwendungszweck },
     );
     if (e.kaufpreis) {
       rows.push(
@@ -179,6 +195,8 @@ function AngabenPage({ vorname, nachname, typ, eingaben }: {
         { label: 'Maklergebühr', value: `${e.maklergebuehr ?? 0} %` },
       );
     }
+    if (e.wohnsitzland) rows.push({ label: 'Wohnsitzland', value: e.wohnsitzland });
+    if (e.staatsangehoerigkeit) rows.push({ label: 'Staatsangehörigkeit', value: e.staatsangehoerigkeit });
   } else {
     const e = eingaben as PrivatkreditEingaben;
     rows.push(
@@ -186,7 +204,7 @@ function AngabenPage({ vorname, nachname, typ, eingaben }: {
       { label: 'Gewünschte Kreditsumme', value: e.wunschkredit ? fEuro(e.wunschkredit) : 'Max. möglich' },
       { label: 'Haushaltsgröße', value: `${e.haushaltsgroesse}${e.haushaltsgroesse >= 5 ? '+' : ''} Person(en)` },
       { label: 'Laufzeit', value: `${e.laufzeit} Monate` },
-      { label: 'Beschäftigungsstatus', value: { angestellt: 'Angestellt', beamter: 'Beamter / Beamtin', selbststaendig: 'Selbstständig', rente: 'Rente' }[e.status] },
+      { label: 'Beschäftigungsstatus', value: statusMap[e.status] ?? e.status },
     );
   }
 
@@ -194,10 +212,8 @@ function AngabenPage({ vorname, nachname, typ, eingaben }: {
     <Page size="A4" style={s.page}>
       <View style={s.contentPage}>
         <PageHeader name={`${vorname} ${nachname}`} page="Ihre Angaben" />
-
         <Text style={s.sectionEyebrow}>Eingabedaten</Text>
         <Text style={s.sectionTitle}>Ihre Angaben im Überblick</Text>
-
         <View style={s.table}>
           {rows.map((row, i) => (
             <View key={row.label} style={[s.tableRow, i % 2 === 1 ? s.tableRowAlt : {}]}>
@@ -221,12 +237,12 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben }: {
   const isBau = typ === 'Baufinanzierung';
   const bauErg = isBau ? ergebnis as BaufinanzierungErgebnis : null;
   const privErg = !isBau ? ergebnis as PrivatkreditErgebnis : null;
+  const bauEing = isBau ? eingaben as BaufinanzierungEingaben : null;
 
   return (
     <Page size="A4" style={s.page}>
       <View style={s.contentPage}>
         <PageHeader name={`${vorname} ${nachname}`} page="Ergebnis" />
-
         <Text style={s.sectionEyebrow}>Ihre Ersteinschätzung</Text>
         <Text style={s.sectionTitle}>Berechnungsergebnis</Text>
 
@@ -242,17 +258,25 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben }: {
         {/* Ergebnis-Karten */}
         <View style={s.resultsGrid}>
           <View style={s.resultCardMain}>
-            <Text style={s.resultCardMainLabel}>Max. {isBau ? 'Kreditsumme' : 'Kreditrahmen'}</Text>
-            <Text style={s.resultCardMainValue}>{fEuro(ergebnis.maxKredit)}</Text>
-          </View>
-          <View style={s.resultCard}>
-            <Text style={s.resultCardLabel}>Monatliche Rate</Text>
-            <Text style={s.resultCardValue}>{fEuro(ergebnis.monatsRate)}</Text>
+            <Text style={s.resultCardMainLabel}>Monatliche Rate</Text>
+            <Text style={s.resultCardMainValue}>{fEuro(ergebnis.monatsRate)}</Text>
           </View>
           {bauErg && (
             <View style={s.resultCard}>
-              <Text style={s.resultCardLabel}>Kaufkraft</Text>
-              <Text style={s.resultCardValue}>{fEuro(bauErg.kaufkraft)}</Text>
+              <Text style={s.resultCardLabel}>Finanzierungsbedarf</Text>
+              <Text style={s.resultCardValue}>{fEuro(bauErg.finanzierungsbedarf)}</Text>
+            </View>
+          )}
+          {bauErg && (
+            <View style={s.resultCard}>
+              <Text style={s.resultCardLabel}>Max. Kreditrahmen</Text>
+              <Text style={s.resultCardValue}>{fEuro(bauErg.maxKredit)}</Text>
+            </View>
+          )}
+          {privErg && (
+            <View style={s.resultCard}>
+              <Text style={s.resultCardLabel}>Kreditbetrag</Text>
+              <Text style={s.resultCardValue}>{fEuro(privErg.aktuellerKredit)}</Text>
             </View>
           )}
           {privErg && (
@@ -263,16 +287,19 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben }: {
           )}
         </View>
 
-        {/* Gesamtkaufkosten bei Baufinanzierung mit Kaufpreis */}
-        {bauErg?.gesamtkaufkosten && (eingaben as BaufinanzierungEingaben).kaufpreis && (
+        {/* Baufinanzierung: vollständige Übersicht */}
+        {bauErg && (
           <>
-            <Text style={[s.sectionEyebrow, { marginTop: 8 }]}>Kaufnebenkosten</Text>
+            <Text style={[s.sectionEyebrow, { marginTop: 4 }]}>Vollständige Übersicht</Text>
             <View style={s.table}>
               {[
-                { label: 'Kaufpreis', value: fEuro((eingaben as BaufinanzierungEingaben).kaufpreis!) },
-                { label: 'Grunderwerbsteuer', value: fEuro(bauErg.grunderwerbsteuer ?? 0) },
-                { label: 'Makler & Notar', value: fEuro((bauErg.nebenkosten ?? 0) - (bauErg.grunderwerbsteuer ?? 0)) },
-                { label: 'Gesamtkosten', value: fEuro(bauErg.gesamtkaufkosten) },
+                { label: 'Max. Kreditrahmen', value: fEuro(bauErg.maxKredit) },
+                { label: 'Kaufkraft gesamt', value: fEuro(bauErg.kaufkraft) },
+                { label: 'Finanzierungsbedarf', value: fEuro(bauErg.finanzierungsbedarf) },
+                { label: 'Zinssatz p.a.', value: fPct(bauErg.zinssatz) },
+                { label: 'Tilgungssatz p.a.', value: fPct(bauEing?.tilgungssatz ?? 0.02) },
+                { label: 'Monatliche Rate', value: fEuro(bauErg.monatsRate) },
+                { label: 'Laufzeit', value: `${bauEing?.laufzeit ?? '–'} Jahre` },
               ].map((row, i) => (
                 <View key={row.label} style={[s.tableRow, i % 2 === 1 ? s.tableRowAlt : {}]}>
                   <Text style={s.tableLabel}>{row.label}</Text>
@@ -283,7 +310,52 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben }: {
           </>
         )}
 
-        {/* Tilgungsplan */}
+        {/* Kaufnebenkosten bei Baufinanzierung */}
+        {bauErg?.gesamtkaufkosten && bauEing?.kaufpreis && (
+          <>
+            <Text style={[s.sectionEyebrow, { marginTop: 4 }]}>Kaufnebenkosten</Text>
+            <View style={s.table}>
+              {[
+                { label: 'Kaufpreis', value: fEuro(bauEing.kaufpreis) },
+                { label: `Grunderwerbsteuer (${bauEing.bundesland ?? 'Bayern'})`, value: fEuro(bauErg.grunderwerbsteuer ?? 0) },
+                { label: `Maklergebühr (${bauEing.maklergebuehr ?? 0} %)`, value: fEuro(bauErg.maklergebuehr ?? 0) },
+                { label: 'Notar & Grundbuch (ca. 2,0 %)', value: fEuro((bauErg.nebenkosten ?? 0) - (bauErg.grunderwerbsteuer ?? 0) - (bauErg.maklergebuehr ?? 0)) },
+                { label: 'Nebenkosten gesamt', value: fEuro(bauErg.nebenkosten ?? 0), total: false },
+                { label: 'Eigenkapital', value: fEuro(bauEing.eigenkapital) },
+                { label: 'Gesamtkaufkosten', value: fEuro(bauErg.gesamtkaufkosten), total: true },
+              ].map((row, i) => (
+                <View key={row.label} style={[s.tableRow, row.total ? s.tableRowTotal : (i % 2 === 1 ? s.tableRowAlt : {})]}>
+                  <Text style={row.total ? s.tableLabelTotal : s.tableLabel}>{row.label}</Text>
+                  <Text style={row.total ? s.tableValueTotal : s.tableValue}>{row.value}</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Privatkredit: vollständige Übersicht */}
+        {privErg && (
+          <>
+            <Text style={[s.sectionEyebrow, { marginTop: 4 }]}>Kreditübersicht</Text>
+            <View style={s.table}>
+              {[
+                { label: 'Max. Kreditrahmen', value: fEuro(privErg.maxKredit) },
+                { label: 'Kreditbetrag', value: fEuro(privErg.aktuellerKredit) },
+                { label: 'Zinssatz p.a.', value: fPct(privErg.zinssatz) },
+                { label: 'Monatliche Rate', value: fEuro(privErg.monatsRate) },
+                { label: 'Zinskosten gesamt', value: fEuro(privErg.gesamtkosten - privErg.aktuellerKredit) },
+                { label: 'Gesamtbetrag', value: fEuro(privErg.gesamtkosten) },
+              ].map((row, i) => (
+                <View key={row.label} style={[s.tableRow, i % 2 === 1 ? s.tableRowAlt : {}]}>
+                  <Text style={s.tableLabel}>{row.label}</Text>
+                  <Text style={s.tableValue}>{row.value}</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Tilgungsplan bei Baufinanzierung */}
         {bauErg?.tilgungsplan && bauErg.tilgungsplan.length > 0 && (
           <>
             <Text style={[s.sectionEyebrow, { marginTop: 8 }]}>Jahres-Tilgungsplan (Stützpunkte)</Text>
@@ -334,9 +406,7 @@ function NextStepsPage({ vorname, nachname }: { vorname: string; nachname: strin
         <Text style={[s.coverLogoSub, { marginBottom: 48 }]}>IHK Region Stuttgart</Text>
 
         <Text style={[s.coverEyebrow, { marginBottom: 12 }]}>Nächste Schritte</Text>
-        <Text style={[s.coverTitle, { fontSize: 22, marginBottom: 40 }]}>
-          Ihr Weg zur{'\n'}Finanzierung
-        </Text>
+        <Text style={[s.coverTitle, { fontSize: 22, marginBottom: 40 }]}>Ihr Weg zur{'\n'}Finanzierung</Text>
 
         {steps.map((step, i) => (
           <View key={i} style={s.stepItem}>
@@ -355,14 +425,17 @@ function NextStepsPage({ vorname, nachname }: { vorname: string; nachname: strin
             Alperen Akbal · Akrona GmbH
           </Text>
           <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
-            E-Mail: info@akrona-gmbh.de{'\n'}
-            IHK Region Stuttgart · § 34c & § 34i GewO
+            E-Mail: info@akrona.de{'\n'}
+            IHK Region Stuttgart · § 34c &amp; § 34i GewO
           </Text>
         </View>
 
         <View style={s.disclaimer}>
           <Text style={s.disclaimerText}>
-            Diese Auswertung wurde am {new Date().toLocaleDateString('de-DE')} für {vorname} {nachname} erstellt und stellt eine unverbindliche Ersteinschätzung dar. Sie ist keine verbindliche Kreditzusage einer Bank. Die tatsächlichen Konditionen können je nach Bonität, Anbieter und Marktlage abweichen. Alle Berechnungen erfolgen nach den gängigen Bankfaustregeln.
+            Diese Auswertung wurde am {new Date().toLocaleDateString('de-DE')} für {vorname} {nachname} erstellt und stellt eine
+            unverbindliche Ersteinschätzung dar. Sie ist KEINE verbindliche Kreditzusage einer Bank oder eines
+            Kreditinstituts. Die tatsächlichen Konditionen können je nach Bonität, Anbieter und Marktlage
+            abweichen. Alle Berechnungen erfolgen nach gängigen Bankfaustregeln ohne Gewähr.
           </Text>
         </View>
       </View>
