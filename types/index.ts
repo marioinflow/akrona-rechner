@@ -68,6 +68,10 @@ export interface TilgungsPunkt {
   restschuld: number;
   gezahlteZinsen: number;
   gezahltesTilgung: number;
+  /** Zinsen in diesem Jahr (für Charts) */
+  jahresZinsen: number;
+  /** Tilgung in diesem Jahr (für Charts) */
+  jahresTilgung: number;
 }
 
 export interface LeadFormData {

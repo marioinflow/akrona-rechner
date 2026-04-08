@@ -50,23 +50,21 @@ export function berechneTilgungsplan(
   let gesamtZinsen = 0;
   let gesamtTilgung = 0;
 
-  const stuetzpunkte = new Set([1, 5, 10, 15, laufzeitJahre].filter((j) => j <= laufzeitJahre));
-
   for (let jahr = 1; jahr <= laufzeitJahre; jahr++) {
     const zinsen = restschuld * zinssatz;
-    const tilgung = jahresrate - zinsen;
+    const tilgung = Math.min(jahresrate - zinsen, restschuld);
     restschuld = Math.max(0, restschuld - tilgung);
     gesamtZinsen += zinsen;
     gesamtTilgung += tilgung;
 
-    if (stuetzpunkte.has(jahr)) {
-      plan.push({
-        jahr,
-        restschuld: Math.round(restschuld),
-        gezahlteZinsen: Math.round(gesamtZinsen),
-        gezahltesTilgung: Math.round(gesamtTilgung),
-      });
-    }
+    plan.push({
+      jahr,
+      restschuld: Math.round(restschuld),
+      gezahlteZinsen: Math.round(gesamtZinsen),
+      gezahltesTilgung: Math.round(gesamtTilgung),
+      jahresZinsen: Math.round(zinsen),
+      jahresTilgung: Math.round(tilgung),
+    });
   }
 
   return plan;
