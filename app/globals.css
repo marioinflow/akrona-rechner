@@ -317,16 +317,15 @@ input[type="checkbox"] {
   height: calc(100% + 8px);
   border-radius: inherit;
   pointer-events: none;
-  background-image: linear-gradient(0deg, rgba(0,0,0,0.22), rgba(0,0,0,0.55));
+  background-image: linear-gradient(0deg, rgba(187,148,79,0.18), rgba(187,148,79,0.08));
   z-index: -1;
   transition: box-shadow var(--transition);
   box-shadow:
+    0 0 0 1px rgba(187,148,79,0.35),
     0 -8px 8px -6px transparent inset,
     0 -16px 16px -8px transparent inset,
     1px 1px 1px rgba(255,255,255,0.10),
-    2px 2px 2px rgba(255,255,255,0.05),
-    -1px -1px 1px rgba(0,0,0,0.06),
-    -2px -2px 2px rgba(0,0,0,0.03);
+    2px 2px 2px rgba(255,255,255,0.05);
 }
 
 .akrona-anim-btn::after {
@@ -369,12 +368,12 @@ input[type="checkbox"] {
 }
 .akrona-anim-btn:hover::before {
   box-shadow:
+    0 0 0 1px rgba(187,148,79,0.60),
+    0 0 8px 2px rgba(187,148,79,0.22),
     0 -8px 8px -6px rgba(255,255,255,0.55) inset,
     0 -16px 16px -8px rgba(255,255,255,0.28) inset,
     1px 1px 1px rgba(255,255,255,0.18),
-    2px 2px 2px rgba(255,255,255,0.08),
-    -1px -1px 1px rgba(0,0,0,0.06),
-    -2px -2px 2px rgba(0,0,0,0.03);
+    2px 2px 2px rgba(255,255,255,0.08);
 }
 .akrona-anim-btn:hover::after {
   opacity: 1;
@@ -394,12 +393,12 @@ input[type="checkbox"] {
 }
 .akrona-anim-btn:active::before {
   box-shadow:
+    0 0 0 1px rgba(187,148,79,0.80),
+    0 0 10px 3px rgba(187,148,79,0.30),
     0 -8px 12px -6px rgba(255,255,255,0.75) inset,
     0 -16px 16px -8px rgba(255,255,255,0.55) inset,
     1px 1px 1px rgba(255,255,255,0.25),
-    2px 2px 2px rgba(255,255,255,0.12),
-    -1px -1px 1px rgba(0,0,0,0.06),
-    -2px -2px 2px rgba(0,0,0,0.03);
+    2px 2px 2px rgba(255,255,255,0.12);
 }
 .akrona-anim-btn:active::after {
   opacity: 1;

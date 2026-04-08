@@ -528,14 +528,15 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   ? 'Klicken Sie auf „Neu berechnen" um Ihre aktualisierten Konditionen zu sehen.'
                   : 'Füllen Sie das Formular aus und klicken Sie auf „Jetzt berechnen".'}
               </p>
-              <button
+              <AkronaAnimatedButton
+                label="Jetzt berechnen"
+                labelActive="Neu berechnen"
+                active={formChanged}
+                size="sm"
+                bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+                className="w-full"
                 onClick={berechnen}
-                style={{ width: '100%', height: '44px', backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C', color: formChanged ? '#0A3D2C' : '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-                onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-              >
-                {formChanged ? 'Neu berechnen' : 'Jetzt berechnen'}
-              </button>
+              />
             </div>
           )}
         </div>
