@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/ui/Header';
+import { PartnerLogos } from '@/components/ui/partner-logos';
 import Footer from '@/components/ui/Footer';
 import BaufinanzierungRechner from '@/components/rechner/BaufinanzierungRechner';
 import PrivatkreditRechner from '@/components/rechner/PrivatkreditRechner';
@@ -286,6 +287,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* ══════════════════════════════════════════════════
+            PARTNER LOGOS TICKER
+        ══════════════════════════════════════════════════ */}
+        <PartnerLogos />
 
         {/* ══════════════════════════════════════════════════
             RECHNER

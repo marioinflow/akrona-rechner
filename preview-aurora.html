@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akrona — Design Preview v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:        #0A3D2C;
+      --green-light:  #0A5D3F;
+      --gold:         #D4AF37;
+      --gold-light:   #E8CC6A;
+      --bg:           #F7F5F0;
+      --border:       #E8E2D9;
+      --muted:        #6b6b6b;
+      --white:        #FFFFFF;
+      --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1.00);
+      --ease-std:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    @keyframes pulse-ring {
+      0%   { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(8px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Ticker scroll */
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: rgba(247, 245, 240, 0.88);
+      border-bottom: 0.5px solid rgba(232, 226, 217, 0.9);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: 0.3px;
+      text-decoration: none;
+    }
+
+    .nav-logo-mark {
+      width: 28px; height: 28px;
+      background: var(--green);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    /* Nav links — Baufinanzierung + Privatkredit */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-link {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      text-decoration: none;
+      transition: background 150ms, color 150ms;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(10, 61, 44, 0.07);
+      color: var(--green);
+    }
+
+    .nav-link.active {
+      background: rgba(10, 61, 44, 0.10);
+      color: var(--green);
+    }
+
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-badge-pill {
+      background: rgba(10, 61, 44, 0.07);
+      border: 1px solid rgba(10, 61, 44, 0.12);
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-cta {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 200ms var(--ease-std), box-shadow 200ms var(--ease-std), background 150ms;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-cta:hover {
+      background: var(--green-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(10, 61, 44, 0.25);
+    }
+
+    .nav-cta:active { transform: scale(0.97); }
+
+    /* ══════════════════════════════════════════
+       HERO SECTION — NETWORK CANVAS
+    ══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 96px 64px 80px;
+      background: var(--bg);
+    }
+
+    /* Network canvas sits behind everything */
+    #networkCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 1;
+    }
+
+    /* Very subtle radial highlight — not aurora, just warmth */
+    .hero-radial {
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 70%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(
+        ellipse at 70% 30%,
+        rgba(212, 175, 55, 0.06) 0%,
+        rgba(10, 61, 44, 0.04) 40%,
+        transparent 70%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(10, 61, 44, 0.07);
+      border: 1px solid rgba(10, 61, 44, 0.15);
+      border-radius: 9999px;
+      padding: 5px 14px 5px 8px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 700;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.5s var(--ease-std) both;
+    }
+
+    .tag-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      position: relative;
+    }
+
+    .tag-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      animation: pulse-ring 2.5s ease-out infinite;
+    }
+
+    .hero-h1 {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -2px;
+      color: #111;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.5s 0.08s var(--ease-std) both;
+    }
+
+    .hero-h1 em {
+      font-style: normal;
+      color: var(--gold);
+      position: relative;
+    }
+
+    .hero-h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 3px; left: 0; right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, var(--gold) 60%, transparent);
+      border-radius: 9999px;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      font-weight: 400;
+      max-width: 460px;
+      animation: fadeInUp 0.5s 0.16s var(--ease-std) both;
+    }
+
+    .hero-btns {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.5s 0.24s var(--ease-std) both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 200ms var(--ease-std), box-shadow 200ms var(--ease-std), background 150ms;
+      box-shadow: 0 4px 16px rgba(10,61,44,0.22), 0 1px 3px rgba(10,61,44,0.12);
+    }
+
+    .btn-primary:hover {
+      background: var(--green-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(10,61,44,0.28);
+    }
+
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-arrow {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+
+    .btn-ghost {
+      background: none; border: none;
+      font-size: 14px; color: var(--muted);
+      font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      font-weight: 500;
+      transition: color 150ms;
+      padding: 0;
+    }
+
+    .btn-ghost:hover { color: var(--green); }
+
+    .hero-stats {
+      display: flex;
+      gap: 28px;
+      animation: fadeInUp 0.5s 0.32s var(--ease-std) both;
+    }
+
+    .hero-stat {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-icon {
+      width: 22px; height: 22px;
+      background: rgba(10, 61, 44, 0.08);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+
+    /* Hero right */
+    .hero-right {
+      position: relative;
+      animation: fadeInRight 0.6s 0.15s var(--ease-std) both;
+    }
+
+    .hero-img-box {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #ddd8d0 0%, #cec8bf 100%);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    /* Simulate a photo with a person silhouette shape */
+    .hero-img-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 60% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        linear-gradient(160deg, rgba(10,61,44,0.06) 0%, rgba(212,175,55,0.05) 100%);
+    }
+
+    .hero-img-label {
+      position: absolute;
+      top: 20px; left: 20px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      z-index: 2;
+    }
+
+    /* Floating pill */
+    .float-pill {
+      position: absolute;
+      top: 20px;
+      left: -36px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+      animation: float 7s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    .float-pill-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+
+    .float-pill-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .float-pill-text span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Floating result card */
+    .float-result {
+      position: absolute;
+      bottom: -28px;
+      right: -28px;
+      background: var(--green);
+      border-radius: 20px;
+      padding: 22px 26px;
+      box-shadow: 0 24px 56px rgba(10,61,44,0.38), 0 4px 10px rgba(0,0,0,0.15);
+      animation: float 6s 0.5s ease-in-out infinite;
+      z-index: 2;
+      min-width: 200px;
+      overflow: hidden;
+    }
+
+    .float-result::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(212,175,55,0.12);
+      pointer-events: none;
+    }
+
+    .float-result-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .float-result-amount {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .float-result-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 3px;
+    }
+
+    /* ══════════════════════════════════════════
+       BANK TICKER — directly below hero
+    ══════════════════════════════════════════ */
+    .ticker-section {
+      position: relative;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+      overflow: hidden;
+    }
+
+    /* Fade edges */
+    .ticker-section::before,
+    .ticker-section::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 160px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .ticker-section::before {
+      left: 0;
+      background: linear-gradient(to right, #fff 0%, transparent 100%);
+    }
+
+    .ticker-section::after {
+      right: 0;
+      background: linear-gradient(to left, #fff 0%, transparent 100%);
+    }
+
+    .ticker-label {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: #fff;
+      padding-right: 16px;
+    }
+
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      width: max-content;
+      animation: ticker 30s linear infinite;
+    }
+
+    .ticker-track:hover { animation-play-state: paused; }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 36px;
+      white-space: nowrap;
+      color: #555;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border-right: 1px solid var(--border);
+    }
+
+    .ticker-item:last-child { border-right: none; }
+
+    .ticker-icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       RECHNER SECTION
+    ══════════════════════════════════════════ */
+    .rechner-section {
+      position: relative;
+      padding: 80px 40px;
+      overflow: hidden;
+    }
+
+    /* Subtle background glow */
+    .bg-glow {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    .bg-glow-1 {
+      top: -15%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(10,61,44,0.05) 0%, transparent 70%);
+    }
+
+    .bg-glow-2 {
+      bottom: -10%;
+      left: -8%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 70%);
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #111;
+      margin-bottom: 40px;
+    }
+
+    /* Rechner card */
+    .rechner-card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 22px;
+      border: 1px solid rgba(232,226,217,0.9);
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.03),
+        0 8px 24px rgba(0,0,0,0.05),
+        0 40px 80px rgba(10,61,44,0.04);
+      overflow: hidden;
+    }
+
+    .rechner-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: rgba(247,245,240,0.7);
+      padding: 0 4px;
+      gap: 4px;
+    }
+
+    .rechner-tab {
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      border-bottom: 2px solid transparent;
+      transition: color 150ms, border-color 150ms;
+      margin-bottom: -1px;
+    }
+
+    .rechner-tab.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .rechner-body {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+    }
+
+    .rechner-form {
+      padding: 28px 32px;
+      border-right: 1px solid var(--border);
+    }
+
+    .form-section-head {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .form-section-head:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .fg { display: flex; flex-direction: column; gap: 5px; }
+    .fg.full { grid-column: span 2; }
+
+    .fg label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .form-input, .form-select {
+      height: 44px;
+      border-radius: 10px;
+      border: 1.5px solid transparent;
+      background: rgba(118,118,128,0.09);
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #111;
+      outline: none;
+      transition: border-color 150ms, background 150ms, box-shadow 150ms;
+      width: 100%;
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236b6b6b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 10px;
+      background-color: rgba(118,118,128,0.09);
+      padding-right: 32px;
+      cursor: pointer;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--green);
+      background: rgba(10,61,44,0.04);
+      box-shadow: 0 0 0 3px rgba(10,61,44,0.10);
+    }
+
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .toggle-btn {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(118,118,128,0.05);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 180ms;
+      text-align: left;
+    }
+
+    .toggle-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 4px 12px rgba(10,61,44,0.18);
+    }
+
+    .toggle-btn-title {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .toggle-btn.active .toggle-btn-title { color: #fff; }
+
+    .toggle-btn-sub {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .toggle-btn.active .toggle-btn-sub { color: rgba(255,255,255,0.55); }
+
+    .btn-calc {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform 200ms var(--ease-std), box-shadow 200ms var(--ease-std), background 150ms;
+      box-shadow: 0 4px 14px rgba(10,61,44,0.20);
+    }
+
+    .btn-calc:hover {
+      background: var(--green-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(10,61,44,0.25);
+    }
+
+    .btn-calc:active { transform: scale(0.98); }
+
+    /* Result Panel */
+    .rechner-result {
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(170deg, rgba(10,61,44,0.025) 0%, rgba(255,255,255,0) 60%);
+    }
+
+    .result-eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+    }
+
+    .result-main {
+      background: var(--green);
+      border-radius: 16px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle network-inspired lines inside the result card */
+    .result-main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.025) 50%, transparent 60%),
+        linear-gradient(75deg,  transparent 40%, rgba(212,175,55,0.04) 50%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .rate-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .rate-amount {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 3px;
+      animation: countUp 0.4s var(--ease-spring) both;
+    }
+
+    .rate-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 18px;
+    }
+
+    .result-sep {
+      height: 0.5px;
+      background: rgba(255,255,255,0.12);
+      margin-bottom: 14px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .rr-label { font-size: 11px; color: rgba(255,255,255,0.45); }
+    .rr-val   { font-size: 12px; font-weight: 700; color: #fff; }
+    .rr-val.gold { color: var(--gold); }
+
+    .bonitaet-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .bon-label { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+    .bon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(52,199,89,0.15);
+      border: 1px solid rgba(52,199,89,0.3);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #30D158;
+    }
+
+    .bon-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #30D158;
+    }
+
+    .result-cta {
+      display: block; width: 100%;
+      background: var(--gold);
+      color: #111;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 200ms var(--ease-std), box-shadow 200ms var(--ease-std);
+      box-shadow: 0 4px 16px rgba(212,175,55,0.30);
+      letter-spacing: 0.1px;
+    }
+
+    .result-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212,175,55,0.40);
+    }
+
+    .result-cta:active { transform: scale(0.97); }
+
+    .result-note {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Options */
+    .options-section {
+      padding: 22px 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .options-eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .opt-card {
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 180ms var(--ease-std);
+      background: rgba(255,255,255,0.7);
+      position: relative;
+    }
+
+    .opt-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+    }
+
+    .opt-card.active {
+      border-color: var(--green);
+      background: rgba(10,61,44,0.04);
+    }
+
+    .opt-badge {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: #111;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    .opt-pct {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: -0.5px;
+    }
+
+    .opt-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+      margin-bottom: 8px;
+    }
+
+    .opt-rate {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .opt-monthly {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ══════════════════════════════════════════
+       TILGUNGSPLAN
+    ══════════════════════════════════════════ */
+    .tilgung-section {
+      padding: 80px 40px;
+    }
+
+    .tilgung-card {
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .tilgung-head {
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tilgung-title { font-size: 17px; font-weight: 700; color: #111; }
+    .tilgung-params { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .tilgung-scroll {
+      overflow: auto;
+      max-height: 300px;
+    }
+
+    .tilg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .tilg-table thead {
+      position: sticky; top: 0; z-index: 2;
+      background: rgba(247,245,240,0.97);
+      backdrop-filter: blur(8px);
+    }
+
+    .tilg-table th {
+      padding: 9px 16px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tilg-table td {
+      padding: 9px 16px;
+      border-bottom: 0.5px solid rgba(232,226,217,0.6);
+      color: #333;
+    }
+
+    .tilg-table tbody tr:hover { background: rgba(10,61,44,0.025); }
+    .td-zins  { color: #b45309; font-weight: 600; }
+    .td-tilg  { color: var(--green); font-weight: 600; }
+    .td-rest  { font-weight: 700; color: #111; }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .chart-box {
+      padding: 24px 28px;
+      background: #fff;
+    }
+
+    .chart-box:first-child { border-right: 1px solid var(--border); }
+
+    .chart-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 3px; }
+    .chart-desc { font-size: 11px; color: var(--muted); margin-bottom: 18px; }
+
+    .chart-svg { width: 100%; height: 160px; overflow: visible; }
+
+    /* ══════════════════════════════════════════
+       VORTEILE (BENTO)
+    ══════════════════════════════════════════ */
+    .bento-section {
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .bento-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 26px;
+      transition: transform 200ms var(--ease-std), box-shadow 200ms var(--ease-std);
+    }
+
+    .bento-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(10,61,44,0.09);
+    }
+
+    .bento-card.accent {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .bento-ico {
+      width: 44px; height: 44px;
+      background: rgba(10,61,44,0.08);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .bento-card.accent .bento-ico { background: rgba(255,255,255,0.12); }
+
+    .bento-num {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .bento-card.accent .bento-num { color: var(--gold); }
+
+    .bento-card-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 4px; }
+    .bento-card.accent .bento-card-title { color: rgba(255,255,255,0.9); }
+
+    .bento-card-sub { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .bento-card.accent .bento-card-sub { color: rgba(255,255,255,0.45); }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    .footer {
+      background: var(--green);
+      padding: 36px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle network lines in footer */
+    #footerCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-logo { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.3px; }
+    .footer-logo span { color: var(--gold); }
+
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .footer-copy a { color: var(--gold); text-decoration: none; }
+
+    /* ══════════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s var(--ease-std), transform 0.5s var(--ease-std);
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.10s; }
+    .reveal-d2 { transition-delay: 0.20s; }
+    .reveal-d3 { transition-delay: 0.30s; }
+
+    /* ══════════════════════════════════════════
+       PREVIEW BANNER
+    ══════════════════════════════════════════ */
+    .preview-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10,10,10,0.90);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 8px 18px;
+      z-index: 9999;
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .preview-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav">
+    <div class="nav-left">
+      <a class="nav-logo" href="#">
+        <div class="nav-logo-mark">A</div>
+        AKRONA GmbH
+      </a>
+      <div class="nav-links">
+        <button class="nav-link active" onclick="switchTab('bau', this)">Baufinanzierung</button>
+        <button class="nav-link" onclick="switchTab('privat', this)">Privatkredit</button>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <div class="nav-badge-pill">§ 34i &amp; § 34c GewO · IHK Stuttgart</div>
+    </div>
+
+    <div class="nav-right">
+      <button class="nav-cta" onclick="document.getElementById('rechner').scrollIntoView({behavior:'smooth'})">
+        Jetzt berechnen
+        <span style="font-size:12px;">↗</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <canvas id="networkCanvas"></canvas>
+    <div class="hero-radial"></div>
+
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-tag">
+          <span class="tag-dot"></span>
+          Kostenlos &amp; Unverbindlich
+        </div>
+
+        <h1 class="hero-h1">
+          Wie viel<br>
+          <em>Finanzierung</em><br>
+          ist für Sie möglich?
+        </h1>
+
+        <p class="hero-sub">
+          Ermitteln Sie Ihre persönliche Finanzierungsmöglichkeit
+          in wenigen Sekunden — realistisch, transparent und
+          ohne Banktermin.
+        </p>
+
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="document.getElementById('rechner').scrollIntoView({behavior:'smooth'})">
+            Jetzt berechnen
+            <span class="btn-arrow">→</span>
+          </button>
+          <button class="btn-ghost">Schutzangabe nicht notwendig →</button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="stat-icon">🏦</div>
+            400+ Banken
+          </div>
+          <div class="hero-stat">
+            <div class="stat-icon">🔒</div>
+            SSL-gesichert
+          </div>
+          <div class="hero-stat">
+            <div class="stat-icon">📍</div>
+            IHK Stuttgart
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="float-pill">
+          <div class="float-pill-icon">✓</div>
+          <div class="float-pill-text">
+            <strong>Sofortauswertung</strong>
+            <span>Ohne Wartezeit</span>
+          </div>
+        </div>
+
+        <div class="hero-img-box">
+          <div class="hero-img-label">Ihr Berater in Stuttgart</div>
+        </div>
+
+        <div class="float-result">
+          <div class="float-result-label">Finanzierungsrahmen</div>
+          <div class="float-result-amount">320.000 €</div>
+          <div class="float-result-sub">bei 3,6 % · 30 Jahre Laufzeit</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BANK TICKER ══ -->
+  <div class="ticker-section">
+    <div class="ticker-label">Unsere Partnerbanken</div>
+    <div style="overflow:hidden; padding-left: 160px;">
+      <div class="ticker-track" id="tickerTrack">
+        <!-- Set A -->
+        <div class="ticker-item"><div class="ticker-icon" style="background:#e8001a10;color:#e8001a">S</div>Sparkasse</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00468610;color:#004686">V</div>Volksbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ffcc0015;color:#b38b00">C</div>Commerzbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ff600010;color:#ff6000">I</div>ING</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00377710;color:#003777">D</div>Deutsche Bank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ffcc0015;color:#b38b00">P</div>Postbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ec000010;color:#ec0000">S</div>Santander</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0a3d2c15;color:#0a3d2c">D</div>DKB</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00457510;color:#004575">T</div>Targobank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0d3e6015;color:#0d3e60">H</div>HypoVereinsbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00305e15;color:#00305e">A</div>Allianz</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#e2000015;color:#e20000">B</div>BW-Bank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00437210;color:#004372">L</div>LBS</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0057a815;color:#0057a8">W</div>Wüstenrot</div>
+        <!-- Set B (duplicate for seamless loop) -->
+        <div class="ticker-item"><div class="ticker-icon" style="background:#e8001a10;color:#e8001a">S</div>Sparkasse</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00468610;color:#004686">V</div>Volksbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ffcc0015;color:#b38b00">C</div>Commerzbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ff600010;color:#ff6000">I</div>ING</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00377710;color:#003777">D</div>Deutsche Bank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ffcc0015;color:#b38b00">P</div>Postbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#ec000010;color:#ec0000">S</div>Santander</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0a3d2c15;color:#0a3d2c">D</div>DKB</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00457510;color:#004575">T</div>Targobank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0d3e6015;color:#0d3e60">H</div>HypoVereinsbank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00305e15;color:#00305e">A</div>Allianz</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#e2000015;color:#e20000">B</div>BW-Bank</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#00437210;color:#004372">L</div>LBS</div>
+        <div class="ticker-item"><div class="ticker-icon" style="background:#0057a815;color:#0057a8">W</div>Wüstenrot</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RECHNER ══ -->
+  <section class="rechner-section" id="rechner">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="section-inner">
+      <div class="reveal" style="text-align:center; margin-bottom:36px;">
+        <div class="section-eyebrow">Finanzierungsrechner</div>
+        <div class="section-title">Ihren Kreditrahmen berechnen</div>
+      </div>
+
+      <div class="rechner-card reveal reveal-d1">
+        <div class="rechner-tabs">
+          <button class="rechner-tab active" id="tabBau" onclick="switchTabRechn('bau')">🏠 Baufinanzierung</button>
+          <button class="rechner-tab" id="tabPrivat" onclick="switchTabRechn('privat')">💳 Privatkredit</button>
+        </div>
+
+        <div class="rechner-body">
+          <div class="rechner-form">
+            <div class="form-section-head">Persönliche Daten</div>
+            <div class="form-grid">
+              <div class="fg">
+                <label>Wohnsitzland</label>
+                <select class="form-select"><option>Deutschland</option></select>
+              </div>
+              <div class="fg">
+                <label>Staatsangehörigkeit</label>
+                <select class="form-select"><option>Deutschland</option></select>
+              </div>
+              <div class="fg full">
+                <label>Beschäftigungsstatus</label>
+                <select class="form-select">
+                  <option>Angestellt</option>
+                  <option>Beamter</option>
+                  <option>Selbstständig</option>
+                  <option>Rente</option>
+                </select>
+              </div>
+              <div class="fg full">
+                <label>Kreditnehmer</label>
+                <div class="toggle-group">
+                  <button class="toggle-btn active" onclick="toggleBtn(this)">
+                    <span class="toggle-btn-title">Alleinantrag</span>
+                    <span class="toggle-btn-sub">1 Person</span>
+                  </button>
+                  <button class="toggle-btn" onclick="toggleBtn(this)">
+                    <span class="toggle-btn-title">Gemeinschaft</span>
+                    <span class="toggle-btn-sub">2 Personen</span>
+                  </button>
+                </div>
+              </div>
+              <div class="fg full">
+                <label>Monatliches Nettoeinkommen (KN 1)</label>
+                <input class="form-input" type="text" value="4.500" placeholder="z.B. 3.500">
+              </div>
+            </div>
+
+            <div class="form-section-head">Immobilien-Daten</div>
+            <div class="form-grid">
+              <div class="fg full">
+                <label>Kaufpreis (optional)</label>
+                <input class="form-input" type="text" value="320.000" placeholder="z.B. 400.000">
+              </div>
+              <div class="fg">
+                <label>Bundesland</label>
+                <select class="form-select">
+                  <option>Baden-Württemberg</option>
+                  <option>Bayern</option>
+                  <option>Berlin</option>
+                  <option>Hamburg</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Grunderwerbsteuer</label>
+                <select class="form-select"><option>5,0 %</option></select>
+              </div>
+              <div class="fg">
+                <label>Laufzeit</label>
+                <select class="form-select">
+                  <option>10 Jahre</option>
+                  <option>15 Jahre</option>
+                  <option selected>20 Jahre</option>
+                  <option>25 Jahre</option>
+                  <option>30 Jahre</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Maklergebühr</label>
+                <select class="form-select">
+                  <option selected>Keine</option>
+                  <option>1,19 %</option>
+                  <option>2,38 %</option>
+                  <option>3,57 %</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-calc">
+              <span>🔢</span> Jetzt berechnen
+            </button>
+          </div>
+
+          <div class="rechner-result">
+            <div class="result-eyebrow">Ihre Ersteinschätzung</div>
+
+            <div class="result-main">
+              <div class="rate-label">Monatliche Rate</div>
+              <div class="rate-amount" id="rateDisplay">1.353 €</div>
+              <div class="rate-sub">ca. · 20 Jahre · 3,6 % Zinssatz</div>
+              <div class="result-sep"></div>
+              <div class="result-row">
+                <span class="rr-label">Zinssatz</span>
+                <span class="rr-val">3,6 %</span>
+              </div>
+              <div class="result-row">
+                <span class="rr-label">Max. Kredit</span>
+                <span class="rr-val gold">400.000 €</span>
+              </div>
+              <div class="result-row">
+                <span class="rr-label">Finanzierungsbedarf</span>
+                <span class="rr-val">283.915 €</span>
+              </div>
+              <div class="result-row">
+                <span class="rr-label">Kaufkraft</span>
+                <span class="rr-val">516.000 €</span>
+              </div>
+              <div class="bonitaet-wrap">
+                <span class="bon-label">Bonität</span>
+                <div class="bon-badge">
+                  <div class="bon-dot"></div>
+                  Sehr gut
+                </div>
+              </div>
+            </div>
+
+            <button class="result-cta">Vollständige Auswertung erhalten →</button>
+            <p class="result-note">Unverbindliche Beispielrechnung —<br>keine Finanzierungszusage einer Bank.</p>
+          </div>
+        </div>
+
+        <div class="options-section">
+          <div class="options-eyebrow">Finanzierungsoptionen</div>
+          <div class="options-grid">
+            <div class="opt-card active" onclick="selectOpt(this)">
+              <div class="opt-pct">100 %</div>
+              <div class="opt-sub">Vollfinanzierung</div>
+              <div class="opt-rate">4,13 % p.a.</div>
+              <div class="opt-monthly">ca. 1.353 €/Monat</div>
+            </div>
+            <div class="opt-card" onclick="selectOpt(this)" style="position:relative">
+              <div class="opt-badge">Empfohlen</div>
+              <div class="opt-pct">80 %</div>
+              <div class="opt-sub">Standard</div>
+              <div class="opt-rate">3,51 % p.a.</div>
+              <div class="opt-monthly">ca. 1.180 €/Monat</div>
+            </div>
+            <div class="opt-card" onclick="selectOpt(this)">
+              <div class="opt-pct">60 %</div>
+              <div class="opt-sub">Niedrig-Beleihung</div>
+              <div class="opt-rate">3,36 % p.a.</div>
+              <div class="opt-monthly">ca. 895 €/Monat</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TILGUNGSPLAN ══ -->
+  <section class="tilgung-section" id="tilgung">
+    <div class="section-inner">
+      <div class="reveal" style="margin-bottom:22px;">
+        <div class="section-eyebrow">Tilgungsplan</div>
+        <div class="section-title" style="margin-bottom:0;">Jahresübersicht · 20 Jahre Laufzeit</div>
+      </div>
+
+      <div class="tilgung-card reveal reveal-d1">
+        <div class="tilgung-head">
+          <div>
+            <div class="tilgung-title">Annuitätenplan</div>
+            <div class="tilgung-params">Darlehensbetrag: 283.915 € · Zinssatz: 3,6 % · Tilgungssatz: 2,0 %</div>
+          </div>
+        </div>
+
+        <div class="tilgung-scroll">
+          <table class="tilg-table">
+            <thead>
+              <tr>
+                <th>Jahr</th>
+                <th>Jahres-Zinsen</th>
+                <th>Jahres-Tilgung</th>
+                <th>Restschuld</th>
+                <th>Kum. Zinsen</th>
+                <th>Kum. Tilgung</th>
+              </tr>
+            </thead>
+            <tbody id="tilgBody"></tbody>
+          </table>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-box">
+            <div class="chart-name">Restschuld-Verlauf</div>
+            <div class="chart-desc">Verbleibendes Darlehen über die Laufzeit</div>
+            <svg class="chart-svg" id="chartRest" viewBox="0 0 460 160"></svg>
+          </div>
+          <div class="chart-box">
+            <div class="chart-name">Zinsen vs. Tilgung</div>
+            <div class="chart-desc">Jährliche Aufteilung der Annuität</div>
+            <svg class="chart-svg" id="chartZvT" viewBox="0 0 460 160"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ VORTEILE ══ -->
+  <section class="bento-section">
+    <div class="section-inner">
+      <div class="reveal" style="margin-bottom:40px;">
+        <div class="section-eyebrow">Warum Akrona</div>
+        <div class="section-title">Ihr Vorteil bei uns</div>
+      </div>
+      <div class="bento-grid">
+        <div class="bento-card reveal reveal-d1">
+          <div class="bento-ico">🏦</div>
+          <div class="bento-num">400+</div>
+          <div class="bento-card-title">Banken &amp; Kreditgeber</div>
+          <div class="bento-card-sub">Wir vergleichen Angebote von über 400 Partnern — für die besten Konditionen.</div>
+        </div>
+        <div class="bento-card accent reveal reveal-d2">
+          <div class="bento-ico">⚖️</div>
+          <div class="bento-num">§ 34i</div>
+          <div class="bento-card-title">Zugelassener Makler</div>
+          <div class="bento-card-sub">Vollständig lizenziert und registriert bei der IHK Region Stuttgart.</div>
+        </div>
+        <div class="bento-card reveal reveal-d3">
+          <div class="bento-ico">⏱️</div>
+          <div class="bento-num">10+</div>
+          <div class="bento-card-title">Jahre Erfahrung</div>
+          <div class="bento-card-sub">Über ein Jahrzehnt Expertise in Baufinanzierung und Privatkredit.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <canvas id="footerCanvas"></canvas>
+    <div class="footer-inner">
+      <div class="footer-logo">AKRONA <span>GmbH</span></div>
+      <div class="footer-copy">© 2025 Akrona GmbH · <a href="mailto:info@akrona.de">info@akrona.de</a></div>
+    </div>
+  </footer>
+
+  <!-- ══ PREVIEW BAR ══ -->
+  <div class="preview-bar">
+    <div class="preview-dot"></div>
+    Design Preview v2 — Network-Effekt + Bank-Ticker + Nav-Links
+  </div>
+
+  <script>
+    /* ══ NETWORK CANVAS ══ */
+    function initNetwork(canvasId, opts) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const cfg = Object.assign({
+        nodeColor: 'rgba(10,61,44,',
+        lineColor: 'rgba(10,61,44,',
+        nodeOpacity: 0.18,
+        lineOpacity: 0.07,
+        nodeCount: 55,
+        nodeRadius: 1.8,
+        speed: 0.25,
+        maxDist: 130,
+        bgFill: null,
+      }, opts);
+
+      let W, H, nodes;
+
+      function resize() {
+        W = canvas.offsetWidth;
+        H = canvas.offsetHeight;
+        canvas.width  = W;
+        canvas.height = H;
+      }
+
+      function initNodes() {
+        nodes = Array.from({ length: cfg.nodeCount }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * cfg.speed,
+          vy: (Math.random() - 0.5) * cfg.speed,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        if (cfg.bgFill) {
+          ctx.fillStyle = cfg.bgFill;
+          ctx.fillRect(0, 0, W, H);
+        }
+
+        // Lines
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[i].x - nodes[j].x;
+            const dy = nodes[i].y - nodes[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < cfg.maxDist) {
+              const alpha = cfg.lineOpacity * (1 - dist / cfg.maxDist);
+              ctx.beginPath();
+              ctx.strokeStyle = cfg.lineColor + alpha + ')';
+              ctx.lineWidth = 0.8;
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Nodes
+        nodes.forEach(n => {
+          ctx.beginPath();
+          ctx.fillStyle = cfg.nodeColor + cfg.nodeOpacity + ')';
+          ctx.arc(n.x, n.y, cfg.nodeRadius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Move
+        nodes.forEach(n => {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      initNodes();
+      draw();
+      window.addEventListener('resize', () => { resize(); initNodes(); });
+    }
+
+    // Hero: light, very subtle green network
+    initNetwork('networkCanvas', {
+      nodeCount: 65,
+      nodeRadius: 1.6,
+      nodeOpacity: 0.14,
+      lineOpacity: 0.055,
+      speed: 0.18,
+      maxDist: 140,
+      nodeColor: 'rgba(10,61,44,',
+      lineColor: 'rgba(10,61,44,',
+    });
+
+    // Footer: white network (on dark green bg)
+    initNetwork('footerCanvas', {
+      nodeCount: 40,
+      nodeRadius: 1.5,
+      nodeOpacity: 0.5,
+      lineOpacity: 0.2,
+      speed: 0.15,
+      maxDist: 110,
+      nodeColor: 'rgba(255,255,255,',
+      lineColor: 'rgba(255,255,255,',
+    });
+
+    /* ══ TILGUNGSPLAN ══ */
+    function fEuro(n) {
+      return new Intl.NumberFormat('de-DE', {
+        style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+      }).format(n);
+    }
+
+    function tilgungsplan(betrag, zins, jahre, tilgSatz) {
+      const jahresrate = betrag * (zins + tilgSatz);
+      const rows = [];
+      let rest = betrag, kumZ = 0, kumT = 0;
+      for (let j = 1; j <= jahre; j++) {
+        const z = rest * zins;
+        const t = Math.min(jahresrate - z, rest);
+        rest = Math.max(0, rest - t);
+        kumZ += z; kumT += t;
+        rows.push({ jahr: 2025 + j - 1, z: Math.round(z), t: Math.round(t),
+          rest: Math.round(rest), kumZ: Math.round(kumZ), kumT: Math.round(kumT) });
+      }
+      return rows;
+    }
+
+    const plan = tilgungsplan(283915, 0.036, 20, 0.02);
+    const tbody = document.getElementById('tilgBody');
+    plan.forEach(r => {
+      tbody.innerHTML += `<tr>
+        <td>${r.jahr}</td>
+        <td class="td-zins">${fEuro(r.z)}</td>
+        <td class="td-tilg">${fEuro(r.t)}</td>
+        <td class="td-rest">${fEuro(r.rest)}</td>
+        <td>${fEuro(r.kumZ)}</td>
+        <td>${fEuro(r.kumT)}</td>
+      </tr>`;
+    });
+
+    /* ══ SVG CHARTS ══ */
+    function svgAreaChart(id, data, lineColor, fillColor) {
+      const el = document.getElementById(id);
+      const W = 460, H = 150, P = 12;
+      const max = Math.max(...data);
+      const pts = data.map((v, i) => [
+        P + (i / (data.length-1)) * (W - 2*P),
+        P + (1 - v/max) * (H - 2*P)
+      ]);
+      const linePath = pts.map((p,i) => `${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+      const areaPath = linePath + ` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+
+      const gradId = 'g_' + id;
+      el.innerHTML = `
+        <defs>
+          <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${fillColor}" stop-opacity="0.30"/>
+            <stop offset="100%" stop-color="${fillColor}" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+        ${[0.25,0.5,0.75,1].map(f => {
+          const y = P + (1-f)*(H-2*P);
+          return `<line x1="${P}" y1="${y}" x2="${W-P}" y2="${y}" stroke="#e8e2d9" stroke-width="0.5"/>`;
+        }).join('')}
+        <path d="${areaPath}" fill="url(#${gradId})"/>
+        <path d="${linePath}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        ${pts.filter((_,i) => i % 4 === 0 || i === pts.length-1).map(p =>
+          `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${lineColor}" opacity="0.7"/>`
+        ).join('')}
+      `;
+    }
+
+    function svgDualAreaChart(id, d1, d2, c1, c2) {
+      const el = document.getElementById(id);
+      const W = 460, H = 150, P = 12;
+      const max = Math.max(...d1.map((v,i) => v + d2[i]));
+      const getY = v => P + (1 - v/max) * (H - 2*P);
+      const pts1 = d1.map((v,i) => [P + (i/(d1.length-1))*(W-2*P), getY(v)]);
+      const pts2 = d2.map((v,i) => [P + (i/(d2.length-1))*(W-2*P), getY(v)]);
+      const lp1 = pts1.map((p,i)=>`${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+      const lp2 = pts2.map((p,i)=>`${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+
+      el.innerHTML = `
+        <defs>
+          <linearGradient id="g1_${id}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${c1}" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="${c1}" stop-opacity="0.02"/>
+          </linearGradient>
+          <linearGradient id="g2_${id}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${c2}" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="${c2}" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+        ${[0.25,0.5,0.75].map(f => {
+          const y = P+(1-f)*(H-2*P);
+          return `<line x1="${P}" y1="${y}" x2="${W-P}" y2="${y}" stroke="#e8e2d9" stroke-width="0.5"/>`;
+        }).join('')}
+        <path d="${lp1} L${pts1[pts1.length-1][0]},${H} L${pts1[0][0]},${H} Z" fill="url(#g1_${id})"/>
+        <path d="${lp2} L${pts2[pts2.length-1][0]},${H} L${pts2[0][0]},${H} Z" fill="url(#g2_${id})"/>
+        <path d="${lp1}" fill="none" stroke="${c1}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${lp2}" fill="none" stroke="${c2}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="${W-110}" y="${P}" width="7" height="7" rx="2" fill="${c1}"/>
+        <text x="${W-99}" y="${P+7}" font-size="10" fill="#6b6b6b" font-family="Manrope,sans-serif">Zinsen</text>
+        <rect x="${W-52}" y="${P}" width="7" height="7" rx="2" fill="${c2}"/>
+        <text x="${W-41}" y="${P+7}" font-size="10" fill="#6b6b6b" font-family="Manrope,sans-serif">Tilgung</text>
+      `;
+    }
+
+    svgAreaChart('chartRest', plan.map(r => r.rest), '#0A5D3F', '#0A3D2C');
+    svgDualAreaChart('chartZvT', plan.map(r => r.z), plan.map(r => r.t), '#b45309', '#0A5D3F');
+
+    /* ══ COUNTER ANIMATION ══ */
+    function counter(el, target, ms = 1200) {
+      const start = performance.now();
+      const run = now => {
+        const p = Math.min((now - start) / ms, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = new Intl.NumberFormat('de-DE').format(Math.round(ease * target)) + ' €';
+        if (p < 1) requestAnimationFrame(run);
+      };
+      requestAnimationFrame(run);
+    }
+
+    const rateEl = document.getElementById('rateDisplay');
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) { counter(rateEl, 1353); }
+    }, { threshold: 0.8 }).observe(rateEl);
+
+    /* ══ SCROLL REVEAL ══ */
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    /* ══ INTERACTIONS ══ */
+    function switchTab(type, btn) {
+      document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      switchTabRechn(type);
+      document.getElementById('rechner').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function switchTabRechn(type) {
+      document.getElementById('tabBau').classList.toggle('active', type === 'bau');
+      document.getElementById('tabPrivat').classList.toggle('active', type === 'privat');
+    }
+
+    function toggleBtn(btn) {
+      btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function selectOpt(card) {
+      document.querySelectorAll('.opt-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    }
+  </script>
+</body>
+</html>
