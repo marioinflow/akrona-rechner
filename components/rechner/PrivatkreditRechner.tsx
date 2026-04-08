@@ -142,14 +142,24 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel required>Haushaltsgröße</FieldLabel>
-              <SelectWrapper>
-                <select value={form.haushaltsgroesse} onChange={(e) => update('haushaltsgroesse', Number(e.target.value) as 1 | 2 | 3 | 4 | 5)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <option key={n} value={n}>{n}{n === 5 ? '+' : ''} {n === 1 ? 'Person' : 'Personen'}</option>
-                  ))}
-                </select>
-              </SelectWrapper>
+              <FieldLabel required>Kreditnehmer</FieldLabel>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {([
+                  { value: 1, label: 'Alleinantrag', sub: '1 Person' },
+                  { value: 2, label: 'Gemeinschaft', sub: '2 Personen' },
+                ] as const).map((opt) => {
+                  const active = form.haushaltsgroesse === opt.value;
+                  return (
+                    <button key={opt.value} type="button"
+                      onClick={() => update('haushaltsgroesse', opt.value)}
+                      style={{ height: '44px', border: `1.5px solid ${active ? '#0A5D3F' : '#E8E2D9'}`, borderRadius: '10px', backgroundColor: active ? '#0A3D2C' : '#F7F5F0', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', transition: 'border-color 0.15s, background-color 0.15s' }}
+                    >
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: active ? '#fff' : '#1a1a1a', lineHeight: 1 }}>{opt.label}</span>
+                      <span style={{ fontSize: '10px', color: active ? 'rgba(255,255,255,0.6)' : '#6b6b6b', lineHeight: 1 }}>{opt.sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="sm:col-span-2">
