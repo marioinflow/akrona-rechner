@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Header from '@/components/ui/Header';
 import { PartnerLogos } from '@/components/ui/partner-logos';
@@ -92,6 +92,99 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<RechnerTyp>('baufinanzierung');
   const [modalPayload, setModalPayload] = useState<ModalPayload | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Listen for tab switch from Header nav links
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tab = (e as CustomEvent).detail as RechnerTyp;
+      if (tab === 'baufinanzierung' || tab === 'privatkredit') {
+        setActiveTab(tab);
+      }
+    };
+    window.addEventListener('akrona:set-tab', handler);
+    return () => window.removeEventListener('akrona:set-tab', handler);
+  }, []);
+
+  // Network canvas animation
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let W = 0, H = 0;
+
+    interface Node { x: number; y: number; vx: number; vy: number; }
+    let nodes: Node[] = [];
+
+    const resize = () => {
+      W = canvas.offsetWidth;
+      H = canvas.offsetHeight;
+      canvas.width = W;
+      canvas.height = H;
+      nodes = Array.from({ length: 60 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+      }));
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      const maxDist = 140;
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < maxDist) {
+            const alpha = 0.055 * (1 - dist / maxDist);
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(10,61,44,${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(10,61,44,0.14)';
+        ctx.arc(n.x, n.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > W) n.vx *= -1;
+        if (n.y < 0 || n.y > H) n.vy *= -1;
+      });
+      animId = requestAnimationFrame(draw);
+    };
+
+    resize();
+    draw();
+    window.addEventListener('resize', resize);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  // Scroll reveal
+  useEffect(() => {
+    const els = document.querySelectorAll('.scroll-reveal');
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      }),
+      { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+    );
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
 
   const handleLeadTrigger = (
     typ: RechnerTyp,
@@ -112,14 +205,38 @@ export default function Home() {
         ══════════════════════════════════════════════════ */}
         <section
           style={{
-            paddingTop: '72px',
-            backgroundColor: '#fff',
+            paddingTop: '64px',
+            backgroundColor: '#F7F5F0',
             overflow: 'hidden',
             minHeight: 'min(100vh, 760px)',
             display: 'flex',
             alignItems: 'center',
+            position: 'relative',
           }}
         >
+          {/* Network canvas */}
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+          {/* Radial glow — top right */}
+          <div style={{
+            position: 'absolute',
+            top: '-10%',
+            right: '-8%',
+            width: '55%',
+            height: '110%',
+            background: 'radial-gradient(ellipse at 65% 30%, rgba(212,175,55,0.07) 0%, rgba(10,61,44,0.05) 40%, transparent 70%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }} />
           <div
             style={{
               maxWidth: '1280px',
@@ -128,7 +245,9 @@ export default function Home() {
               display: 'grid',
               gridTemplateColumns: '3fr 2fr',
               alignItems: 'stretch',
-              minHeight: 'min(calc(100vh - 72px), 688px)',
+              minHeight: 'min(calc(100vh - 64px), 700px)',
+              position: 'relative',
+              zIndex: 1,
             }}
           >
             {/* ── Text-Seite ── */}
@@ -142,27 +261,40 @@ export default function Home() {
             >
               {/* Eyebrow */}
               <div
+                className="fade-in-up"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '6px 14px',
+                  padding: '5px 14px 5px 9px',
                   borderRadius: '99px',
-                  backgroundColor: 'rgba(10,61,44,0.06)',
-                  border: '1px solid rgba(10,61,44,0.12)',
-                  marginBottom: '28px',
+                  backgroundColor: 'rgba(10,61,44,0.07)',
+                  border: '1px solid rgba(10,61,44,0.14)',
+                  marginBottom: '24px',
                   width: 'fit-content',
                 }}
               >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#0A5D3F' }} />
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#0A3D2C', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {/* Pulse dot */}
+                <span style={{ position: 'relative', width: '6px', height: '6px', flexShrink: 0 }}>
+                  <span style={{
+                    position: 'absolute', inset: 0,
+                    borderRadius: '50%', backgroundColor: '#D4AF37',
+                  }} />
+                  <span style={{
+                    position: 'absolute', inset: '-4px',
+                    borderRadius: '50%', border: '1.5px solid #D4AF37',
+                    animation: 'pulse-ring 2.5s ease-out infinite',
+                  }} />
+                </span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#0A3D2C', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Kostenlos & unverbindlich
                 </span>
               </div>
 
               {/* H1 */}
               <h1
-                style={{
+                className="fade-in-up"
+                style={{ animationDelay: '0.08s',
                   fontSize: 'clamp(38px, 4.5vw, 60px)',
                   fontWeight: 800,
                   color: '#0A3D2C',
@@ -179,7 +311,8 @@ export default function Home() {
 
               {/* Subtext */}
               <p
-                style={{
+                className="fade-in-up"
+                style={{ animationDelay: '0.16s',
                   fontSize: '17px',
                   fontWeight: 400,
                   color: '#444',
@@ -193,7 +326,7 @@ export default function Home() {
               </p>
 
               {/* CTA */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
+              <div className="fade-in-up" style={{ animationDelay: '0.24s', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
                 <a
                   href="#rechner"
                   style={{
@@ -227,7 +360,7 @@ export default function Home() {
               </div>
 
               {/* Trust Badges */}
-              <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+              <div className="fade-in-up" style={{ animationDelay: '0.32s', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                 {[
                   { icon: '🏦', label: '400+ Banken' },
                   { icon: '🔒', label: 'SSL-gesichert' },
@@ -268,6 +401,7 @@ export default function Home() {
                 />
                 {/* Float Card */}
                 <div
+                  className="float-anim"
                   style={{
                     position: 'absolute',
                     bottom: '32px',
@@ -307,7 +441,7 @@ export default function Home() {
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
 
             {/* Section Header */}
-            <div style={{ marginBottom: '40px' }}>
+            <div className="scroll-reveal" style={{ marginBottom: '40px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
                 Finanzierungsrechner
               </span>
@@ -380,7 +514,7 @@ export default function Home() {
         <section style={{ padding: '80px 0', backgroundColor: '#fff', borderTop: '1px solid #E8E2D9' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
 
-            <div style={{ marginBottom: '48px' }}>
+            <div className="scroll-reveal" style={{ marginBottom: '48px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
                 Warum Akrona
               </span>
@@ -394,6 +528,7 @@ export default function Home() {
 
               {/* Karte 1: breit (2 Spalten) */}
               <div
+                className="scroll-reveal bento-hover"
                 style={{
                   gridColumn: 'span 2',
                   borderRadius: '20px',
@@ -418,6 +553,7 @@ export default function Home() {
 
               {/* Karte 2: schmal */}
               <div
+                className="scroll-reveal delay-1 bento-hover"
                 style={{
                   borderRadius: '20px',
                   padding: '32px',
@@ -438,6 +574,7 @@ export default function Home() {
 
               {/* Karte 3: schmal */}
               <div
+                className="scroll-reveal delay-2 bento-hover"
                 style={{
                   borderRadius: '20px',
                   padding: '32px',
@@ -459,6 +596,7 @@ export default function Home() {
 
               {/* Karte 4: breit (2 Spalten) */}
               <div
+                className="scroll-reveal delay-1 bento-hover"
                 style={{
                   gridColumn: 'span 2',
                   borderRadius: '20px',
@@ -493,7 +631,7 @@ export default function Home() {
         ══════════════════════════════════════════════════ */}
         <section style={{ padding: '80px 0', backgroundColor: '#F7F5F0', borderTop: '1px solid #E8E2D9' }}>
           <div style={{ maxWidth: '760px', margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div className="scroll-reveal" style={{ textAlign: 'center', marginBottom: '48px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
                 FAQ
               </span>
@@ -563,7 +701,7 @@ export default function Home() {
             CTA
         ══════════════════════════════════════════════════ */}
         <section style={{ backgroundColor: '#0A3D2C', padding: '80px 0' }}>
-          <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+          <div className="scroll-reveal" style={{ maxWidth: '640px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
             <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(212,175,55,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', display: 'block', marginBottom: '16px' }}>
               Persönliche Beratung
             </span>
