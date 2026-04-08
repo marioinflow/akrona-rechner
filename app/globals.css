@@ -113,6 +113,25 @@ body {
 .float-anim      { animation: float 6s ease-in-out infinite; }
 
 /* ─────────────────────────────────────────
+   Hero Highlight — "Finanzierung" Unterstrich
+───────────────────────────────────────── */
+.hero-highlight {
+  color: #D4AF37;
+  position: relative;
+  display: inline-block;
+}
+.hero-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D4AF37 50%, transparent 100%);
+  border-radius: 9999px;
+}
+
+/* ─────────────────────────────────────────
    Scroll Reveal
 ───────────────────────────────────────── */
 .scroll-reveal {

@@ -305,7 +305,7 @@ export default function Home() {
                 }}
               >
                 Wie viel{' '}
-                <span style={{ color: '#D4AF37' }}>Finanzierung</span>
+                <span className="hero-highlight">Finanzierung</span>
                 {' '}ist für Sie möglich?
               </h1>
 
@@ -374,8 +374,43 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ── Bild-Seite: border-radius 100px links ── */}
+            {/* ── Bild-Seite ── */}
             <div style={{ position: 'relative', minHeight: '500px' }}>
+              {/* Floating Pill — oben links, schwebt vor dem Bild */}
+              <div
+                className="float-anim"
+                style={{
+                  position: 'absolute',
+                  top: '40px',
+                  left: '-20px',
+                  zIndex: 3,
+                  backgroundColor: '#fff',
+                  borderRadius: '14px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)',
+                  animationDelay: '1s',
+                }}
+              >
+                <div
+                  style={{
+                    width: '34px', height: '34px',
+                    background: 'linear-gradient(135deg, #0A3D2C, #0A5D3F)',
+                    borderRadius: '9px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '16px', flexShrink: 0,
+                  }}
+                >
+                  ✓
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#111' }}>Sofortauswertung</p>
+                  <p style={{ margin: 0, fontSize: '11px', color: '#6b6b6b' }}>Ohne Wartezeit</p>
+                </div>
+              </div>
+
               <div
                 style={{
                   position: 'absolute',
@@ -399,7 +434,7 @@ export default function Home() {
                     background: 'linear-gradient(to right, rgba(10,61,44,0.25) 0%, transparent 50%)',
                   }}
                 />
-                {/* Float Card */}
+                {/* Float Result Card — unten links */}
                 <div
                   className="float-anim"
                   style={{
