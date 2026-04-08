@@ -329,6 +329,7 @@ export default function Home() {
               <div className="fade-in-up" style={{ animationDelay: '0.24s', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
                 <a
                   href="#rechner"
+                  className="btn-primary"
                   style={{
                     height: '52px',
                     padding: '0 32px',
@@ -342,16 +343,11 @@ export default function Home() {
                     alignItems: 'center',
                     gap: '10px',
                     letterSpacing: '0.02em',
-                    transition: 'transform 0.1s ease, opacity 0.1s ease',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-                  onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-                  onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
                 >
                   Jetzt berechnen
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="2" y1="8" x2="14" y2="8" /><polyline points="9 3 14 8 9 13" />
                   </svg>
                 </a>
                 <p style={{ fontSize: '13px', color: '#6b6b6b', margin: 0 }}>
@@ -381,9 +377,9 @@ export default function Home() {
                 className="float-anim"
                 style={{
                   position: 'absolute',
-                  top: '40px',
+                  top: '48px',
                   left: '-20px',
-                  zIndex: 3,
+                  zIndex: 4,
                   backgroundColor: '#fff',
                   borderRadius: '14px',
                   padding: '12px 16px',
@@ -411,47 +407,50 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Bild-Container — leicht abgerundet, kein extremes Pill */}
               <div
                 style={{
                   position: 'absolute',
                   inset: '24px 0 24px 0',
-                  borderTopLeftRadius: '100px',
-                  borderBottomLeftRadius: '100px',
+                  borderRadius: '24px',
                   overflow: 'hidden',
                 }}
               >
                 <Image
-                  src="/hero-bg.jpg"
-                  alt="Moderne Immobilie"
+                  src="/akrona-mockup.png"
+                  alt="Paar nutzt Akrona Finanzierungsrechner"
                   fill
                   priority
-                  style={{ objectFit: 'cover', objectPosition: 'center' }}
+                  style={{ objectFit: 'cover', objectPosition: '50% 15%' }}
                 />
                 <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to right, rgba(10,61,44,0.25) 0%, transparent 50%)',
+                    background: 'linear-gradient(to bottom, transparent 50%, rgba(10,61,44,0.15) 100%)',
                   }}
                 />
-                {/* Float Result Card — unten links */}
-                <div
-                  className="float-anim"
-                  style={{
-                    position: 'absolute',
-                    bottom: '32px',
-                    left: '32px',
-                    backgroundColor: 'rgba(255,255,255,0.92)',
-                    backdropFilter: 'blur(16px)',
-                    borderRadius: '14px',
-                    padding: '14px 18px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
-                  }}
-                >
-                  <p style={{ fontSize: '10px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>Ø Finanzierungsrahmen</p>
-                  <p style={{ fontSize: '22px', fontWeight: 800, color: '#0A3D2C', margin: 0, letterSpacing: '-0.02em' }}>320.000 €</p>
-                  <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '2px 0 0' }}>bei 3.500 € Nettoeinkommen</p>
-                </div>
+              </div>
+
+              {/* Float Result Card — ragt über Bild hinaus (unten rechts) */}
+              <div
+                className="float-anim"
+                style={{
+                  position: 'absolute',
+                  bottom: '8px',
+                  right: '-20px',
+                  zIndex: 4,
+                  backgroundColor: '#0A3D2C',
+                  borderRadius: '20px',
+                  padding: '18px 22px',
+                  boxShadow: '0 20px 56px rgba(10,61,44,0.38), 0 4px 10px rgba(0,0,0,0.15)',
+                  minWidth: '200px',
+                  animationDelay: '0.5s',
+                }}
+              >
+                <p style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(212,175,55,0.75)', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 4px' }}>Ø Finanzierungsrahmen</p>
+                <p style={{ fontSize: '30px', fontWeight: 800, color: '#D4AF37', margin: '0 0 3px', letterSpacing: '-0.02em', lineHeight: 1 }}>320.000 €</p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>bei 3.500 € Nettoeinkommen</p>
               </div>
             </div>
           </div>

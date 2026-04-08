@@ -123,10 +123,31 @@ export default function Header() {
           </span>
         </div>
 
-        {/* ── Zone 3: CTA button (right, justified to end) ── */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {/* ── Zone 3: Social proof avatar + CTA button (right, justified to end) ── */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
+          {/* Social proof avatar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <div style={{
+              width: '32px', height: '32px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              border: '2px solid rgba(10,61,44,0.15)',
+              flexShrink: 0,
+            }}>
+              <Image
+                src="/akrona-mockup.png"
+                alt="Akrona Kunden"
+                width={32}
+                height={32}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%' }}
+              />
+            </div>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: '#555', whiteSpace: 'nowrap' }}>5.000+ Kunden</span>
+          </div>
+
           <a
             href="#rechner"
+            className="btn-nav-cta"
             style={{
               height: '38px',
               padding: '0 18px',
@@ -140,21 +161,9 @@ export default function Header() {
               alignItems: 'center',
               gap: '8px',
               letterSpacing: '0.02em',
-              transition: 'opacity 0.15s, transform 0.1s, box-shadow 0.2s',
-              boxShadow: '0 2px 8px rgba(10,61,44,0.22)',
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '0.88';
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(10,61,44,0.30)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '1';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(10,61,44,0.22)';
-            }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-            onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
           >
             Jetzt berechnen
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

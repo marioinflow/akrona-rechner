@@ -15,10 +15,10 @@ const DEFAULT: PrivatkreditEingaben = {
 
 const IS: React.CSSProperties = {
   height: '44px',
-  border: '1.5px solid #E8E2D9',
+  border: '1.5px solid transparent',
   borderRadius: '10px',
   padding: '0 14px',
-  backgroundColor: '#F7F5F0',
+  backgroundColor: 'rgba(118,118,128,0.09)',
   fontSize: '14px',
   fontWeight: 400,
   color: '#1a1a1a',
@@ -31,12 +31,12 @@ const IS: React.CSSProperties = {
 
 function onFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
   e.currentTarget.style.borderColor = '#0A5D3F';
-  e.currentTarget.style.backgroundColor = '#fff';
-  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,93,63,0.1)';
+  e.currentTarget.style.backgroundColor = 'rgba(10,61,44,0.05)';
+  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,61,44,0.10)';
 }
 function onBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
-  e.currentTarget.style.borderColor = '#E8E2D9';
-  e.currentTarget.style.backgroundColor = '#F7F5F0';
+  e.currentTarget.style.borderColor = 'transparent';
+  e.currentTarget.style.backgroundColor = 'rgba(118,118,128,0.09)';
   e.currentTarget.style.boxShadow = 'none';
 }
 
@@ -324,11 +324,8 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               <div style={{ padding: '18px 24px' }}>
                 <button
                   onClick={() => onLeadTrigger(ergebnis, form)}
-                  style={{ width: '100%', height: '48px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em', transition: 'transform 0.1s ease, opacity 0.1s ease', marginBottom: '12px' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-                  onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-                  onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                  className="btn-gold"
+                  style={{ width: '100%', height: '48px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em', marginBottom: '12px' }}
                 >
                   Vollständige Auswertung erhalten
                 </button>
@@ -355,9 +352,8 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               </p>
               <button
                 onClick={berechnen}
+                className="btn-calc"
                 style={{ width: '100%', height: '44px', backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C', color: formChanged ? '#0A3D2C' : '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-                onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
               >
                 {formChanged ? 'Neu berechnen' : 'Jetzt berechnen'}
               </button>
@@ -432,11 +428,8 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                   </p>
                   <button
                     onClick={() => onLeadTrigger(ergebnis, form)}
-                    style={{ height: '44px', padding: '0 28px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.1s ease, opacity 0.1s ease' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-                    onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-                    onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                    className="btn-gold"
+                    style={{ height: '44px', padding: '0 28px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}
                   >
                     Jetzt kostenlos erhalten
                   </button>
