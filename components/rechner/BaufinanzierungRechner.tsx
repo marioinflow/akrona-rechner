@@ -13,6 +13,7 @@ import {
 import { berechneBaufinanzierung, formatEuro, GRUNDERWERBSTEUER } from '@/lib/berechnung';
 import type { BaufinanzierungEingaben, BaufinanzierungErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
+import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
 
@@ -428,25 +429,15 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
         )}
 
         {/* ── Berechnen-Button ── */}
-        <button
+        <AkronaAnimatedButton
+          label="Jetzt berechnen"
+          labelActive="Neu berechnen"
+          active={formChanged || !!ergebnis}
+          size="lg"
+          bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+          className="w-full"
           onClick={berechnen}
-          className="btn-calc"
-          style={{
-            width: '100%', height: '56px',
-            backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C',
-            color: formChanged ? '#0A3D2C' : '#fff',
-            border: 'none', borderRadius: '14px',
-            fontSize: '16px', fontWeight: 800,
-            cursor: 'pointer', letterSpacing: '0.03em',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-          }}
-        >
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" transform="scale(0.75) translate(3,3)" />
-            <circle cx="12" cy="12" r="9" />
-          </svg>
-          {formChanged ? 'Neu berechnen' : ergebnis ? 'Neu berechnen' : 'Jetzt berechnen'}
-        </button>
+        />
       </div>
 
       {/* ════════════════════ RESULTS PANEL — 4 Spalten, sticky ════════════════════ */}

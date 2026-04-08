@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { berechnePrivatkredit, formatEuro } from '@/lib/berechnung';
 import type { PrivatkreditEingaben, PrivatkreditErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
+import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 
 const DEFAULT: PrivatkreditEingaben = {
   nettoeinkommen: 0,
@@ -242,29 +243,15 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
         )}
 
         {/* ── Berechnen-Button ── */}
-        <button
+        <AkronaAnimatedButton
+          label="Jetzt berechnen"
+          labelActive="Neu berechnen"
+          active={formChanged || !!ergebnis}
+          size="lg"
+          bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+          className="w-full"
           onClick={berechnen}
-          style={{
-            width: '100%', height: '56px',
-            backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C',
-            color: formChanged ? '#0A3D2C' : '#fff',
-            border: 'none', borderRadius: '14px',
-            fontSize: '16px', fontWeight: 800,
-            cursor: 'pointer', letterSpacing: '0.03em',
-            transition: 'transform 0.1s ease, opacity 0.1s ease, background-color 0.2s ease',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-        >
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" transform="scale(0.75) translate(3,3)" />
-            <circle cx="12" cy="12" r="9" />
-          </svg>
-          {formChanged ? 'Neu berechnen' : ergebnis ? 'Neu berechnen' : 'Jetzt berechnen'}
-        </button>
+        />
       </div>
 
       {/* ════════════════════ RESULTS PANEL — 4 Spalten, sticky ════════════════════ */}
@@ -350,13 +337,15 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                   ? 'Klicken Sie auf „Neu berechnen" um Ihre aktualisierten Konditionen zu sehen.'
                   : 'Füllen Sie das Formular aus und klicken Sie auf „Jetzt berechnen".'}
               </p>
-              <button
+              <AkronaAnimatedButton
+                label="Jetzt berechnen"
+                labelActive="Neu berechnen"
+                active={formChanged}
+                size="sm"
+                bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+                className="w-full"
                 onClick={berechnen}
-                className="btn-calc"
-                style={{ width: '100%', height: '44px', backgroundColor: formChanged ? '#D4AF37' : '#0A3D2C', color: formChanged ? '#0A3D2C' : '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-              >
-                {formChanged ? 'Neu berechnen' : 'Jetzt berechnen'}
-              </button>
+              />
             </div>
           )}
         </div>

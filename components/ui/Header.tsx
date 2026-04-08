@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -145,32 +146,14 @@ export default function Header() {
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#555', whiteSpace: 'nowrap' }}>5.000+ Kunden</span>
           </div>
 
-          <a
-            href="#rechner"
-            className="btn-nav-cta"
-            style={{
-              height: '38px',
-              padding: '0 18px',
-              backgroundColor: '#0A3D2C',
-              color: '#fff',
-              borderRadius: '10px',
-              fontSize: '13px',
-              fontWeight: 700,
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              letterSpacing: '0.02em',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
+          <AkronaAnimatedButton
+            label="Jetzt berechnen"
+            size="sm"
+            onClick={() => {
+              const el = document.getElementById('rechner');
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }}
-          >
-            Jetzt berechnen
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="2" y1="7" x2="12" y2="7" />
-              <polyline points="8 3 12 7 8 11" />
-            </svg>
-          </a>
+          />
         </div>
       </div>
     </header>

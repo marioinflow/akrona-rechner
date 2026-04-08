@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Header from '@/components/ui/Header';
+import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 import { PartnerLogos } from '@/components/ui/partner-logos';
 import Footer from '@/components/ui/Footer';
 import BaufinanzierungRechner from '@/components/rechner/BaufinanzierungRechner';
@@ -327,29 +328,14 @@ export default function Home() {
 
               {/* CTA */}
               <div className="fade-in-up" style={{ animationDelay: '0.24s', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
-                <a
-                  href="#rechner"
-                  className="btn-primary"
-                  style={{
-                    height: '52px',
-                    padding: '0 32px',
-                    backgroundColor: '#0A3D2C',
-                    color: '#fff',
-                    borderRadius: '12px',
-                    fontSize: '15px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    letterSpacing: '0.02em',
+                <AkronaAnimatedButton
+                  label="Jetzt berechnen"
+                  size="md"
+                  onClick={() => {
+                    const el = document.getElementById('rechner');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                >
-                  Jetzt berechnen
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="2" y1="8" x2="14" y2="8" /><polyline points="9 3 14 8 9 13" />
-                  </svg>
-                </a>
+                />
                 <p style={{ fontSize: '13px', color: '#6b6b6b', margin: 0 }}>
                   Sofortergebnis · Kein Termin nötig
                 </p>
