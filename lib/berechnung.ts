@@ -79,6 +79,7 @@ export function berechneBaufinanzierung(
 ): BaufinanzierungErgebnis {
   const {
     nettoeinkommen,
+    nettoeinkommen2,
     eigenkapital,
     haushaltsgroesse,
     laufzeit,
@@ -90,12 +91,13 @@ export function berechneBaufinanzierung(
     bonitaetOverride,
   } = eingaben;
 
+  const gesamtEinkommen = nettoeinkommen + (nettoeinkommen2 ?? 0);
   const tilgungssatz = tilgungssatzEingabe ?? 0.02;
   const haushaltsAbzug = RECHNER_CONFIG.haushaltsAbzuege[Math.min(haushaltsgroesse, 5)] ?? 1100;
   const multiplikator = RECHNER_CONFIG.beschaeftigungsFaktoren[status] ?? 1.0;
 
   // ── Kreditrahmen ──
-  const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
+  const verfuegbaresEinkommen = (gesamtEinkommen - haushaltsAbzug) * multiplikator;
   const maxKredit = Math.max(0, Math.round((verfuegbaresEinkommen * 100) / 1000) * 1000);
 
   // ── Nebenkosten & Gesamtkaufkosten ──
@@ -140,7 +142,7 @@ export function berechneBaufinanzierung(
     ? Math.min(kaufpreis - eigenkapital, maxKredit)
     : maxKredit;
   const provisorischeRate = kreditFuerBelastungstest * (0.036 + 0.02) / 12;
-  const belastung = nettoeinkommen > 0 ? provisorischeRate / nettoeinkommen : 1;
+  const belastung = gesamtEinkommen > 0 ? provisorischeRate / gesamtEinkommen : 1;
   if (belastung < 0.25) score += 2;
   else if (belastung <= 0.38) score += 1;
 
@@ -182,12 +184,13 @@ export function berechneBaufinanzierung(
 export function berechnePrivatkredit(
   eingaben: PrivatkreditEingaben
 ): PrivatkreditErgebnis {
-  const { nettoeinkommen, wunschkredit, haushaltsgroesse, laufzeit, status, bonitaetOverride } = eingaben;
+  const { nettoeinkommen, nettoeinkommen2, wunschkredit, haushaltsgroesse, laufzeit, status, bonitaetOverride } = eingaben;
 
+  const gesamtEinkommen = nettoeinkommen + (nettoeinkommen2 ?? 0);
   const haushaltsAbzug = RECHNER_CONFIG.haushaltsAbzuege[Math.min(haushaltsgroesse, 5)] ?? 1100;
   const multiplikator = RECHNER_CONFIG.beschaeftigungsFaktoren[status] ?? 1.0;
 
-  const verfuegbaresEinkommen = (nettoeinkommen - haushaltsAbzug) * multiplikator;
+  const verfuegbaresEinkommen = (gesamtEinkommen - haushaltsAbzug) * multiplikator;
 
   // ── Score ──
   let score = 0;
@@ -211,7 +214,7 @@ export function berechnePrivatkredit(
   const beurteilungsRate = beurteilungsKredit * refMonatszins /
     (1 - Math.pow(1 + refMonatszins, -laufzeit));
 
-  const belastung = nettoeinkommen > 0 ? beurteilungsRate / nettoeinkommen : 1;
+  const belastung = gesamtEinkommen > 0 ? beurteilungsRate / gesamtEinkommen : 1;
   if (belastung < 0.20) score += 2;
   else if (belastung <= 0.33) score += 1;
 

@@ -5,6 +5,8 @@ export type RechnerTyp = 'baufinanzierung' | 'privatkredit';
 
 export interface BaufinanzierungEingaben {
   nettoeinkommen: number;
+  /** Einkommen 2. Kreditnehmer (nur bei Gemeinschaftsantrag) */
+  nettoeinkommen2?: number;
   eigenkapital: number;
   haushaltsgroesse: 1 | 2 | 3 | 4 | 5;
   laufzeit: 10 | 15 | 20 | 25 | 30;
@@ -23,6 +25,8 @@ export interface BaufinanzierungEingaben {
 
 export interface PrivatkreditEingaben {
   nettoeinkommen: number;
+  /** Einkommen 2. Kreditnehmer (nur bei Gemeinschaftsantrag) */
+  nettoeinkommen2?: number;
   wunschkredit?: number;
   haushaltsgroesse: 1 | 2 | 3 | 4 | 5;
   laufzeit: 12 | 24 | 36 | 48 | 60 | 84;

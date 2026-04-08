@@ -163,13 +163,18 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   };
 
   const berechnen = () => {
+    const gesamtEinkommen = (form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0);
     if (!form.nettoeinkommen || form.nettoeinkommen <= 0) {
-      setValidationError('Bitte geben Sie Ihr monatliches Nettoeinkommen ein.');
+      setValidationError('Bitte geben Sie das Nettoeinkommen des 1. Kreditnehmers ein.');
+      return;
+    }
+    if (form.haushaltsgroesse === 2 && (!form.nettoeinkommen2 || form.nettoeinkommen2 <= 0)) {
+      setValidationError('Bitte geben Sie das Nettoeinkommen des 2. Kreditnehmers ein.');
       return;
     }
     const haushaltsAbzug = { 1: 0, 2: 350, 3: 600, 4: 850, 5: 1100 }[form.haushaltsgroesse] ?? 1100;
-    if (form.nettoeinkommen <= haushaltsAbzug) {
-      setValidationError(`Das Nettoeinkommen liegt unter dem Haushaltsabzug von ${formatEuro(haushaltsAbzug)}. Eine Finanzierung ist nicht möglich.`);
+    if (gesamtEinkommen <= haushaltsAbzug) {
+      setValidationError(`Das Gesamteinkommen liegt unter dem Haushaltsabzug von ${formatEuro(haushaltsAbzug)}. Eine Finanzierung ist nicht möglich.`);
       return;
     }
     setErgebnis(berechneBaufinanzierung(form));
@@ -246,14 +251,39 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               </div>
             </div>
 
-            <div className="sm:col-span-2">
-              <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
-              <div style={{ position: 'relative' }}>
-                <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.500"
-                  style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
-                <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
+            {form.haushaltsgroesse === 1 ? (
+              <div className="sm:col-span-2">
+                <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
+                <div style={{ position: 'relative' }}>
+                  <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.500"
+                    style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                  <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <FieldLabel required>Nettoeinkommen KN 1</FieldLabel>
+                  <div style={{ position: 'relative' }}>
+                    <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.500"
+                      style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                    <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
+                  </div>
+                </div>
+                <div>
+                  <FieldLabel required>Nettoeinkommen KN 2</FieldLabel>
+                  <div style={{ position: 'relative' }}>
+                    <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 2.000"
+                      style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                    <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
+                  </div>
+                </div>
+                <div className="sm:col-span-2" style={{ backgroundColor: '#F7F5F0', borderRadius: '8px', padding: '8px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', color: '#6b6b6b' }}>Gemeinsames Nettoeinkommen</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#0A3D2C' }}>{formatEuro((form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0))}</span>
+                </div>
+              </>
+            )}
           </div>
         </SectionCard>
 
