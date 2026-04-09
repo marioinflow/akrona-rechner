@@ -62,7 +62,7 @@ const DEFAULT: BaufinanzierungEingaben = {
 };
 
 const IS: React.CSSProperties = {
-  height: '44px',
+  height: '40px',
   border: '1.5px solid transparent',
   borderRadius: '10px',
   padding: '0 14px',
@@ -92,14 +92,14 @@ function SectionCard({ step, title, subtitle, children }: {
   step: string; title: string; subtitle?: string; children: React.ReactNode;
 }) {
   return (
-    <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', padding: '28px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '22px' }}>
-        <span style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#0A3D2C', color: '#D4AF37', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, letterSpacing: '0.04em' }}>
+    <div style={{ border: '1px solid #E8E2D9', borderRadius: '14px', padding: '20px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '14px' }}>
+        <span style={{ width: '24px', height: '24px', borderRadius: '7px', backgroundColor: '#0A3D2C', color: '#D4AF37', fontSize: '10px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, letterSpacing: '0.04em' }}>
           {step}
         </span>
         <div>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: '#0A3D2C', margin: 0, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</p>
-          {subtitle && <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '2px 0 0', fontWeight: 400 }}>{subtitle}</p>}
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#0A3D2C', margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</p>
+          {subtitle && <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '1px 0 0', fontWeight: 400 }}>{subtitle}</p>}
         </div>
       </div>
       {children}
@@ -109,7 +109,7 @@ function SectionCard({ step, title, subtitle, children }: {
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <p style={{ fontSize: '11px', fontWeight: 700, color: '#1a1a1a', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>
+    <p style={{ fontSize: '10px', fontWeight: 700, color: '#1a1a1a', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>
       {children}{required && <span style={{ color: '#ef4444', marginLeft: '3px' }}>*</span>}
     </p>
   );
@@ -195,12 +195,12 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      {/* ════════════════════ FORM — 8 Spalten ════════════════════ */}
-      <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* ════════════════════ LEFT — 8 Spalten (Form + Tilgungsplan + Charts) ════════════════════ */}
+      <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
         {/* 01: Persönliche Daten */}
         <SectionCard step="01" title="Persönliche Daten">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <FieldLabel>Wohnsitzland</FieldLabel>
               <SelectWrapper>
@@ -257,7 +257,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
                 <div style={{ position: 'relative' }}>
                   <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.500"
-                    style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                    style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                   <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                 </div>
               </div>
@@ -267,7 +267,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   <FieldLabel required>Nettoeinkommen KN 1</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.500"
-                      style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                      style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
                 </div>
@@ -275,7 +275,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   <FieldLabel required>Nettoeinkommen KN 2</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 2.000"
-                      style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
+                      style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
                 </div>
@@ -290,12 +290,12 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
         {/* 02: Immobilien-Daten */}
         <SectionCard step="02" title="Immobilien-Daten" subtitle="Optional — für Kaufnebenkosten & Szenarien">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="sm:col-span-2">
               <FieldLabel>Kaufpreis</FieldLabel>
               <div style={{ position: 'relative' }}>
                 <input type="number" value={form.kaufpreis || ''} onChange={(e) => update('kaufpreis', e.target.value ? Number(e.target.value) : undefined)} placeholder="z.B. 400.000"
-                  style={{ ...IS, height: '56px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }} onFocus={onFocus} onBlur={onBlur} />
+                  style={{ ...IS, height: '48px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }} onFocus={onFocus} onBlur={onBlur} />
                 <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: '#6b6b6b', fontWeight: 700, pointerEvents: 'none' }}>€</span>
               </div>
             </div>
@@ -348,7 +348,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               const anzahlung = form.kaufpreis ? Math.round(form.kaufpreis * (1 - opt.anteil / 100)) : null;
               return (
                 <button key={opt.anteil} type="button" onClick={() => selectFinanzierung(opt.anteil)}
-                  style={{ position: 'relative', border: `2px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`, borderRadius: '14px', padding: '16px 14px', backgroundColor: isActive ? 'rgba(10,93,63,0.05)' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, background-color 0.15s' }}
+                  style={{ position: 'relative', border: `2px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`, borderRadius: '12px', padding: '12px', backgroundColor: isActive ? 'rgba(10,93,63,0.05)' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, background-color 0.15s' }}
                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#0A3D2C'; }}
                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = '#E8E2D9'; }}
                   onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
@@ -383,7 +383,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
         {/* 04: Details */}
         <SectionCard step="04" title="Details">
-          <div style={{ marginBottom: '28px' }}>
+          <div style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <FieldLabel>Tilgungsrate</FieldLabel>
               <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff', backgroundColor: '#3b82f6', padding: '3px 12px', borderRadius: '99px', letterSpacing: '0.03em' }}>
@@ -438,6 +438,132 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
           className="w-full"
           onClick={berechnen}
         />
+
+        {/* ════════════════════ TILGUNGSPLAN + CHARTS (in linker Spalte) ════════════════════ */}
+        {ergebnis && !formChanged && (() => {
+          const startJahr = new Date().getFullYear() + 1;
+          const chartData = ergebnis.tilgungsplan?.map((p) => ({
+            jahr: startJahr + p.jahr - 1,
+            restschuld: p.restschuld,
+            zinsen: p.jahresZinsen,
+            tilgung: p.jahresTilgung,
+          })) ?? [];
+
+          const fK = (v: number) => {
+            if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} M€`;
+            if (v >= 1_000) return `${Math.round(v / 1_000)} k€`;
+            return `${v} €`;
+          };
+
+          return (
+            <>
+              {/* — Tilgungsplan-Tabelle — */}
+              <div className="fade-in-up" style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+                <div style={{ padding: '18px 20px 14px' }}>
+                  <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>
+                    Jahres-Tilgungsplan
+                  </h4>
+                  <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
+                    {form.laufzeit} Jahre · {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {(tSatz * 100).toFixed(1)} % Tilgung
+                    {form.kaufpreis ? ` · Darlehensbetrag: ${formatEuro(ergebnis.finanzierungsbedarf)}` : ''}
+                  </p>
+                </div>
+                <div style={{ overflowX: 'auto', maxHeight: '360px', overflowY: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+                      <tr style={{ backgroundColor: '#F7F5F0' }}>
+                        {['Jahr', 'Jahres-Zinsen', 'Jahres-Tilgung', 'Restschuld', 'Kum. Zinsen', 'Kum. Tilgung'].map((h, i) => (
+                          <th key={h} style={{ padding: '10px 16px', fontSize: '11px', fontWeight: 700, color: '#0A3D2C', textAlign: i === 0 ? 'left' : 'right', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #E8E2D9', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ergebnis.tilgungsplan?.map((punkt, i) => (
+                        <tr key={punkt.jahr} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #F0EDE8' }}>
+                          <td style={{ padding: '9px 16px', fontWeight: 600, color: '#0A3D2C', whiteSpace: 'nowrap' }}>{startJahr + punkt.jahr - 1}</td>
+                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#3b82f6', fontWeight: 500 }}>{formatEuro(punkt.jahresZinsen)}</td>
+                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#0A5D3F', fontWeight: 500 }}>{formatEuro(punkt.jahresTilgung)}</td>
+                          <td style={{ padding: '9px 16px', textAlign: 'right', fontWeight: 700, color: punkt.restschuld === 0 ? '#16a34a' : '#0A3D2C' }}>{formatEuro(punkt.restschuld)}</td>
+                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#6b6b6b' }}>{formatEuro(punkt.gezahlteZinsen)}</td>
+                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#6b6b6b' }}>{formatEuro(punkt.gezahltesTilgung)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* — Charts — */}
+              <div className="fade-in-up">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                  {/* Chart 1: Restschuld */}
+                  <div style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '18px 16px 14px' }}>
+                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>Restschuld</h4>
+                    <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 16px' }}>Entwicklung über {form.laufzeit} Jahre</p>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="gradRestschuld" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.35} />
+                            <stop offset="95%" stopColor="#60a5fa" stopOpacity={0.02} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F0EDE8" vertical={false} />
+                        <XAxis dataKey="jahr" tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                        <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
+                        <Tooltip
+                          contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                          formatter={(value) => [formatEuro(Number(value)), 'Restschuld']}
+                          labelFormatter={(label) => `Jahr ${label}`}
+                        />
+                        <Area type="monotone" dataKey="restschuld" stroke="#3b82f6" strokeWidth={2} fill="url(#gradRestschuld)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Chart 2: Zinsen vs. Tilgung */}
+                  <div style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '18px 16px 14px' }}>
+                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>Zinsen vs. Tilgung</h4>
+                    <div style={{ display: 'flex', gap: '16px', margin: '0 0 12px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />Zinsen
+                      </span>
+                      <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0A5D3F' }} />Tilgung
+                      </span>
+                    </div>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="gradZinsen" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#60a5fa" stopOpacity={0.05} />
+                          </linearGradient>
+                          <linearGradient id="gradTilgung" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#0A5D3F" stopOpacity={0.35} />
+                            <stop offset="95%" stopColor="#0A5D3F" stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F0EDE8" vertical={false} />
+                        <XAxis dataKey="jahr" tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                        <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
+                        <Tooltip
+                          contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                          formatter={(value, name) => [formatEuro(Number(value)), name === 'zinsen' ? 'Zinsen' : 'Tilgung']}
+                          labelFormatter={(label) => `Jahr ${label}`}
+                        />
+                        <Area type="monotone" dataKey="zinsen" stroke="#3b82f6" strokeWidth={2} fill="url(#gradZinsen)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
+                        <Area type="monotone" dataKey="tilgung" stroke="#0A5D3F" strokeWidth={2} fill="url(#gradTilgung)" dot={false} activeDot={{ r: 4, fill: '#0A5D3F' }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </div>
 
       {/* ════════════════════ RESULTS PANEL — 4 Spalten, sticky ════════════════════ */}
@@ -542,133 +668,6 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
         </div>
       </div>
 
-      {/* ════════════════════ VOLLSTÄNDIGER TILGUNGSPLAN + CHARTS ════════════════════ */}
-      {ergebnis && !formChanged && (() => {
-        const startJahr = new Date().getFullYear() + 1;
-        const chartData = ergebnis.tilgungsplan?.map((p) => ({
-          jahr: startJahr + p.jahr - 1,
-          restschuld: p.restschuld,
-          zinsen: p.jahresZinsen,
-          tilgung: p.jahresTilgung,
-        })) ?? [];
-
-        const fK = (v: number) => {
-          if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} M€`;
-          if (v >= 1_000) return `${Math.round(v / 1_000)} k€`;
-          return `${v} €`;
-        };
-
-        return (
-          <>
-            {/* — Vollständige Tilgungsplan-Tabelle — */}
-            <div className="lg:col-span-12 fade-in-up">
-              <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-                <div style={{ padding: '24px 28px 18px' }}>
-                  <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
-                    Jahres-Tilgungsplan
-                  </h4>
-                  <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
-                    {form.laufzeit} Jahre · {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {(tSatz * 100).toFixed(1)} % Tilgung
-                    {form.kaufpreis ? ` · Darlehensbetrag: ${formatEuro(ergebnis.finanzierungsbedarf)}` : ''}
-                  </p>
-                </div>
-                <div style={{ overflowX: 'auto', maxHeight: '360px', overflowY: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                      <tr style={{ backgroundColor: '#F7F5F0' }}>
-                        {['Jahr', 'Jahres-Zinsen', 'Jahres-Tilgung', 'Restschuld', 'Kum. Zinsen', 'Kum. Tilgung'].map((h, i) => (
-                          <th key={h} style={{ padding: '10px 16px', fontSize: '11px', fontWeight: 700, color: '#0A3D2C', textAlign: i === 0 ? 'left' : 'right', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #E8E2D9', whiteSpace: 'nowrap' }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ergebnis.tilgungsplan?.map((punkt, i) => (
-                        <tr key={punkt.jahr} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #F0EDE8' }}>
-                          <td style={{ padding: '9px 16px', fontWeight: 600, color: '#0A3D2C', whiteSpace: 'nowrap' }}>{startJahr + punkt.jahr - 1}</td>
-                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#3b82f6', fontWeight: 500 }}>{formatEuro(punkt.jahresZinsen)}</td>
-                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#0A5D3F', fontWeight: 500 }}>{formatEuro(punkt.jahresTilgung)}</td>
-                          <td style={{ padding: '9px 16px', textAlign: 'right', fontWeight: 700, color: punkt.restschuld === 0 ? '#16a34a' : '#0A3D2C' }}>{formatEuro(punkt.restschuld)}</td>
-                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#6b6b6b' }}>{formatEuro(punkt.gezahlteZinsen)}</td>
-                          <td style={{ padding: '9px 16px', textAlign: 'right', color: '#6b6b6b' }}>{formatEuro(punkt.gezahltesTilgung)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            {/* — Charts — */}
-            <div className="lg:col-span-12 fade-in-up">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {/* Chart 1: Restschuld */}
-                <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '24px 20px 16px' }}>
-                  <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Restschuld</h4>
-                  <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 20px' }}>Entwicklung über {form.laufzeit} Jahre</p>
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="gradRestschuld" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.35} />
-                          <stop offset="95%" stopColor="#60a5fa" stopOpacity={0.02} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#F0EDE8" vertical={false} />
-                      <XAxis dataKey="jahr" tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                      <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
-                      <Tooltip
-                        contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
-                        formatter={(value) => [formatEuro(Number(value)), 'Restschuld']}
-                        labelFormatter={(label) => `Jahr ${label}`}
-                      />
-                      <Area type="monotone" dataKey="restschuld" stroke="#3b82f6" strokeWidth={2} fill="url(#gradRestschuld)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-
-                {/* Chart 2: Zinsen vs. Tilgung */}
-                <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '24px 20px 16px' }}>
-                  <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Zinsen vs. Tilgung</h4>
-                  <div style={{ display: 'flex', gap: '16px', margin: '0 0 16px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />Zinsen
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0A5D3F' }} />Tilgung
-                    </span>
-                  </div>
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="gradZinsen" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#60a5fa" stopOpacity={0.05} />
-                        </linearGradient>
-                        <linearGradient id="gradTilgung" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0A5D3F" stopOpacity={0.35} />
-                          <stop offset="95%" stopColor="#0A5D3F" stopOpacity={0.05} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#F0EDE8" vertical={false} />
-                      <XAxis dataKey="jahr" tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                      <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
-                      <Tooltip
-                        contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
-                        formatter={(value, name) => [formatEuro(Number(value)), name === 'zinsen' ? 'Zinsen' : 'Tilgung']}
-                        labelFormatter={(label) => `Jahr ${label}`}
-                      />
-                      <Area type="monotone" dataKey="zinsen" stroke="#3b82f6" strokeWidth={2} fill="url(#gradZinsen)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
-                      <Area type="monotone" dataKey="tilgung" stroke="#0A5D3F" strokeWidth={2} fill="url(#gradTilgung)" dot={false} activeDot={{ r: 4, fill: '#0A5D3F' }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-
-              </div>
-            </div>
-          </>
-        );
-      })()}
     </div>
   );
 }
