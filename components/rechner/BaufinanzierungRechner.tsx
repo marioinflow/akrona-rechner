@@ -193,7 +193,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   const restschuld = ergebnis?.tilgungsplan?.[ergebnis.tilgungsplan.length - 1]?.restschuld ?? 0;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
       {/* ════════════════════ LEFT — 8 Spalten (Form + Tilgungsplan + Charts) ════════════════════ */}
       <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
