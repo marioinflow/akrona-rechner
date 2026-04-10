@@ -428,16 +428,18 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
           </div>
         )}
 
-        {/* ── Berechnen-Button ── */}
-        <AkronaAnimatedButton
-          label={t('calculateNow')}
-          labelActive={t('recalculate')}
-          active={formChanged || !!ergebnis}
-          size="lg"
-          bg={formChanged ? '#D4AF37' : '#0A3D2C'}
-          className="w-full"
-          onClick={berechnen}
-        />
+        {/* ── Berechnen-Button (Desktop only — auf Mobile in der Result-Card) ── */}
+        <div className="rech-calc-btn">
+          <AkronaAnimatedButton
+            label={t('calculateNow')}
+            labelActive={t('recalculate')}
+            active={formChanged || !!ergebnis}
+            size="lg"
+            bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+            className="w-full"
+            onClick={berechnen}
+          />
+        </div>
 
         {/* ════════════════════ TILGUNGSPLAN + CHARTS (in linker Spalte) ════════════════════ */}
         {ergebnis && !formChanged && (() => {
@@ -652,17 +654,15 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               <p style={{ fontSize: '13px', color: '#6b6b6b', lineHeight: 1.6, margin: '0 0 20px' }}>
                 {formChanged ? t('clickRecalculate') : t('fillFormAndCalculate')}
               </p>
-              <div className="rech-placeholder-btn">
-                <AkronaAnimatedButton
-                  label={t('calculateNow')}
-                  labelActive={t('recalculate')}
-                  active={formChanged}
-                  size="sm"
-                  bg={formChanged ? '#D4AF37' : '#0A3D2C'}
-                  className="w-full"
-                  onClick={berechnen}
-                />
-              </div>
+              <AkronaAnimatedButton
+                label={t('calculateNow')}
+                labelActive={t('recalculate')}
+                active={formChanged}
+                size="sm"
+                bg={formChanged ? '#D4AF37' : '#0A3D2C'}
+                className="w-full"
+                onClick={berechnen}
+              />
             </div>
           )}
         </div>

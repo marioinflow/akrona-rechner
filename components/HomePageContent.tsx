@@ -273,12 +273,12 @@ export default function HomePageContent() {
               </p>
 
               {/* Mobile-only: kleines Mockup-Bild */}
-              <div className="mobile-only fade-in-up" style={{ marginBottom: '28px', borderRadius: '18px', overflow: 'hidden', position: 'relative', height: '200px', boxShadow: '0 8px 32px rgba(10,61,44,0.15)' }}>
+              <div className="mobile-only fade-in-up" style={{ marginBottom: '28px', borderRadius: '18px', overflow: 'hidden', position: 'relative', height: '220px', boxShadow: '0 8px 32px rgba(10,61,44,0.15)' }}>
                 <Image
                   src="/akrona-mockup.png"
                   alt="Paar nutzt Akrona Finanzierungsrechner"
                   fill
-                  style={{ objectFit: 'cover', objectPosition: '50% 15%' }}
+                  style={{ objectFit: 'cover', objectPosition: '50% 55%' }}
                 />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 55%, rgba(10,61,44,0.2) 100%)' }} />
               </div>

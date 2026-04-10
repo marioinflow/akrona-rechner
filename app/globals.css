@@ -474,8 +474,8 @@ input[type="checkbox"] {
   .rech-tabs { display: flex !important; width: 100% !important; }
   .rech-tab  { flex: 1 !important; text-align: center !important; padding: 9px 8px !important; }
 
-  /* ── Doppelter Button im Result-Placeholder ausblenden ── */
-  .rech-placeholder-btn { display: none !important; }
+  /* ── Freistehender Berechnen-Button unter Form ausblenden ── */
+  .rech-calc-btn { display: none !important; }
 }
 
 /* ─────────────────────────────────────────
