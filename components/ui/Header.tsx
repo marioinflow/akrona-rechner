@@ -3,10 +3,42 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
+import { useLanguage, useT } from '@/lib/language-context';
+
+function FlagButton({ lang, current, onClick }: { lang: 'de' | 'ro'; current: string; onClick: () => void }) {
+  const flag = lang === 'de' ? '🇩🇪' : '🇷🇴';
+  const active = current === lang;
+  return (
+    <button
+      onClick={onClick}
+      title={lang === 'de' ? 'Deutsch' : 'Română'}
+      style={{
+        fontSize: '18px',
+        lineHeight: 1,
+        padding: '4px 6px',
+        borderRadius: '6px',
+        border: active ? '1.5px solid rgba(10,61,44,0.25)' : '1.5px solid transparent',
+        background: active ? 'rgba(10,61,44,0.08)' : 'transparent',
+        cursor: active ? 'default' : 'pointer',
+        opacity: active ? 1 : 0.55,
+        transition: 'opacity 150ms, background 150ms, border-color 150ms',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: '36px',
+        minHeight: '32px',
+      }}
+    >
+      {flag}
+    </button>
+  );
+}
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const { lang, setLang } = useLanguage();
+  const t = useT();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -40,7 +72,6 @@ export default function Header() {
         transition: 'background-color 0.3s, border-color 0.3s, box-shadow 0.3s',
       }}
     >
-      {/* Inner container — no overflow hidden, flex with 3 explicit zones */}
       <div
         style={{
           maxWidth: '1280px',
@@ -100,7 +131,7 @@ export default function Header() {
                 }
               }}
             >
-              {tab === 'baufinanzierung' ? 'Baufinanzierung' : 'Privatkredit'}
+              {tab === 'baufinanzierung' ? t('mortgage') : t('personalLoan')}
             </button>
           ))}
         </div>
@@ -124,30 +155,16 @@ export default function Header() {
           </span>
         </div>
 
-        {/* ── Zone 3: Social proof avatar + CTA button (right, justified to end) ── */}
+        {/* ── Zone 3: Language switcher + CTA button (right) ── */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
-          {/* Social proof avatar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            <div style={{
-              width: '32px', height: '32px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '2px solid rgba(10,61,44,0.15)',
-              flexShrink: 0,
-            }}>
-              <Image
-                src="/akrona-mockup.png"
-                alt="Akrona Kunden"
-                width={32}
-                height={32}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%' }}
-              />
-            </div>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: '#555', whiteSpace: 'nowrap' }}>5.000+ Kunden</span>
+          {/* Flag switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+            <FlagButton lang="de" current={lang} onClick={() => setLang('de')} />
+            <FlagButton lang="ro" current={lang} onClick={() => setLang('ro')} />
           </div>
 
           <AkronaAnimatedButton
-            label="Jetzt berechnen"
+            label={t('calculateNow')}
             size="sm"
             onClick={() => {
               const el = document.getElementById('rechner');

@@ -5,6 +5,7 @@ import { berechnePrivatkredit, formatEuro } from '@/lib/berechnung';
 import type { PrivatkreditEingaben, PrivatkreditErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
+import { useT } from '@/lib/language-context';
 
 const DEFAULT: PrivatkreditEingaben = {
   nettoeinkommen: 0,
@@ -89,6 +90,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
   const [ergebnis, setErgebnis] = useState<PrivatkreditErgebnis | null>(null);
   const [formChanged, setFormChanged] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const t = useT();
 
   const update = useCallback(<K extends keyof PrivatkreditEingaben>(
     key: K,
@@ -102,16 +104,16 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
   const berechnen = () => {
     const gesamtEinkommen = (form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0);
     if (!form.nettoeinkommen || form.nettoeinkommen <= 0) {
-      setValidationError('Bitte geben Sie das Nettoeinkommen des 1. Kreditnehmers ein.');
+      setValidationError(t('errorIncome1'));
       return;
     }
     if (form.haushaltsgroesse === 2 && (!form.nettoeinkommen2 || form.nettoeinkommen2 <= 0)) {
-      setValidationError('Bitte geben Sie das Nettoeinkommen des 2. Kreditnehmers ein.');
+      setValidationError(t('errorIncome2'));
       return;
     }
     const haushaltsAbzug = { 1: 0, 2: 350, 3: 600, 4: 850, 5: 1100 }[form.haushaltsgroesse] ?? 1100;
     if (gesamtEinkommen <= haushaltsAbzug) {
-      setValidationError(`Das Gesamteinkommen liegt unter dem Haushaltsabzug von ${formatEuro(haushaltsAbzug)}. Eine Finanzierung ist nicht möglich.`);
+      setValidationError(t('errorLowIncome', { amount: formatEuro(haushaltsAbzug) }));
       return;
     }
     setErgebnis(berechnePrivatkredit(form));
@@ -133,26 +135,26 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
       <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* 01: Persönliche Daten */}
-        <SectionCard step="01" title="Persönliche Daten">
+        <SectionCard step="01" title={t('personalData')}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <FieldLabel required>Beschäftigungsstatus</FieldLabel>
+              <FieldLabel required>{t('employmentStatus')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.status} onChange={(e) => update('status', e.target.value as PrivatkreditEingaben['status'])} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  <option value="angestellt">Angestellt</option>
-                  <option value="beamter">Beamter / Beamtin</option>
-                  <option value="selbststaendig">Selbstständig</option>
-                  <option value="rente">Rentner / Rentnerin</option>
+                  <option value="angestellt">{t('employed')}</option>
+                  <option value="beamter">{t('civilServant')}</option>
+                  <option value="selbststaendig">{t('selfEmployed')}</option>
+                  <option value="rente">{t('pensioner')}</option>
                 </select>
               </SelectWrapper>
             </div>
 
             <div>
-              <FieldLabel required>Kreditnehmer</FieldLabel>
+              <FieldLabel required>{t('borrowers')}</FieldLabel>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {([
-                  { value: 1, label: 'Alleinantrag', sub: '1 Person' },
-                  { value: 2, label: 'Gemeinschaft', sub: '2 Personen' },
+                  { value: 1, label: t('singleApplicant'), sub: t('onePerson') },
+                  { value: 2, label: t('jointApplicant'), sub: t('twoPersons') },
                 ] as const).map((opt) => {
                   const active = form.haushaltsgroesse === opt.value;
                   return (
@@ -170,7 +172,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
 
             {form.haushaltsgroesse === 1 ? (
               <div className="sm:col-span-2">
-                <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
+                <FieldLabel required>{t('monthlyNetIncome')}</FieldLabel>
                 <div style={{ position: 'relative' }}>
                   <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.000"
                     style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -180,7 +182,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             ) : (
               <>
                 <div>
-                  <FieldLabel required>Nettoeinkommen KN 1</FieldLabel>
+                  <FieldLabel required>{t('netIncomeApplicant1')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.000"
                       style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -188,7 +190,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                   </div>
                 </div>
                 <div>
-                  <FieldLabel required>Nettoeinkommen KN 2</FieldLabel>
+                  <FieldLabel required>{t('netIncomeApplicant2')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 1.500"
                       style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -196,7 +198,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                   </div>
                 </div>
                 <div className="sm:col-span-2" style={{ backgroundColor: '#F7F5F0', borderRadius: '8px', padding: '8px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '12px', color: '#6b6b6b' }}>Gemeinsames Nettoeinkommen</span>
+                  <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{t('jointNetIncome')}</span>
                   <span style={{ fontSize: '14px', fontWeight: 700, color: '#0A3D2C' }}>{formatEuro((form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0))}</span>
                 </div>
               </>
@@ -205,16 +207,16 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
         </SectionCard>
 
         {/* 02: Kreditwunsch */}
-        <SectionCard step="02" title="Kreditwunsch" subtitle="Optional — leer lassen für maximalen Kreditrahmen">
+        <SectionCard step="02" title={t('loanRequest')} subtitle={t('optionalLeaveEmptyMaxCredit')}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <FieldLabel>Gewünschte Kreditsumme</FieldLabel>
+              <FieldLabel>{t('desiredLoanAmount')}</FieldLabel>
               <div style={{ position: 'relative' }}>
                 <input
                   type="number"
                   value={form.wunschkredit || ''}
                   onChange={(e) => update('wunschkredit', e.target.value ? Number(e.target.value) : undefined)}
-                  placeholder="Max. möglich"
+                  placeholder={t('maxPossible')}
                   style={{ ...IS, height: '56px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }}
                   onFocus={onFocus} onBlur={onBlur}
                 />
@@ -223,11 +225,11 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel required>Laufzeit</FieldLabel>
+              <FieldLabel required>{t('duration')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 12 | 24 | 36 | 48 | 60 | 84)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
                   {[12, 24, 36, 48, 60, 84].map((n) => (
-                    <option key={n} value={n}>{n} Monate</option>
+                    <option key={n} value={n}>{n} {t('months')}</option>
                   ))}
                 </select>
               </SelectWrapper>
@@ -244,8 +246,8 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
 
         {/* ── Berechnen-Button ── */}
         <AkronaAnimatedButton
-          label="Jetzt berechnen"
-          labelActive="Neu berechnen"
+          label={t('calculateNow')}
+          labelActive={t('recalculate')}
           active={formChanged || !!ergebnis}
           size="lg"
           bg={formChanged ? '#D4AF37' : '#0A3D2C'}
@@ -272,28 +274,28 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             <div className="fade-in">
               <div style={{ backgroundColor: '#0A3D2C', padding: '18px 24px' }}>
                 <p style={{ fontSize: '10px', fontWeight: 800, color: 'rgba(212,175,55,0.85)', textTransform: 'uppercase', letterSpacing: '0.18em', margin: 0 }}>
-                  IHRE ERSTEINSCHÄTZUNG
+                  {t('yourInitialAssessment')}
                 </p>
               </div>
 
               {/* Rate */}
               <div style={{ padding: '22px 24px', borderBottom: '1px solid #F0EDE8' }}>
-                <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 5px', fontWeight: 500 }}>Monatliche Rate</p>
+                <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 5px', fontWeight: 500 }}>{t('monthlyInstallment')}</p>
                 <p style={{ fontSize: '44px', fontWeight: 800, color: '#0A3D2C', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 5px' }}>
                   {formatEuro(ergebnis.monatsRate)}
                 </p>
                 <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
-                  pro Monat · {form.laufzeit} Monate Laufzeit
+                  {t('perMonthPersonalLoan', { duration: String(form.laufzeit) })}
                 </p>
               </div>
 
               {/* Kennzahlen */}
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 {[
-                  { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
-                  { label: 'Max. Kreditrahmen', value: formatEuro(ergebnis.maxKredit) },
-                  { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
-                  { label: 'Zinsen mtl.', value: formatEuro(zinsenMonatlich) },
+                  { label: t('creditAmount'), value: formatEuro(ergebnis.aktuellerKredit) },
+                  { label: t('maxCreditLimit'), value: formatEuro(ergebnis.maxKredit) },
+                  { label: t('interestRatePa'), value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
+                  { label: t('monthlyInterestAmount'), value: formatEuro(zinsenMonatlich) },
                 ].map((item) => (
                   <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F7F5F0' }}>
                     <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item.label}</span>
@@ -314,10 +316,10 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                   className="btn-gold"
                   style={{ width: '100%', height: '48px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em', marginBottom: '12px' }}
                 >
-                  Vollständige Auswertung erhalten
+                  {t('getCompleteEvaluation')}
                 </button>
                 <p style={{ fontSize: '11px', color: '#6b6b6b', textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
-                  Detailauswertung & Beratung — kostenlos per E-Mail
+                  {t('resultsFooterPersonalLoan')}
                 </p>
               </div>
             </div>
@@ -330,16 +332,14 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                 </svg>
               </div>
               <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 8px' }}>
-                {formChanged ? 'Eingaben geändert' : 'Bereit zur Berechnung'}
+                {formChanged ? t('inputsChanged') : t('readyToCalculate')}
               </p>
               <p style={{ fontSize: '13px', color: '#6b6b6b', lineHeight: 1.6, margin: '0 0 20px' }}>
-                {formChanged
-                  ? 'Klicken Sie auf „Neu berechnen" um Ihre aktualisierten Konditionen zu sehen.'
-                  : 'Füllen Sie das Formular aus und klicken Sie auf „Jetzt berechnen".'}
+                {formChanged ? t('clickRecalculate') : t('fillFormAndCalculate')}
               </p>
               <AkronaAnimatedButton
-                label="Jetzt berechnen"
-                labelActive="Neu berechnen"
+                label={t('calculateNow')}
+                labelActive={t('recalculate')}
                 active={formChanged}
                 size="sm"
                 bg={formChanged ? '#D4AF37' : '#0A3D2C'}
@@ -357,10 +357,10 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
           <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
             <div style={{ padding: '24px 28px 18px' }}>
               <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
-                Kosten-Übersicht
+                {t('completeOverview')}
               </h4>
               <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
-                Vorschau · {form.laufzeit} Monate · {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {formatEuro(ergebnis.aktuellerKredit)} Kreditbetrag
+                {form.laufzeit} {t('months')} · {(ergebnis.zinssatz * 100).toFixed(1)} % · {formatEuro(ergebnis.aktuellerKredit)}
               </p>
             </div>
 
@@ -369,15 +369,15 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#F7F5F0' }}>
-                    {['Kennzahl', 'Betrag'].map((h, i) => (
+                    {[t('result'), t('totalAmount')].map((h, i) => (
                       <th key={h} style={{ padding: '10px 20px', fontSize: '11px', fontWeight: 700, color: '#0A3D2C', textAlign: i === 0 ? 'left' : 'right', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { label: 'Monatliche Rate', value: formatEuro(ergebnis.monatsRate) },
-                    { label: 'Kreditbetrag', value: formatEuro(ergebnis.aktuellerKredit) },
+                    { label: t('monthlyInstallment'), value: formatEuro(ergebnis.monatsRate) },
+                    { label: t('creditAmount'), value: formatEuro(ergebnis.aktuellerKredit) },
                   ].map((row, i) => (
                     <tr key={row.label} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', borderBottom: '1px solid #F0EDE8' }}>
                       <td style={{ padding: '10px 20px', fontWeight: 600, color: '#0A3D2C' }}>{row.label}</td>
@@ -391,9 +391,9 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             {/* Blur-Overlay über Rest */}
             <div style={{ position: 'relative' }}>
               {[
-                { label: 'Zinskosten gesamt', value: formatEuro(zinsgesamt) },
-                { label: 'Gesamtbetrag', value: formatEuro(ergebnis.gesamtkosten) },
-                { label: 'Effektiver Jahreszins', value: `${(ergebnis.zinssatz * 100).toFixed(2)} %` },
+                { label: t('totalInterestCosts'), value: formatEuro(zinsgesamt) },
+                { label: t('totalAmount'), value: formatEuro(ergebnis.gesamtkosten) },
+                { label: t('interestRatePa'), value: `${(ergebnis.zinssatz * 100).toFixed(2)} %` },
               ].map((row, i) => (
                 <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 20px', borderBottom: '1px solid #F0EDE8', backgroundColor: i % 2 === 0 ? '#fff' : '#FAFAF8', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none' }}>
                   <span style={{ fontSize: '13px', fontWeight: 600, color: '#0A3D2C' }}>{row.label}</span>
@@ -410,17 +410,17 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                     </svg>
                   </div>
                   <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 6px' }}>
-                    Vollständige Auswertung + persönliche Beratung
+                    {t('completeEvaluationAndAdvice')}
                   </p>
                   <p style={{ fontSize: '13px', color: '#6b6b6b', margin: '0 0 16px', lineHeight: 1.5 }}>
-                    Mit allen Kosten, Zinsentwicklung und individueller Einschätzung — kostenlos per E-Mail.
+                    {t('completeEvaluationDesc')}
                   </p>
                   <button
                     onClick={() => onLeadTrigger(ergebnis, form)}
                     className="btn-gold"
                     style={{ height: '44px', padding: '0 28px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    Jetzt kostenlos erhalten
+                    {t('getForFreeNow')}
                   </button>
                 </div>
               </div>

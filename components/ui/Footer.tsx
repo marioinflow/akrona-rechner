@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useT } from '@/lib/language-context';
 
 export default function Footer() {
+  const t = useT();
+
   return (
     <footer
       style={{
@@ -31,8 +36,8 @@ export default function Footer() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           {[
-            { href: '/impressum', label: 'Impressum' },
-            { href: '/datenschutz', label: 'Datenschutz' },
+            { href: '/impressum', labelKey: 'imprint' as const },
+            { href: '/datenschutz', labelKey: 'privacyPolicy' as const },
           ].map((l) => (
             <Link
               key={l.href}
@@ -47,7 +52,7 @@ export default function Footer() {
               onMouseEnter={(e) => (e.currentTarget.style.color = '#D4AF37')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
             >
-              {l.label}
+              {t(l.labelKey)}
             </Link>
           ))}
         </div>
@@ -60,7 +65,7 @@ export default function Footer() {
             margin: 0,
           }}
         >
-          © 2025 Akrona GmbH · Alperen Akbal
+          {t('copyright')}
         </p>
       </div>
     </footer>

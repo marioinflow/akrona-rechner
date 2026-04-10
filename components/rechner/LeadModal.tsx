@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { LeadFormData } from '@/types';
+import { useT } from '@/lib/language-context';
 
 interface Props {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const t = useT();
 
   if (!isOpen || !payload) return null;
 
@@ -50,10 +52,10 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
       if (data.success) {
         setSuccess(true);
       } else {
-        setError(data.error ?? 'Ein Fehler ist aufgetreten.');
+        setError(data.error ?? t('errorOccurred'));
       }
     } catch {
-      setError('Netzwerkfehler. Bitte versuchen Sie es erneut.');
+      setError(t('networkError'));
     } finally {
       setLoading(false);
     }
@@ -73,10 +75,10 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
         <div className="px-6 py-5 flex items-center justify-between" style={{ backgroundColor: '#0A3D2C' }}>
           <div>
             <h2 className="font-semibold text-base" style={{ color: '#D4AF37' }}>
-              Vollständige Auswertung
+              {t('completeEvaluationTitle')}
             </h2>
             <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              Kostenlos & unverbindlich per E-Mail
+              {t('freeAndNonBindingViaEmail')}
             </p>
           </div>
           {!success && (
@@ -102,18 +104,17 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                 </svg>
               </div>
               <h3 className="font-semibold text-lg mb-2" style={{ color: '#0A3D2C' }}>
-                Auswertung wird versendet!
+                {t('evaluationSent')}
               </h3>
               <p className="text-sm mb-6" style={{ color: '#6b6b6b' }}>
-                Ihre persönliche Finanzierungsauswertung wurde an <strong>{form.email}</strong> gesendet.
-                Bitte prüfen Sie auch Ihren Spam-Ordner.
+                {t('evaluationSentDesc', { email: form.email })}
               </p>
               <button
                 onClick={onClose}
                 className="px-6 py-2.5 rounded-lg text-sm font-medium"
                 style={{ backgroundColor: '#0A3D2C', color: '#fff' }}
               >
-                Schließen
+                {t('close')}
               </button>
             </div>
           ) : (
@@ -121,7 +122,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
               {/* Name */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>Vorname *</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>{t('firstName')} *</label>
                   <input
                     type="text"
                     value={form.vorname}
@@ -132,7 +133,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>Nachname *</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>{t('lastName')} *</label>
                   <input
                     type="text"
                     value={form.nachname}
@@ -145,7 +146,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>E-Mail-Adresse *</label>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>{t('emailAddress')} *</label>
                 <input
                   type="email"
                   value={form.email}
@@ -158,7 +159,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
 
               <div>
                 <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>
-                  Telefon <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
+                  {t('phoneNumber')} <span style={{ color: '#9ca3af', fontWeight: 400 }}>{t('optional')}</span>
                 </label>
                 <input
                   type="tel"
@@ -181,12 +182,16 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                     style={{ accentColor: '#0A3D2C' }}
                   />
                   <span className="text-xs leading-relaxed" style={{ color: '#444' }}>
-                    <strong>[Pflicht]</strong> Ich habe die{' '}
-                    <Link href="/datenschutz" target="_blank" style={{ color: '#0A3D2C' }}>
-                      Datenschutzerklärung
-                    </Link>{' '}
-                    gelesen und stimme der Verarbeitung meiner Daten zu.{' '}
-                    <span style={{ color: '#6b6b6b' }}>(Art. 6 Abs. 1 lit. b DSGVO)</span>
+                    {t('privacyConsent').split(t('privacyPolicyLinkText')).map((part, i, arr) =>
+                      i < arr.length - 1 ? (
+                        <span key={i}>
+                          {part}
+                          <Link href="/datenschutz" target="_blank" style={{ color: '#0A3D2C' }}>
+                            {t('privacyPolicyLinkText')}
+                          </Link>
+                        </span>
+                      ) : part
+                    )}
                   </span>
                 </label>
 
@@ -199,7 +204,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                     style={{ accentColor: '#0A3D2C' }}
                   />
                   <span className="text-xs leading-relaxed" style={{ color: '#444' }}>
-                    <strong>[Pflicht]</strong> Ich bin damit einverstanden, dass Akrona GmbH mich per E-Mail zu meiner Anfrage kontaktiert.
+                    {t('contactConsent')}
                   </span>
                 </label>
 
@@ -212,7 +217,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                     style={{ accentColor: '#0A3D2C' }}
                   />
                   <span className="text-xs leading-relaxed" style={{ color: '#6b6b6b' }}>
-                    [Optional] Ich möchte den Akrona Newsletter erhalten. Diese Einwilligung kann ich jederzeit widerrufen.
+                    {t('newsletterConsent')}
                   </span>
                 </label>
               </div>
@@ -233,15 +238,11 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
                   cursor: canSubmit ? 'pointer' : 'not-allowed',
                 }}
               >
-                {loading ? 'Wird verarbeitet…' : 'Auswertung per E-Mail erhalten'}
+                {loading ? t('processing') : t('receiveEvaluationByEmail')}
               </button>
 
               <p className="text-xs text-center" style={{ color: '#6b6b6b' }}>
-                Ihre Daten werden nicht an Dritte weitergegeben. Speicherung gemäß DSGVO.{' '}
-                Widerruf jederzeit möglich unter{' '}
-                <a href="mailto:datenschutz@akrona.de" style={{ color: '#0A3D2C' }}>
-                  datenschutz@akrona.de
-                </a>
+                {t('dataProtectionInfo')}
               </p>
             </div>
           )}

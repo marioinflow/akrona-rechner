@@ -14,6 +14,7 @@ import { berechneBaufinanzierung, formatEuro, GRUNDERWERBSTEUER } from '@/lib/be
 import type { BaufinanzierungEingaben, BaufinanzierungErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
+import { useT } from '@/lib/language-context';
 
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
 
@@ -24,13 +25,6 @@ const LAENDER = [
   'Lettland', 'Litauen', 'Luxemburg', 'Malta', 'Niederlande',
   'Polen', 'Portugal', 'Rumänien', 'Schweden', 'Slowakei',
   'Slowenien', 'Spanien', 'Tschechien', 'Ungarn', 'Zypern', 'Sonstiges',
-];
-
-const MAKLERGEBUEHREN = [
-  { label: 'Keine Maklergebühr', value: 0 },
-  { label: '1,19 %', value: 1.19 },
-  { label: '2,38 %', value: 2.38 },
-  { label: '3,57 %', value: 3.57 },
 ];
 
 const FINANZIERUNGSOPTIONEN: {
@@ -136,6 +130,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   const [ergebnis, setErgebnis] = useState<BaufinanzierungErgebnis | null>(null);
   const [formChanged, setFormChanged] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const t = useT();
 
   const update = useCallback(<K extends keyof BaufinanzierungEingaben>(
     key: K,
@@ -166,16 +161,16 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   const berechnen = () => {
     const gesamtEinkommen = (form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0);
     if (!form.nettoeinkommen || form.nettoeinkommen <= 0) {
-      setValidationError('Bitte geben Sie das Nettoeinkommen des 1. Kreditnehmers ein.');
+      setValidationError(t('errorIncome1'));
       return;
     }
     if (form.haushaltsgroesse === 2 && (!form.nettoeinkommen2 || form.nettoeinkommen2 <= 0)) {
-      setValidationError('Bitte geben Sie das Nettoeinkommen des 2. Kreditnehmers ein.');
+      setValidationError(t('errorIncome2'));
       return;
     }
     const haushaltsAbzug = { 1: 0, 2: 350, 3: 600, 4: 850, 5: 1100 }[form.haushaltsgroesse] ?? 1100;
     if (gesamtEinkommen <= haushaltsAbzug) {
-      setValidationError(`Das Gesamteinkommen liegt unter dem Haushaltsabzug von ${formatEuro(haushaltsAbzug)}. Eine Finanzierung ist nicht möglich.`);
+      setValidationError(t('errorLowIncome', { amount: formatEuro(haushaltsAbzug) }));
       return;
     }
     setErgebnis(berechneBaufinanzierung(form));
@@ -199,10 +194,10 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
       <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
         {/* 01: Persönliche Daten */}
-        <SectionCard step="01" title="Persönliche Daten">
+        <SectionCard step="01" title={t('personalData')}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Wohnsitzland</FieldLabel>
+              <FieldLabel>{t('countryOfResidence')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.wohnsitzland ?? 'Deutschland'} onChange={(e) => update('wohnsitzland', e.target.value)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
                   {LAENDER.map((l) => <option key={l} value={l}>{l}</option>)}
@@ -211,7 +206,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel>Staatsangehörigkeit</FieldLabel>
+              <FieldLabel>{t('citizenship')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.staatsangehoerigkeit ?? 'Deutschland'} onChange={(e) => update('staatsangehoerigkeit', e.target.value)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
                   {LAENDER.map((l) => <option key={l} value={l}>{l}</option>)}
@@ -220,23 +215,23 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel required>Beschäftigungsstatus</FieldLabel>
+              <FieldLabel required>{t('employmentStatus')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.status} onChange={(e) => update('status', e.target.value as BaufinanzierungEingaben['status'])} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  <option value="angestellt">Angestellt</option>
-                  <option value="beamter">Beamter / Beamtin</option>
-                  <option value="selbststaendig">Selbstständig</option>
-                  <option value="rente">Rentner / Rentnerin</option>
+                  <option value="angestellt">{t('employed')}</option>
+                  <option value="beamter">{t('civilServant')}</option>
+                  <option value="selbststaendig">{t('selfEmployed')}</option>
+                  <option value="rente">{t('pensioner')}</option>
                 </select>
               </SelectWrapper>
             </div>
 
             <div>
-              <FieldLabel required>Kreditnehmer</FieldLabel>
+              <FieldLabel required>{t('borrowers')}</FieldLabel>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {([
-                  { value: 1, label: 'Alleinantrag', sub: '1 Person' },
-                  { value: 2, label: 'Gemeinschaft', sub: '2 Personen' },
+                  { value: 1, label: t('singleApplicant'), sub: t('onePerson') },
+                  { value: 2, label: t('jointApplicant'), sub: t('twoPersons') },
                 ] as const).map((opt) => {
                   const active = form.haushaltsgroesse === opt.value;
                   return (
@@ -254,7 +249,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
             {form.haushaltsgroesse === 1 ? (
               <div className="sm:col-span-2">
-                <FieldLabel required>Monatliches Nettoeinkommen</FieldLabel>
+                <FieldLabel required>{t('monthlyNetIncome')}</FieldLabel>
                 <div style={{ position: 'relative' }}>
                   <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.500"
                     style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -264,7 +259,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             ) : (
               <>
                 <div>
-                  <FieldLabel required>Nettoeinkommen KN 1</FieldLabel>
+                  <FieldLabel required>{t('netIncomeApplicant1')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.500"
                       style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -272,7 +267,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   </div>
                 </div>
                 <div>
-                  <FieldLabel required>Nettoeinkommen KN 2</FieldLabel>
+                  <FieldLabel required>{t('netIncomeApplicant2')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
                     <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 2.000"
                       style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -280,7 +275,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   </div>
                 </div>
                 <div className="sm:col-span-2" style={{ backgroundColor: '#F7F5F0', borderRadius: '8px', padding: '8px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '12px', color: '#6b6b6b' }}>Gemeinsames Nettoeinkommen</span>
+                  <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{t('jointNetIncome')}</span>
                   <span style={{ fontSize: '14px', fontWeight: 700, color: '#0A3D2C' }}>{formatEuro((form.nettoeinkommen || 0) + (form.nettoeinkommen2 || 0))}</span>
                 </div>
               </>
@@ -289,10 +284,10 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
         </SectionCard>
 
         {/* 02: Immobilien-Daten */}
-        <SectionCard step="02" title="Immobilien-Daten" subtitle="Optional — für Kaufnebenkosten & Szenarien">
+        <SectionCard step="02" title={t('propertyData')} subtitle={t('propertyDataSubtitle')}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="sm:col-span-2">
-              <FieldLabel>Kaufpreis</FieldLabel>
+              <FieldLabel>{t('purchasePrice')}</FieldLabel>
               <div style={{ position: 'relative' }}>
                 <input type="number" value={form.kaufpreis || ''} onChange={(e) => update('kaufpreis', e.target.value ? Number(e.target.value) : undefined)} placeholder="z.B. 400.000"
                   style={{ ...IS, height: '48px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }} onFocus={onFocus} onBlur={onBlur} />
@@ -301,7 +296,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel>Bundesland</FieldLabel>
+              <FieldLabel>{t('federalState')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.bundesland ?? 'Baden-Württemberg'} onChange={(e) => update('bundesland', e.target.value)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
                   {BUNDESLAENDER.map((bl) => <option key={bl} value={bl}>{bl}</option>)}
@@ -310,30 +305,33 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             </div>
 
             <div>
-              <FieldLabel>Verwendungszweck</FieldLabel>
+              <FieldLabel>{t('purpose')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.verwendungszweck} onChange={(e) => update('verwendungszweck', e.target.value as BaufinanzierungEingaben['verwendungszweck'])} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  <option value="kauf">Kauf</option>
-                  <option value="neubau">Neubau</option>
-                  <option value="anschlussfinanzierung">Anschlussfinanzierung</option>
+                  <option value="kauf">{t('purchase')}</option>
+                  <option value="neubau">{t('newConstruction')}</option>
+                  <option value="anschlussfinanzierung">{t('refinancing')}</option>
                 </select>
               </SelectWrapper>
             </div>
 
             <div>
-              <FieldLabel>Laufzeit</FieldLabel>
+              <FieldLabel>{t('duration')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 10 | 15 | 20 | 25 | 30)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  {[10, 15, 20, 25, 30].map((n) => <option key={n} value={n}>{n} Jahre</option>)}
+                  {[10, 15, 20, 25, 30].map((n) => <option key={n} value={n}>{n} {t('years')}</option>)}
                 </select>
               </SelectWrapper>
             </div>
 
             <div>
-              <FieldLabel>Maklergebühr</FieldLabel>
+              <FieldLabel>{t('brokerFee')}</FieldLabel>
               <SelectWrapper>
                 <select value={form.maklergebuehr ?? 0} onChange={(e) => update('maklergebuehr', Number(e.target.value) as 0 | 1.19 | 2.38 | 3.57)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  {MAKLERGEBUEHREN.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  <option value={0}>{t('noBrokerFee')}</option>
+                  <option value={1.19}>1,19 %</option>
+                  <option value={2.38}>2,38 %</option>
+                  <option value={3.57}>3,57 %</option>
                 </select>
               </SelectWrapper>
             </div>
@@ -341,7 +339,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
         </SectionCard>
 
         {/* 03: Finanzierungsoptionen */}
-        <SectionCard step="03" title="Finanzierungsoptionen">
+        <SectionCard step="03" title={t('financingOptions')}>
           <div className="grid grid-cols-3 gap-3">
             {FINANZIERUNGSOPTIONEN.map((opt) => {
               const isActive = form.finanzierungsanteil === opt.anteil;
@@ -354,9 +352,9 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
                   onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
                 >
-                  {opt.badge && (
+                  {opt.anteil === 80 && (
                     <span style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 700, color: '#fff', backgroundColor: '#0A3D2C', padding: '2px 10px', borderRadius: '99px', whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>
-                      {opt.badge}
+                      {t('popular')}
                     </span>
                   )}
                   {isActive && (
@@ -365,11 +363,13 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                     </span>
                   )}
                   <p style={{ fontSize: '22px', fontWeight: 800, color: isActive ? '#0A5D3F' : '#0A3D2C', lineHeight: 1, margin: '0 0 3px' }}>{opt.label}</p>
-                  <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 10px' }}>{opt.sublabel}</p>
+                  <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 10px' }}>
+                    {opt.anteil === 100 ? t('fullFinancing') : opt.anteil === 80 ? t('recommended') : t('safestOption')}
+                  </p>
                   <div style={{ borderTop: '1px solid #E8E2D9', paddingTop: '10px' }}>
-                    <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 2px' }}>ab {opt.approxZins.toFixed(1)} % p.a.</p>
+                    <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 2px' }}>{t('fromRatePerAnnum', { rate: opt.approxZins.toFixed(1) })}</p>
                     <p style={{ fontSize: '12px', fontWeight: 700, color: '#0A3D2C', margin: 0 }}>
-                      {anzahlung !== null ? (anzahlung === 0 ? '0 € Anzahlung' : formatEuro(anzahlung)) : '— €'}
+                      {anzahlung !== null ? (anzahlung === 0 ? t('noDownPayment') : t('downPaymentAmount', { amount: formatEuro(anzahlung) })) : '— €'}
                     </p>
                   </div>
                 </button>
@@ -377,15 +377,15 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             })}
           </div>
           <p style={{ fontSize: '11px', color: '#6b6b6b', marginTop: '10px' }}>
-            Anzahlung wird automatisch berechnet sobald ein Kaufpreis angegeben ist.
+            {t('downPaymentAutoCalculated')}
           </p>
         </SectionCard>
 
         {/* 04: Details */}
-        <SectionCard step="04" title="Details">
+        <SectionCard step="04" title={t('details')}>
           <div style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <FieldLabel>Tilgungsrate</FieldLabel>
+              <FieldLabel>{t('repaymentRate')}</FieldLabel>
               <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff', backgroundColor: '#3b82f6', padding: '3px 12px', borderRadius: '99px', letterSpacing: '0.03em' }}>
                 {tSatzPct} %
               </span>
@@ -401,7 +401,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <FieldLabel>Anzahlung / Eigenkapital</FieldLabel>
+              <FieldLabel>{t('downPaymentEquity')}</FieldLabel>
               <span style={{ fontSize: '13px', fontWeight: 700, color: '#0A3D2C' }}>
                 {formatEuro(form.eigenkapital)}
                 {form.kaufpreis && form.kaufpreis > 0 && (
@@ -430,8 +430,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
         {/* ── Berechnen-Button ── */}
         <AkronaAnimatedButton
-          label="Jetzt berechnen"
-          labelActive="Neu berechnen"
+          label={t('calculateNow')}
+          labelActive={t('recalculate')}
           active={formChanged || !!ergebnis}
           size="lg"
           bg={formChanged ? '#D4AF37' : '#0A3D2C'}
@@ -461,18 +461,18 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               <div className="fade-in-up" style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
                 <div style={{ padding: '18px 20px 14px' }}>
                   <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>
-                    Jahres-Tilgungsplan
+                    {t('yearlyRepaymentPlan')}
                   </h4>
                   <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
-                    {form.laufzeit} Jahre · {(ergebnis.zinssatz * 100).toFixed(1)} % Zinssatz · {(tSatz * 100).toFixed(1)} % Tilgung
-                    {form.kaufpreis ? ` · Darlehensbetrag: ${formatEuro(ergebnis.finanzierungsbedarf)}` : ''}
+                    {form.laufzeit} {t('years')} · {(ergebnis.zinssatz * 100).toFixed(1)} % · {(tSatz * 100).toFixed(1)} %
+                    {form.kaufpreis ? ` · ${t('loanAmount')}: ${formatEuro(ergebnis.finanzierungsbedarf)}` : ''}
                   </p>
                 </div>
                 <div style={{ overflowX: 'auto', maxHeight: '360px', overflowY: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                     <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                       <tr style={{ backgroundColor: '#F7F5F0' }}>
-                        {['Jahr', 'Jahres-Zinsen', 'Jahres-Tilgung', 'Restschuld', 'Kum. Zinsen', 'Kum. Tilgung'].map((h, i) => (
+                        {[t('year'), t('yearlyInterest'), t('yearlyRepayment'), t('residualDebt'), t('cumulatedInterest'), t('cumulatedRepayment')].map((h, i) => (
                           <th key={h} style={{ padding: '10px 16px', fontSize: '11px', fontWeight: 700, color: '#0A3D2C', textAlign: i === 0 ? 'left' : 'right', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #E8E2D9', whiteSpace: 'nowrap' }}>{h}</th>
                         ))}
                       </tr>
@@ -499,8 +499,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
                   {/* Chart 1: Restschuld */}
                   <div style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '18px 16px 14px' }}>
-                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>Restschuld</h4>
-                    <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 16px' }}>Entwicklung über {form.laufzeit} Jahre</p>
+                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>{t('residualDebt')}</h4>
+                    <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 16px' }}>{t('developmentOverYears', { years: String(form.laufzeit) })}</p>
                     <ResponsiveContainer width="100%" height={200}>
                       <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                         <defs>
@@ -514,8 +514,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                         <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
                         <Tooltip
                           contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
-                          formatter={(value) => [formatEuro(Number(value)), 'Restschuld']}
-                          labelFormatter={(label) => `Jahr ${label}`}
+                          formatter={(value) => [formatEuro(Number(value)), t('residualDebt')]}
+                          labelFormatter={(label) => `${t('year')} ${label}`}
                         />
                         <Area type="monotone" dataKey="restschuld" stroke="#3b82f6" strokeWidth={2} fill="url(#gradRestschuld)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
                       </AreaChart>
@@ -524,13 +524,13 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
                   {/* Chart 2: Zinsen vs. Tilgung */}
                   <div style={{ border: '1px solid #E8E2D9', borderRadius: '14px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '18px 16px 14px' }}>
-                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>Zinsen vs. Tilgung</h4>
+                    <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#0A3D2C', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 3px' }}>{t('interestVsRepayment')}</h4>
                     <div style={{ display: 'flex', gap: '16px', margin: '0 0 12px', alignItems: 'center' }}>
                       <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />Zinsen
+                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6' }} />{t('interest')}
                       </span>
                       <span style={{ fontSize: '12px', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0A5D3F' }} />Tilgung
+                        <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0A5D3F' }} />{t('repayment')}
                       </span>
                     </div>
                     <ResponsiveContainer width="100%" height={200}>
@@ -550,8 +550,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                         <YAxis tickFormatter={fK} tick={{ fontSize: 11, fill: '#6b6b6b' }} tickLine={false} axisLine={false} width={60} />
                         <Tooltip
                           contentStyle={{ borderRadius: '10px', border: '1px solid #E8E2D9', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
-                          formatter={(value, name) => [formatEuro(Number(value)), name === 'zinsen' ? 'Zinsen' : 'Tilgung']}
-                          labelFormatter={(label) => `Jahr ${label}`}
+                          formatter={(value, name) => [formatEuro(Number(value)), name === 'zinsen' ? t('interest') : t('repayment')]}
+                          labelFormatter={(label) => `${t('year')} ${label}`}
                         />
                         <Area type="monotone" dataKey="zinsen" stroke="#3b82f6" strokeWidth={2} fill="url(#gradZinsen)" dot={false} activeDot={{ r: 4, fill: '#3b82f6' }} />
                         <Area type="monotone" dataKey="tilgung" stroke="#0A5D3F" strokeWidth={2} fill="url(#gradTilgung)" dot={false} activeDot={{ r: 4, fill: '#0A5D3F' }} />
@@ -584,33 +584,33 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             <div className="fade-in">
               <div style={{ backgroundColor: '#0A3D2C', padding: '18px 24px' }}>
                 <p style={{ fontSize: '10px', fontWeight: 800, color: 'rgba(212,175,55,0.85)', textTransform: 'uppercase', letterSpacing: '0.18em', margin: 0 }}>
-                  IHRE ERSTEINSCHÄTZUNG
+                  {t('yourInitialAssessment')}
                 </p>
               </div>
 
               {/* Rate */}
               <div style={{ padding: '22px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 <p style={{ fontSize: '12px', color: '#6b6b6b', margin: '0 0 5px', fontWeight: 500 }}>
-                  {form.kaufpreis ? 'Monatliche Rate' : 'Rate bei max. Kreditrahmen'}
+                  {form.kaufpreis ? t('monthlyInstallment') : t('installmentAtMaxCredit')}
                 </p>
                 <p style={{ fontSize: '44px', fontWeight: 800, color: '#0A3D2C', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 5px' }}>
                   {formatEuro(ergebnis.monatsRate)}
                 </p>
                 <p style={{ fontSize: '12px', color: '#6b6b6b', margin: 0 }}>
-                  pro Monat · {form.laufzeit} Jahre · {(tSatz * 100).toFixed(1)} % Tilgung
+                  {t('perMonthMortgage', { duration: String(form.laufzeit), rate: (tSatz * 100).toFixed(1) })}
                 </p>
               </div>
 
               {/* Kennzahlen */}
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 {[
-                  { label: 'Zinssatz p.a.', value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
-                  { label: 'Zinsen mtl.', value: formatEuro(zinsenMonatlich) },
-                  ...(form.kaufpreis ? [{ label: 'Finanzierungsbedarf', value: formatEuro(ergebnis.finanzierungsbedarf) }] : []),
-                  { label: `Restschuld (${form.laufzeit} J.)`, value: formatEuro(restschuld) },
-                  { label: 'Max. Kreditrahmen', value: formatEuro(ergebnis.maxKredit) },
-                  { label: 'Kaufkraft gesamt', value: formatEuro(ergebnis.kaufkraft) },
-                  ...(ergebnis.gesamtkaufkosten ? [{ label: 'Gesamtkaufkosten', value: formatEuro(ergebnis.gesamtkaufkosten) }] : []),
+                  { label: t('interestRatePa'), value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
+                  { label: t('monthlyInterestAmount'), value: formatEuro(zinsenMonatlich) },
+                  ...(form.kaufpreis ? [{ label: t('financingNeed'), value: formatEuro(ergebnis.finanzierungsbedarf) }] : []),
+                  { label: t('residualDebtAfterYears', { years: String(form.laufzeit) }), value: formatEuro(restschuld) },
+                  { label: t('maxCreditLimit'), value: formatEuro(ergebnis.maxKredit) },
+                  { label: t('totalPurchasingPower'), value: formatEuro(ergebnis.kaufkraft) },
+                  ...(ergebnis.gesamtkaufkosten ? [{ label: t('totalPurchaseCosts'), value: formatEuro(ergebnis.gesamtkaufkosten) }] : []),
                 ].map((item) => (
                   <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F7F5F0' }}>
                     <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item.label}</span>
@@ -631,10 +631,10 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   className="btn-gold"
                   style={{ width: '100%', height: '48px', backgroundColor: '#D4AF37', color: '#0A3D2C', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em', marginBottom: '12px' }}
                 >
-                  Vollständige Auswertung erhalten
+                  {t('getCompleteEvaluation')}
                 </button>
                 <p style={{ fontSize: '11px', color: '#6b6b6b', textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
-                  Tilgungsplan, Szenarien & Beratung — kostenlos per E-Mail
+                  {t('resultsFooterMortgage')}
                 </p>
               </div>
             </div>
@@ -647,16 +647,14 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 </svg>
               </div>
               <p style={{ fontWeight: 700, color: '#0A3D2C', fontSize: '15px', margin: '0 0 8px' }}>
-                {formChanged ? 'Eingaben geändert' : 'Bereit zur Berechnung'}
+                {formChanged ? t('inputsChanged') : t('readyToCalculate')}
               </p>
               <p style={{ fontSize: '13px', color: '#6b6b6b', lineHeight: 1.6, margin: '0 0 20px' }}>
-                {formChanged
-                  ? 'Klicken Sie auf „Neu berechnen" um Ihre aktualisierten Konditionen zu sehen.'
-                  : 'Füllen Sie das Formular aus und klicken Sie auf „Jetzt berechnen".'}
+                {formChanged ? t('clickRecalculate') : t('fillFormAndCalculate')}
               </p>
               <AkronaAnimatedButton
-                label="Jetzt berechnen"
-                labelActive="Neu berechnen"
+                label={t('calculateNow')}
+                labelActive={t('recalculate')}
                 active={formChanged}
                 size="sm"
                 bg={formChanged ? '#D4AF37' : '#0A3D2C'}
