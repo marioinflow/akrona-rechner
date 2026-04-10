@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akrona Rechner — Layout Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; background: #F7F5F0; color: #1a1a1a; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,61,44,0.97); backdrop-filter: blur(20px);
+    height: 64px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; border-bottom: 1px solid rgba(212,175,55,0.15);
+  }
+  nav .logo { color: #D4AF37; font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+  nav .logo span { color: #fff; font-weight: 300; }
+  nav .cta { background: #D4AF37; color: #0A3D2C; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+  /* ── OUTER WRAPPER ── */
+  .page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; background: #fff; border-radius: 12px; padding: 4px; border: 1px solid #E8E2D9; margin-bottom: 24px; width: fit-content; }
+  .tab { padding: 8px 20px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: #6b6b6b; }
+  .tab.active { background: #0A3D2C; color: #fff; }
+
+  /* ══════════════════════════════════════════════
+     MAIN GRID: LEFT 8 / RIGHT 4
+     RIGHT IS STICKY — LEFT CONTAINS EVERYTHING
+  ══════════════════════════════════════════════ */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── LEFT COLUMN ── */
+  .left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* ← COMPACT: war 16px */
+  }
+
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: #fff;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px; /* ← war 18px */
+    padding: 20px; /* ← COMPACT: war 28px */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; /* ← COMPACT: war 22px */
+  }
+  .step-badge {
+    width: 24px; height: 24px; /* ← COMPACT: war 28px */
+    border-radius: 7px;
+    background: #0A3D2C; color: #D4AF37;
+    font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; letter-spacing: 0.04em;
+  }
+  .card-title { font-size: 11px; font-weight: 700; color: #0A3D2C; text-transform: uppercase; letter-spacing: 0.06em; }
+  .card-sub { font-size: 11px; color: #6b6b6b; margin-top: 1px; }
+
+  /* ── FIELD GRID ── */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } /* ← gap-3 statt gap-4 */
+  .field-grid.single { grid-template-columns: 1fr; }
+  .field-grid.span2 { grid-column: 1 / -1; }
+
+  .field-label {
+    font-size: 10px; font-weight: 700; color: #1a1a1a;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 4px; /* ← COMPACT: war 6px */
+    display: block;
+  }
+
+  /* ── INPUTS ── */
+  .input-wrap { position: relative; }
+  input, select {
+    height: 40px; /* ← COMPACT: war 44px */
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    padding: 0 14px;
+    background: rgba(118,118,128,0.09);
+    font-size: 14px; color: #1a1a1a;
+    width: 100%; outline: none;
+    appearance: none;
+  }
+  input.lg { height: 44px; font-size: 18px; font-weight: 700; padding-right: 40px; }
+  input.xl { height: 48px; font-size: 22px; font-weight: 800; padding-right: 40px; }
+  .euro-suffix {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    color: #6b6b6b; font-size: 15px; font-weight: 600; pointer-events: none;
+  }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: ''; position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid transparent; border-top: 5px solid #6b6b6b;
+    margin-top: 3px; pointer-events: none;
+  }
+
+  /* ── TOGGLE BUTTONS ── */
+  .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .toggle-btn {
+    height: 40px; border: 1.5px solid #E8E2D9; border-radius: 10px;
+    background: #F7F5F0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  }
+  .toggle-btn.active { background: #0A3D2C; border-color: #0A5D3F; }
+  .toggle-btn .t1 { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+  .toggle-btn.active .t1 { color: #fff; }
+  .toggle-btn .t2 { font-size: 10px; color: #6b6b6b; }
+  .toggle-btn.active .t2 { color: rgba(255,255,255,0.6); }
+
+  /* ── FINANZIERUNGSOPTIONEN ── */
+  .opt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .opt-card {
+    position: relative;
+    border: 2px solid #E8E2D9; border-radius: 12px;
+    padding: 12px; /* ← COMPACT: war 16px 14px */
+    background: #fff; cursor: pointer; text-align: left;
+  }
+  .opt-card.active { border-color: #0A5D3F; background: rgba(10,93,63,0.05); }
+  .opt-badge {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; font-weight: 700; color: #fff;
+    background: #0A3D2C; padding: 2px 10px; border-radius: 99px; white-space: nowrap;
+  }
+  .opt-pct { font-size: 20px; font-weight: 800; color: #0A3D2C; line-height: 1; margin-bottom: 2px; }
+  .opt-card.active .opt-pct { color: #0A5D3F; }
+  .opt-sub { font-size: 11px; color: #6b6b6b; margin-bottom: 8px; }
+  .opt-detail { border-top: 1px solid #E8E2D9; padding-top: 8px; }
+  .opt-zins { font-size: 10px; color: #6b6b6b; }
+  .opt-anzahlung { font-size: 11px; font-weight: 700; color: #0A3D2C; }
+
+  /* ── SLIDER ── */
+  .slider-row { margin-bottom: 20px; } /* ← COMPACT: war 28px */
+  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .slider-value { font-size: 12px; font-weight: 700; color: #fff; background: #3b82f6; padding: 2px 10px; border-radius: 99px; }
+  .slider-value.green { background: transparent; color: #0A3D2C; font-size: 13px; }
+  input[type=range] {
+    height: 4px; border-radius: 2px; cursor: pointer;
+    background: linear-gradient(to right, #0A3D2C 0%, #0A3D2C 40%, #E8E2D9 40%, #E8E2D9 100%);
+    padding: 0; border: none; appearance: none; width: 100%;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: #0A3D2C; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .slider-minmax { display: flex; justify-content: space-between; margin-top: 4px; }
+  .slider-minmax span { font-size: 11px; color: #6b6b6b; }
+
+  /* ── BERECHNEN BUTTON ── */
+  .btn-berechnen {
+    width: 100%; height: 52px;
+    background: #0A3D2C; color: #fff;
+    border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  /* ══════════════════════════════════════════════
+     TILGUNGSPLAN (now INSIDE left col)
+  ══════════════════════════════════════════════ */
+  .tilgungsplan-card {
+    background: #fff;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-top: 0;
+  }
+  .tp-header { padding: 18px 20px 14px; }
+  .tp-title { font-size: 11px; font-weight: 800; color: #0A3D2C; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .tp-sub { font-size: 12px; color: #6b6b6b; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th {
+    background: #F7F5F0;
+    padding: 8px 14px;
+    font-size: 10px; font-weight: 700; color: #0A3D2C;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid #E8E2D9;
+    text-align: right;
+  }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid #F0EDE8; }
+  tbody tr:nth-child(even) { background: #FAFAF8; }
+  td { padding: 7px 14px; text-align: right; color: #0A3D2C; font-size: 12px; }
+  td:first-child { text-align: left; font-weight: 600; color: #0A3D2C; }
+  td.zinsen { color: #3b82f6; font-weight: 500; }
+  td.tilgung { color: #0A5D3F; font-weight: 500; }
+  td.muted { color: #6b6b6b; }
+
+  /* ── CHARTS INSIDE LEFT COL ── */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .chart-card {
+    background: #fff; border: 1px solid #E8E2D9;
+    border-radius: 14px; padding: 18px 16px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .chart-title { font-size: 10px; font-weight: 800; color: #0A3D2C; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .chart-sub { font-size: 11px; color: #6b6b6b; margin-bottom: 12px; }
+  .chart-placeholder {
+    height: 160px; background: linear-gradient(135deg, #F7F5F0 0%, #E8F5F0 100%);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .chart-line {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 100%;
+  }
+  svg.chart-svg { width: 100%; height: 100%; }
+
+  /* ══════════════════════════════════════════════
+     RIGHT COLUMN — STICKY RESULT CARD
+  ══════════════════════════════════════════════ */
+  .right-col { position: sticky; top: 80px; }
+
+  .result-card {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(232,226,217,0.9);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  .result-header { background: #0A3D2C; padding: 14px 20px; }
+  .result-header p { font-size: 10px; font-weight: 800; color: rgba(212,175,55,0.85); text-transform: uppercase; letter-spacing: 0.18em; margin: 0; }
+
+  .result-rate { padding: 20px 20px 16px; border-bottom: 1px solid #F0EDE8; }
+  .result-rate .label { font-size: 11px; color: #6b6b6b; margin-bottom: 4px; }
+  .result-rate .amount { font-size: 42px; font-weight: 800; color: #0A3D2C; line-height: 1; letter-spacing: -0.03em; margin-bottom: 4px; }
+  .result-rate .meta { font-size: 11px; color: #6b6b6b; }
+
+  .result-rows { padding: 14px 20px; border-bottom: 1px solid #F0EDE8; }
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid #F7F5F0;
+  }
+  .result-row .rl { font-size: 11px; color: #6b6b6b; }
+  .result-row .rv { font-size: 12px; font-weight: 700; color: #0A3D2C; }
+
+  .result-bonitaet { padding: 12px 20px; border-bottom: 1px solid #F0EDE8; }
+  .bonitaet-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(212,175,55,0.1); border-radius: 8px; padding: 10px 14px;
+  }
+  .bonitaet-dot { width: 8px; height: 8px; border-radius: 50%; background: #D4AF37; flex-shrink: 0; }
+  .bonitaet-label { font-size: 13px; font-weight: 700; color: #D4AF37; }
+  .bonitaet-sub { font-size: 10px; color: #6b6b6b; margin-top: 2px; }
+
+  .result-cta { padding: 16px 20px; }
+  .btn-gold {
+    width: 100%; height: 46px;
+    background: #D4AF37; color: #0A3D2C;
+    border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .cta-sub { font-size: 10px; color: #6b6b6b; text-align: center; line-height: 1.5; }
+
+  /* ── TILGUNGSPLAN IN RIGHT SIDEBAR ── */
+  .result-tp-section {
+    border-top: 1px solid #F0EDE8;
+    padding: 0;
+  }
+  .result-tp-header {
+    padding: 12px 20px 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .result-tp-title { font-size: 10px; font-weight: 800; color: #0A3D2C; text-transform: uppercase; letter-spacing: 0.1em; }
+  .result-tp-sub { font-size: 10px; color: #6b6b6b; }
+  .result-tp-table-wrap {
+    max-height: 280px;
+    overflow-y: auto;
+    border-top: 1px solid #F0EDE8;
+  }
+  .result-tp-table-wrap table { font-size: 11px; }
+  .result-tp-table-wrap thead th { font-size: 9px; padding: 6px 10px; }
+  .result-tp-table-wrap td { padding: 5px 10px; font-size: 11px; }
+
+  /* ── LABEL BADGES ── */
+  .badge-label {
+    display: inline-block;
+    font-size: 9px; font-weight: 700;
+    background: rgba(10,61,44,0.08); color: #0A3D2C;
+    padding: 2px 8px; border-radius: 99px; margin-bottom: 8px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  /* ── ANNOTATION OVERLAY ── */
+  .annotation {
+    background: rgba(212,175,55,0.15);
+    border: 1.5px dashed #D4AF37;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11px; font-weight: 600; color: #8B6914;
+    margin: -4px 0 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .annotation::before { content: '→'; }
+
+  .section-divider {
+    font-size: 10px; font-weight: 700; color: #6b6b6b;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    text-align: center; padding: 6px 0;
+    border-top: 1px dashed #E8E2D9;
+    margin-top: 4px;
+  }
+
+  /* ── COMPARISON LABELS ── */
+  .compare-bar {
+    display: flex; gap: 16px; margin-bottom: 16px;
+    padding: 12px 16px; background: #fff; border-radius: 10px;
+    border: 1px solid #E8E2D9;
+  }
+  .compare-item { display: flex; align-items: center; gap: 6px; }
+  .compare-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .compare-text { font-size: 11px; color: #6b6b6b; }
+  .compare-text strong { color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="logo">AKRONA <span>GmbH</span></span>
+  <div style="display:flex;gap:24px;align-items:center;">
+    <span style="font-size:12px;color:rgba(255,255,255,0.6);">§ 34i GewO · IHK Stuttgart</span>
+    <button class="cta">Jetzt berechnen</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Tabs -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div class="tabs">
+      <button class="tab active">Baufinanzierung</button>
+      <button class="tab">Privatkredit</button>
+    </div>
+    <div style="font-size:12px;color:#6b6b6b;">5.000+ Kunden vertrauen Akrona</div>
+  </div>
+
+  <!-- Annotation: Was sich ändert -->
+  <div style="background:rgba(212,175,55,0.08);border:1.5px dashed #D4AF37;border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:#8B6914;line-height:1.7;">
+    <strong style="color:#0A3D2C;">Preview: Vorgeschlagene Layout-Änderungen</strong><br>
+    ① Form kompakter (Padding ↓, Input-Höhe ↓, Abstände ↓) &nbsp;|&nbsp;
+    ② Tilgungsplan + Charts in die linke Spalte (statt full-width darunter) &nbsp;|&nbsp;
+    ③ Ergebnis-Karte bleibt immer rechts sichtbar — sticky über die gesamte Länge
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- ════ LEFT COL ════ -->
+    <div class="left-col">
+
+      <!-- 01 Persönliche Daten -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="step-badge">01</div>
+          <div>
+            <div class="card-title">Persönliche Daten</div>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div>
+            <label class="field-label">Wohnsitzland</label>
+            <div class="select-wrap">
+              <select><option>Deutschland</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Staatsangehörigkeit</label>
+            <div class="select-wrap">
+              <select><option>Deutschland</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Beschäftigungsstatus <span style="color:#ef4444">*</span></label>
+            <div class="select-wrap">
+              <select><option>Angestellt</option></select>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Kreditnehmer <span style="color:#ef4444">*</span></label>
+            <div class="toggle-grid">
+              <button class="toggle-btn active"><span class="t1">Alleinantrag</span><span class="t2">1 Person</span></button>
+              <button class="toggle-btn"><span class="t1">Gemeinschaft</span><span class="t2">2 Personen</span></button>
+            </div>
+          </div>
+          <div class="span2" style="grid-column:1/-1">
+            <label class="field-label">Monatliches Nettoeinkommen <span style="color:#ef4444">*</span></label>
+            <div class="input-wrap">
+              <input class="lg" type="text" value="3.500" />
+              <span class="euro-suffix">€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 Immobilien-Daten -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="step-badge">02</div>
+          <div>
+            <div class="card-title">Immobilien-Daten</div>
+            <div class="card-sub">Optional — für Kaufnebenkosten & Szenarien</div>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div style="grid-column:1/-1">
+            <label class="field-label">Kaufpreis</label>
+            <div class="input-wrap">
+              <input class="xl" type="text" value="320.000" />
+              <span class="euro-suffix" style="font-size:18px;font-weight:700;">€</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Bundesland</label>
+            <div class="select-wrap"><select><option>Baden-Württemberg</option></select></div>
+          </div>
+          <div>
+            <label class="field-label">Verwendungszweck</label>
+            <div class="select-wrap"><select><option>Kauf</option></select></div>
+          </div>
+          <div>
+            <label class="field-label">Laufzeit</label>
+            <div class="select-wrap"><select><option>20 Jahre</option></select></div>
+          </div>
+          <div>
+            <label class="field-label">Maklergebühr</label>
+            <div class="select-wrap"><select><option>Keine Maklergebühr</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 Finanzierungsoptionen -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="step-badge">03</div>
+          <div><div class="card-title">Finanzierungsoptionen</div></div>
+        </div>
+        <div class="opt-grid">
+          <div class="opt-card">
+            <div class="opt-pct">100 %</div>
+            <div class="opt-sub">Vollfinanzierung</div>
+            <div class="opt-detail">
+              <div class="opt-zins">ab 4.8 % p.a.</div>
+              <div class="opt-anzahlung">0 € Anzahlung</div>
+            </div>
+          </div>
+          <div class="opt-card active">
+            <div class="opt-badge">Beliebt</div>
+            <div style="position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:#0A5D3F;display:flex;align-items:center;justify-content:center;">
+              <svg width="10" height="8" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 4 7 9 1"/></svg>
+            </div>
+            <div class="opt-pct">80 %</div>
+            <div class="opt-sub">Empfohlen</div>
+            <div class="opt-detail">
+              <div class="opt-zins">ab 3.6 % p.a.</div>
+              <div class="opt-anzahlung">64.000 €</div>
+            </div>
+          </div>
+          <div class="opt-card">
+            <div class="opt-pct">60 %</div>
+            <div class="opt-sub">Sicherste Option</div>
+            <div class="opt-detail">
+              <div class="opt-zins">ab 3.6 % p.a.</div>
+              <div class="opt-anzahlung">128.000 €</div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:10px;color:#6b6b6b;margin-top:8px;">Anzahlung wird automatisch aus dem Kaufpreis berechnet.</p>
+      </div>
+
+      <!-- 04 Details -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="step-badge">04</div>
+          <div><div class="card-title">Details</div></div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-header">
+            <label class="field-label" style="margin:0;">Tilgungsrate</label>
+            <span class="slider-value">2.0 %</span>
+          </div>
+          <input type="range" min="2" max="10" value="2" style="background:linear-gradient(to right,#0A3D2C 0%,#0A3D2C 0%,#E8E2D9 0%,#E8E2D9 100%);">
+          <div class="slider-minmax"><span>2,0 %</span><span>10,0 %</span></div>
+        </div>
+        <div>
+          <div class="slider-header">
+            <label class="field-label" style="margin:0;">Anzahlung / Eigenkapital</label>
+            <span class="slider-value green">64.000 € <span style="font-size:10px;color:#6b6b6b;font-weight:400;">(20 %)</span></span>
+          </div>
+          <input type="range" min="0" max="320000" value="64000" style="background:linear-gradient(to right,#0A3D2C 0%,#0A3D2C 20%,#E8E2D9 20%,#E8E2D9 100%);">
+          <div class="slider-minmax"><span>0 €</span><span>320.000 €</span></div>
+        </div>
+      </div>
+
+      <!-- BERECHNEN BUTTON -->
+      <button class="btn-berechnen">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Neu berechnen
+      </button>
+
+      <!-- ─── TILGUNGSPLAN (now in left col) ─── -->
+      <div class="annotation">Tilgungsplan jetzt hier — innerhalb der linken Spalte (nicht mehr full-width darunter)</div>
+      <div class="tilgungsplan-card">
+        <div class="tp-header">
+          <div class="tp-title">Jahres-Tilgungsplan</div>
+          <div class="tp-sub">20 Jahre · 3,6 % Zinssatz · 2,0 % Tilgung · Darlehensbetrag: 256.000 €</div>
+        </div>
+        <div style="overflow-x:auto;max-height:300px;overflow-y:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;">Jahr</th>
+                <th>Jahres-Zinsen</th>
+                <th>Jahres-Tilgung</th>
+                <th>Restschuld</th>
+                <th>Kum. Zinsen</th>
+                <th>Kum. Tilgung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2027</td><td class="zinsen">9.216 €</td><td class="tilgung">5.120 €</td><td>250.880 €</td><td class="muted">9.216 €</td><td class="muted">5.120 €</td></tr>
+              <tr><td>2028</td><td class="zinsen">9.032 €</td><td class="tilgung">5.304 €</td><td>245.576 €</td><td class="muted">18.248 €</td><td class="muted">10.424 €</td></tr>
+              <tr><td>2029</td><td class="zinsen">8.841 €</td><td class="tilgung">5.495 €</td><td>240.081 €</td><td class="muted">27.089 €</td><td class="muted">15.919 €</td></tr>
+              <tr><td>2030</td><td class="zinsen">8.643 €</td><td class="tilgung">5.693 €</td><td>234.388 €</td><td class="muted">35.732 €</td><td class="muted">21.612 €</td></tr>
+              <tr><td>2031</td><td class="zinsen">8.438 €</td><td class="tilgung">5.898 €</td><td>228.490 €</td><td class="muted">44.170 €</td><td class="muted">27.510 €</td></tr>
+              <tr><td>2032</td><td class="zinsen">8.226 €</td><td class="tilgung">6.110 €</td><td>222.380 €</td><td class="muted">52.396 €</td><td class="muted">33.620 €</td></tr>
+              <tr><td>2033</td><td class="zinsen">8.006 €</td><td class="tilgung">6.330 €</td><td>216.050 €</td><td class="muted">60.402 €</td><td class="muted">39.950 €</td></tr>
+              <tr><td>2034</td><td class="zinsen">7.778 €</td><td class="tilgung">6.558 €</td><td>209.492 €</td><td class="muted">68.180 €</td><td class="muted">46.508 €</td></tr>
+              <tr><td>2035</td><td class="zinsen">7.542 €</td><td class="tilgung">6.794 €</td><td>202.698 €</td><td class="muted">75.722 €</td><td class="muted">53.302 €</td></tr>
+              <tr><td>2036</td><td class="zinsen">7.297 €</td><td class="tilgung">7.039 €</td><td>195.659 €</td><td class="muted">83.019 €</td><td class="muted">60.341 €</td></tr>
+              <tr><td>2037</td><td class="zinsen">7.044 €</td><td class="tilgung">7.292 €</td><td>188.367 €</td><td class="muted">90.063 €</td><td class="muted">67.633 €</td></tr>
+              <tr><td>2038</td><td class="zinsen">6.781 €</td><td class="tilgung">7.555 €</td><td>180.812 €</td><td class="muted">96.844 €</td><td class="muted">75.188 €</td></tr>
+              <tr><td>2039</td><td class="zinsen">6.509 €</td><td class="tilgung">7.827 €</td><td>172.985 €</td><td class="muted">103.353 €</td><td class="muted">83.015 €</td></tr>
+              <tr><td>2040</td><td class="zinsen">6.227 €</td><td class="tilgung">8.109 €</td><td>164.876 €</td><td class="muted">109.580 €</td><td class="muted">91.124 €</td></tr>
+              <tr><td>2041</td><td class="zinsen">5.936 €</td><td class="tilgung">8.400 €</td><td>156.476 €</td><td class="muted">115.516 €</td><td class="muted">99.524 €</td></tr>
+              <tr><td>2042</td><td class="zinsen">5.633 €</td><td class="tilgung">8.703 €</td><td>147.773 €</td><td class="muted">121.149 €</td><td class="muted">108.227 €</td></tr>
+              <tr><td>2043</td><td class="zinsen">5.320 €</td><td class="tilgung">9.016 €</td><td>138.757 €</td><td class="muted">126.469 €</td><td class="muted">117.243 €</td></tr>
+              <tr><td>2044</td><td class="zinsen">4.995 €</td><td class="tilgung">9.341 €</td><td>129.416 €</td><td class="muted">131.464 €</td><td class="muted">126.584 €</td></tr>
+              <tr><td>2045</td><td class="zinsen">4.659 €</td><td class="tilgung">9.677 €</td><td>119.739 €</td><td class="muted">136.123 €</td><td class="muted">136.261 €</td></tr>
+              <tr><td>2046</td><td class="zinsen">4.311 €</td><td class="tilgung">10.025 €</td><td style="color:#16a34a;font-weight:700;">109.714 €</td><td class="muted">140.434 €</td><td class="muted">146.286 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── CHARTS (2-col, inside left col) ─── -->
+      <div class="annotation">Charts 2-spaltig — ebenfalls innerhalb der linken Spalte</div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Restschuld</div>
+          <div class="chart-sub">Entwicklung über 20 Jahre</div>
+          <div class="chart-placeholder">
+            <svg class="chart-svg" viewBox="0 0 300 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stop-color="#60a5fa" stop-opacity="0.4"/>
+                  <stop offset="95%" stop-color="#60a5fa" stop-opacity="0.02"/>
+                </linearGradient>
+              </defs>
+              <path d="M10 10 L30 18 L60 30 L90 45 L120 62 L150 80 L180 98 L210 112 L240 124 L270 132 L290 138" stroke="#3b82f6" stroke-width="2" fill="none"/>
+              <path d="M10 10 L30 18 L60 30 L90 45 L120 62 L150 80 L180 98 L210 112 L240 124 L270 132 L290 138 L290 140 L10 140 Z" fill="url(#g1)"/>
+              <text x="10" y="135" font-size="9" fill="#6b6b6b">2027</text>
+              <text x="265" y="135" font-size="9" fill="#6b6b6b">2047</text>
+              <text x="10" y="14" font-size="9" fill="#6b6b6b">256k€</text>
+              <text x="250" y="136" font-size="9" fill="#16a34a" font-weight="600">0€</text>
+            </svg>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Zinsen vs. Tilgung</div>
+          <div style="display:flex;gap:12px;margin-bottom:10px;align-items:center;">
+            <span style="font-size:11px;color:#6b6b6b;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;"></span>Zinsen</span>
+            <span style="font-size:11px;color:#6b6b6b;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0A5D3F;"></span>Tilgung</span>
+          </div>
+          <div class="chart-placeholder">
+            <svg class="chart-svg" viewBox="0 0 300 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="gz" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stop-color="#60a5fa" stop-opacity="0.4"/>
+                  <stop offset="95%" stop-color="#60a5fa" stop-opacity="0.02"/>
+                </linearGradient>
+                <linearGradient id="gt" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stop-color="#0A5D3F" stop-opacity="0.35"/>
+                  <stop offset="95%" stop-color="#0A5D3F" stop-opacity="0.05"/>
+                </linearGradient>
+              </defs>
+              <!-- Zinsen: fallend -->
+              <path d="M10 20 L60 30 L120 48 L180 70 L240 95 L290 120" stroke="#3b82f6" stroke-width="2" fill="none"/>
+              <path d="M10 20 L60 30 L120 48 L180 70 L240 95 L290 120 L290 140 L10 140 Z" fill="url(#gz)"/>
+              <!-- Tilgung: steigend -->
+              <path d="M10 120 L60 112 L120 98 L180 80 L240 55 L290 28" stroke="#0A5D3F" stroke-width="2" fill="none"/>
+              <path d="M10 120 L60 112 L120 98 L180 80 L240 55 L290 28 L290 140 L10 140 Z" fill="url(#gt)"/>
+              <text x="10" y="135" font-size="9" fill="#6b6b6b">2027</text>
+              <text x="265" y="135" font-size="9" fill="#6b6b6b">2047</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- END LEFT COL -->
+
+    </div>
+
+    <!-- ════ RIGHT COL — STICKY ════ -->
+    <div class="right-col">
+      <div class="result-card">
+
+        <div class="result-header">
+          <p>Ihre Ersteinschätzung</p>
+        </div>
+
+        <div class="result-rate">
+          <div class="label">Monatliche Rate</div>
+          <div class="amount">1.299 €</div>
+          <div class="meta">pro Monat · 20 Jahre · 2,0 % Tilgung</div>
+        </div>
+
+        <div class="result-rows">
+          <div class="result-row"><span class="rl">Zinssatz p.a.</span><span class="rv">3,6 %</span></div>
+          <div class="result-row"><span class="rl">Zinsen mtl.</span><span class="rv">819 €</span></div>
+          <div class="result-row"><span class="rl">Finanzierungsbedarf</span><span class="rv">278.400 €</span></div>
+          <div class="result-row"><span class="rl">Restschuld (20 J.)</span><span class="rv">119.511 €</span></div>
+          <div class="result-row"><span class="rl">Max. Kreditrahmen</span><span class="rv">350.000 €</span></div>
+          <div class="result-row"><span class="rl">Kaufkraft gesamt</span><span class="rv">414.000 €</span></div>
+          <div class="result-row"><span class="rl">Gesamtkaufkosten</span><span class="rv">342.400 €</span></div>
+        </div>
+
+        <div class="result-bonitaet">
+          <div class="bonitaet-badge">
+            <div class="bonitaet-dot"></div>
+            <div>
+              <div class="bonitaet-label">Bonität: Sehr gut</div>
+              <div class="bonitaet-sub">Score: 85 · Zinssatz-Basis: 3,6 %</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-cta">
+          <button class="btn-gold">Vollständige Auswertung erhalten</button>
+          <div class="cta-sub">Tilgungsplan, Szenarien & Beratung — kostenlos per E-Mail</div>
+        </div>
+
+      </div>
+      <!-- Hinweis: Right Sidebar endet hier — sticky hält über gesamte Scrolllänge -->
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(10,61,44,0.05);border-radius:10px;border:1px dashed #0A5D3F;">
+        <div style="font-size:10px;color:#0A5D3F;font-weight:700;margin-bottom:3px;">↑ Ergebnis bleibt hier — immer sichtbar</div>
+        <div style="font-size:10px;color:#6b6b6b;">Sticky über Form + Tilgungsplan + Charts. Scrolle nach unten und diese Karte bleibt stehen.</div>
+      </div>
+    </div>
+
+  </div><!-- /main-grid -->
+</div><!-- /page -->
+
+</body>
+</html>
