@@ -476,6 +476,17 @@ input[type="checkbox"] {
 
   /* ── Freistehender Berechnen-Button unter Form ausblenden ── */
   .rech-calc-btn { display: none !important; }
+
+  /* ── Tilgungsplan nach Result-Card anzeigen (via order) ── */
+  .rech-result-col  { order: 1; }
+  .rech-tilgung-col { order: 2; margin: 0 8px; }
+}
+
+/* ─────────────────────────────────────────
+   Desktop: dense grid für korrekte Spaltenanordnung
+───────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .rech-grid { grid-auto-flow: dense; }
 }
 
 /* ─────────────────────────────────────────

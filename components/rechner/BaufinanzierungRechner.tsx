@@ -188,9 +188,9 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   const restschuld = ergebnis?.tilgungsplan?.[ergebnis.tilgungsplan.length - 1]?.restschuld ?? 0;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 rech-grid">
 
-      {/* ════════════════════ LEFT — 8 Spalten (Form + Tilgungsplan + Charts) ════════════════════ */}
+      {/* ════════════════════ LEFT — 8 Spalten (Form) ════════════════════ */}
       <div className="lg:col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
         {/* 01: Persönliche Daten */}
@@ -441,7 +441,10 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
           />
         </div>
 
-        {/* ════════════════════ TILGUNGSPLAN + CHARTS (in linker Spalte) ════════════════════ */}
+      </div>
+
+      {/* ════════════════════ TILGUNGSPLAN + CHARTS (full width, 12 Spalten) ════════════════════ */}
+      <div className="lg:col-span-12 rech-tilgung-col" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {ergebnis && !formChanged && (() => {
           const startJahr = new Date().getFullYear() + 1;
           const chartData = ergebnis.tilgungsplan?.map((p) => ({
@@ -569,7 +572,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
       </div>
 
       {/* ════════════════════ RESULTS PANEL — 4 Spalten, sticky ════════════════════ */}
-      <div className="lg:col-span-4">
+      <div className="lg:col-span-4 rech-result-col">
         <div
           className="slide-in-right"
           style={{
