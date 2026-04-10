@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useT } from '@/lib/language-context';
+import { useT, useLanguage } from '@/lib/language-context';
 
 export default function Footer() {
   const t = useT();
+  const { lang } = useLanguage();
+  const prefix = lang === 'ro' ? '/romania' : '';
 
   return (
     <footer
@@ -36,8 +38,8 @@ export default function Footer() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           {[
-            { href: '/impressum', labelKey: 'imprint' as const },
-            { href: '/datenschutz', labelKey: 'privacyPolicy' as const },
+            { href: `${prefix}/impressum`, labelKey: 'imprint' as const },
+            { href: `${prefix}/datenschutz`, labelKey: 'privacyPolicy' as const },
           ].map((l) => (
             <Link
               key={l.href}
