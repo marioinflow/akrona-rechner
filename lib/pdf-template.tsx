@@ -47,9 +47,9 @@ function fPct(n: number) {
 }
 
 function getBonitaetColor(label: string) {
-  if (label === 'Sehr gut') return { bg: 'rgba(212,175,55,0.12)', dot: C.gold, text: C.gold };
-  if (label === 'Mittel')   return { bg: 'rgba(255,193,7,0.1)',   dot: '#f5c842', text: '#c49a00' };
-  return { bg: 'rgba(255,100,100,0.1)', dot: '#ef4444', text: '#ef4444' };
+  if (label === 'Sehr gut') return { bg: '#E6F4EC', dot: '#0A5D3F', text: '#0A5D3F', border: '#B8DACC' };
+  if (label === 'Mittel')   return { bg: '#FFF8E6', dot: '#D97706', text: '#92400E', border: '#F5D98B' };
+  return { bg: '#FEF2F2', dot: '#EF4444', text: '#DC2626', border: '#FCA5A5' };
 }
 
 function translateBonitaet(label: string, t: typeof translations.de): string {
@@ -66,16 +66,16 @@ function getValidUntil(lang: 'de' | 'ro'): string {
 
 // ─── Styles ───────────────────────────────────────────
 const s = StyleSheet.create({
-  page: { fontFamily: 'Helvetica', backgroundColor: C.white, padding: 0 },
+  page:     { fontFamily: 'Helvetica', backgroundColor: C.white, padding: 0 },
+  pageDark: { fontFamily: 'Helvetica', backgroundColor: C.darkGreen, padding: 0 },
 
-  // ── Cover ──
-  coverPage:        { backgroundColor: C.darkGreen, flex: 1 },
-  coverBorderOuter: { position: 'absolute', top: 16, left: 16, right: 16, bottom: 16, border: '1.5px solid rgba(212,175,55,0.35)' },
-  coverBorderInner: { position: 'absolute', top: 22, left: 22, right: 22, bottom: 22, border: '0.5px solid rgba(212,175,55,0.15)' },
-  coverInner:       { padding: 48, flex: 1 },
+  // ── Cover ── (nested View border, no absolute positioning)
+  coverFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
+  coverFrameInner: { flex: 1, margin: 5, borderWidth: 0.5, borderColor: '#7A6428', borderStyle: 'solid' },
+  coverInner:      { padding: 36, flex: 1 },
 
   coverLogoWrap:  { alignItems: 'center', marginBottom: 2 },
-  coverLogoImg:   { width: 200, height: 66 },
+  coverLogoImg:   { width: 150, height: 100 },
   coverLogoSub:   { fontSize: 8, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textAlign: 'center', marginTop: 4 },
 
   coverCenter:          { flex: 1, alignItems: 'center', justifyContent: 'center' },
@@ -100,7 +100,7 @@ const s = StyleSheet.create({
   // ── Content Pages ──
   contentPage:          { backgroundColor: C.white, flex: 1 },
   contentHeader:        { backgroundColor: C.darkGreen, paddingHorizontal: 36, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  contentHeaderLogo:    { width: 140, height: 46 },
+  contentHeaderLogo:    { width: 66, height: 44 },
   contentHeaderRight:   { fontSize: 8.5, color: 'rgba(255,255,255,0.5)' },
   contentHeaderDivider: { height: 2, backgroundColor: C.gold, opacity: 0.7 },
   contentBody:          { padding: 36, flex: 1 },
@@ -130,7 +130,7 @@ const s = StyleSheet.create({
   resultCardValue:     { fontSize: 16, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
 
   // Bonitäts Badge
-  bonitaetBadge:  { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 8, marginBottom: 16, border: '1px solid rgba(212,175,55,0.25)' },
+  bonitaetBadge:  { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 8, marginBottom: 16, borderWidth: 1, borderStyle: 'solid' },
   bonitaetDot:    { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
   bonitaetLabel:  { fontSize: 12, fontFamily: 'Helvetica-Bold' },
   bonitaetSub:    { fontSize: 8.5, color: C.muted, marginTop: 2 },
@@ -144,15 +144,14 @@ const s = StyleSheet.create({
   planCell:            { fontSize: 8.5, color: C.text, flex: 1, textAlign: 'right' },
   planCellFirst:       { color: C.darkGreen, fontFamily: 'Helvetica-Bold', textAlign: 'left' },
 
-  // ── Voucher Page ──
-  voucherPage:   { backgroundColor: C.darkGreen, flex: 1 },
-  voucherBorder: { position: 'absolute', top: 16, left: 16, right: 16, bottom: 16, border: '1.5px solid rgba(212,175,55,0.35)' },
-  voucherInner:  { padding: 44, flex: 1 },
+  // ── Voucher Page ── (nested View border, no absolute positioning)
+  voucherFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
+  voucherInner:      { padding: 36, flex: 1 },
 
-  voucherTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 22 },
+  voucherTopRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
   voucherEyebrow: { fontSize: 8, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 8 },
   voucherTitle:   { fontSize: 22, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2 },
-  voucherLogoImg: { width: 130, height: 43 },
+  voucherLogoImg: { width: 90, height: 60 },
 
   voucherStep:        { flexDirection: 'row', marginBottom: 14, paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.07)' },
   voucherStepNum:     { width: 30, height: 30, borderRadius: 15, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 14, flexShrink: 0 },
@@ -160,9 +159,11 @@ const s = StyleSheet.create({
   voucherStepTitle:   { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.white, marginBottom: 3 },
   voucherStepText:    { fontSize: 9, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 },
 
-  voucherCert:         { borderWidth: 1.5, borderColor: 'rgba(212,175,55,0.5)', borderStyle: 'dashed', borderRadius: 8, padding: 18, marginTop: 12 },
-  voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
-  voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 12 },
+  voucherCert:         { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', borderRadius: 8, marginTop: 12, overflow: 'hidden' },
+  voucherCertHeader:   { backgroundColor: '#1E5A3C', paddingVertical: 10, paddingHorizontal: 18, borderBottomWidth: 1, borderBottomColor: '#D4AF37', borderBottomStyle: 'solid' },
+  voucherCertBody:     { backgroundColor: '#0F4A33', padding: 16 },
+  voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 2 },
+  voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold },
   voucherServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 7 },
   voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: 'rgba(212,175,55,0.5)', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
   voucherCheckText:    { fontSize: 8, color: C.gold },
@@ -170,7 +171,7 @@ const s = StyleSheet.create({
 
   voucherCodeRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(212,175,55,0.2)' },
   voucherCodeLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
-  voucherCodeValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 2, backgroundColor: 'rgba(212,175,55,0.08)', padding: '5 10', borderRadius: 4, border: '1px solid rgba(212,175,55,0.25)' },
+  voucherCodeValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 2, backgroundColor: '#1E5A3C', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 4, borderWidth: 1, borderColor: '#D4AF37', borderStyle: 'solid' },
   voucherValidLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4, textAlign: 'right' },
   voucherValidValue: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
 
@@ -213,10 +214,9 @@ function CoverPage({ vorname, nachname, typ, datum, t }: {
   t: typeof translations.de;
 }) {
   return (
-    <Page size="A4" style={s.page}>
-      <View style={s.coverPage}>
-        <View style={s.coverBorderOuter} />
-        <View style={s.coverBorderInner} />
+    <Page size="A4" style={s.pageDark}>
+      <View style={s.coverFrameOuter}>
+        <View style={s.coverFrameInner}>
         <View style={s.coverInner}>
 
           {/* Logo */}
@@ -268,6 +268,7 @@ function CoverPage({ vorname, nachname, typ, datum, t }: {
           </View>
 
           <Text style={s.coverFooterText}>{t.pdfDisclaimerCover}</Text>
+        </View>
         </View>
       </View>
     </Page>
@@ -371,7 +372,7 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben, t, totalPage
           <Text style={s.sectionTitle}>{t.calculationResult}</Text>
 
           {/* Bonitäts-Badge */}
-          <View style={[s.bonitaetBadge, { backgroundColor: bc.bg }]}>
+          <View style={[s.bonitaetBadge, { backgroundColor: bc.bg, borderColor: bc.border }]}>
             <View style={[s.bonitaetDot, { backgroundColor: bc.dot }]} />
             <View>
               <Text style={[s.bonitaetLabel, { color: bc.text }]}>
@@ -544,9 +545,8 @@ function VoucherPage({ vorname, nachname, lang, t }: {
     .replace('{name}', `${vorname} ${nachname}`);
 
   return (
-    <Page size="A4" style={s.page}>
-      <View style={s.voucherPage}>
-        <View style={s.voucherBorder} />
+    <Page size="A4" style={s.pageDark}>
+      <View style={s.voucherFrameOuter}>
         <View style={s.voucherInner}>
 
           {/* Top: Eyebrow + Title (left) | Logo (right) */}
@@ -573,37 +573,43 @@ function VoucherPage({ vorname, nachname, lang, t }: {
 
           {/* Voucher Certificate */}
           <View style={s.voucherCert}>
-            <Text style={s.voucherCertEyebrow}>{t.voucherEyebrow}</Text>
-            <Text style={s.voucherCertTitle}>{t.voucherWeGiveYou}</Text>
-
-            <View style={s.voucherServiceRow}>
-              <View style={s.voucherServiceCheck}>
-                <Text style={s.voucherCheckText}>✓</Text>
-              </View>
-              <Text style={s.voucherServiceText}>
-                <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService1Title}</Text>
-                {' — '}{t.voucherService1Desc}
-              </Text>
+            {/* Gold header bar */}
+            <View style={s.voucherCertHeader}>
+              <Text style={s.voucherCertEyebrow}>{t.voucherEyebrow}</Text>
+              <Text style={s.voucherCertTitle}>{t.voucherWeGiveYou}</Text>
             </View>
 
-            <View style={s.voucherServiceRow}>
-              <View style={s.voucherServiceCheck}>
-                <Text style={s.voucherCheckText}>✓</Text>
+            {/* Body */}
+            <View style={s.voucherCertBody}>
+              <View style={s.voucherServiceRow}>
+                <View style={s.voucherServiceCheck}>
+                  <Text style={s.voucherCheckText}>✓</Text>
+                </View>
+                <Text style={s.voucherServiceText}>
+                  <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService1Title}</Text>
+                  {' — '}{t.voucherService1Desc}
+                </Text>
               </View>
-              <Text style={s.voucherServiceText}>
-                <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService2Title}</Text>
-                {' — '}{t.voucherService2Desc}
-              </Text>
-            </View>
 
-            <View style={s.voucherCodeRow}>
-              <View>
-                <Text style={s.voucherCodeLabel}>{t.voucherCodeLabel}</Text>
-                <Text style={s.voucherCodeValue}>AKRONA-VORTEIL</Text>
+              <View style={s.voucherServiceRow}>
+                <View style={s.voucherServiceCheck}>
+                  <Text style={s.voucherCheckText}>✓</Text>
+                </View>
+                <Text style={s.voucherServiceText}>
+                  <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService2Title}</Text>
+                  {' — '}{t.voucherService2Desc}
+                </Text>
               </View>
-              <View>
-                <Text style={s.voucherValidLabel}>{t.voucherValidUntil}</Text>
-                <Text style={s.voucherValidValue}>{validUntil}</Text>
+
+              <View style={s.voucherCodeRow}>
+                <View>
+                  <Text style={s.voucherCodeLabel}>{t.voucherCodeLabel}</Text>
+                  <Text style={s.voucherCodeValue}>AKRONA-VORTEIL</Text>
+                </View>
+                <View>
+                  <Text style={s.voucherValidLabel}>{t.voucherValidUntil}</Text>
+                  <Text style={s.voucherValidValue}>{validUntil}</Text>
+                </View>
               </View>
             </View>
           </View>
