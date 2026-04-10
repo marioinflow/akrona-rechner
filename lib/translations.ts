@@ -23,6 +23,8 @@ export const translations = {
     avgFinancingFrame: "Ø Finanzierungsrahmen",
     atIncomeExample: "bei 3.500 € Nettoeinkommen",
 
+    ourPartnerBanks: "Unsere Partnerbanken",
+
     // Calculator Section
     calculatorEyebrow: "Finanzierungsrechner",
     calculatorTitle: "Ihren Kreditrahmen berechnen",
@@ -251,6 +253,8 @@ export const translations = {
     noWaitTime: "Fără timp de așteptare",
     avgFinancingFrame: "Ø Limită de creditare",
     atIncomeExample: "la un venit net lunar de 3.500 €",
+
+    ourPartnerBanks: "Băncile noastre partenere",
 
     // Calculator Section
     calculatorEyebrow: "Calculator de credit",

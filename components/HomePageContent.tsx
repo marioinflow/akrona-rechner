@@ -325,10 +325,12 @@ export default function HomePageContent() {
                     background: 'linear-gradient(135deg, #0A3D2C, #0A5D3F)',
                     borderRadius: '9px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '16px', flexShrink: 0,
+                    flexShrink: 0,
                   }}
                 >
-                  ✓
+                  <svg width="16" height="12" fill="none" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="1 6 5 10 15 1" />
+                  </svg>
                 </div>
                 <div>
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#111' }}>{t('instantEvaluation')}</p>
@@ -388,7 +390,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════════════
             PARTNER LOGOS TICKER
         ══════════════════════════════════════════════════ */}
-        <PartnerLogos />
+        <PartnerLogos heading={t('ourPartnerBanks')} />
 
         {/* ══════════════════════════════════════════════════
             RECHNER
