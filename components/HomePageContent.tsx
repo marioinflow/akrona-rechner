@@ -151,6 +151,7 @@ export default function HomePageContent() {
             HERO
         ══════════════════════════════════════════════════ */}
         <section
+          className="hero-section"
           style={{
             paddingTop: '64px',
             backgroundColor: '#F7F5F0',
@@ -185,6 +186,7 @@ export default function HomePageContent() {
             zIndex: 0,
           }} />
           <div
+            className="hero-grid"
             style={{
               maxWidth: '1280px',
               margin: '0 auto',
@@ -199,6 +201,7 @@ export default function HomePageContent() {
           >
             {/* ── Text-Seite ── */}
             <div
+              className="hero-text-col"
               style={{
                 padding: '72px 64px 72px 24px',
                 display: 'flex',
@@ -300,7 +303,7 @@ export default function HomePageContent() {
             </div>
 
             {/* ── Bild-Seite ── */}
-            <div style={{ position: 'relative', minHeight: '500px' }}>
+            <div className="hero-img-col" style={{ position: 'relative', minHeight: '500px' }}>
               {/* Floating Pill — oben links, schwebt vor dem Bild */}
               <div
                 className="float-anim"
@@ -397,6 +400,7 @@ export default function HomePageContent() {
         ══════════════════════════════════════════════════ */}
         <section
           id="rechner"
+          className="sec-pad"
           style={{
             padding: '80px 0 96px',
             backgroundColor: '#F7F5F0',
@@ -417,6 +421,7 @@ export default function HomePageContent() {
 
             {/* Tabs */}
             <div
+              className="rech-tabs"
               style={{
                 display: 'inline-flex',
                 gap: '4px',
@@ -431,6 +436,7 @@ export default function HomePageContent() {
               {(['baufinanzierung', 'privatkredit'] as const).map((tab) => (
                 <button
                   key={tab}
+                  className="rech-tab"
                   onClick={() => setActiveTab(tab)}
                   style={{
                     padding: '9px 24px',
@@ -476,7 +482,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════════════
             BENTO GRID
         ══════════════════════════════════════════════════ */}
-        <section style={{ padding: '80px 0', backgroundColor: '#fff', borderTop: '1px solid #E8E2D9' }}>
+        <section className="sec-pad" style={{ padding: '80px 0', backgroundColor: '#fff', borderTop: '1px solid #E8E2D9' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
 
             <div className="scroll-reveal" style={{ marginBottom: '48px' }}>
@@ -489,11 +495,11 @@ export default function HomePageContent() {
             </div>
 
             {/* Grid: 2 Reihen */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto auto', gap: '16px' }}>
+            <div className="bento-g" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto auto', gap: '16px' }}>
 
               {/* Karte 1: breit (2 Spalten) */}
               <div
-                className="scroll-reveal bento-hover"
+                className="scroll-reveal bento-hover bento-span2"
                 style={{
                   gridColumn: 'span 2',
                   borderRadius: '20px',
@@ -561,7 +567,7 @@ export default function HomePageContent() {
 
               {/* Karte 4: breit (2 Spalten) */}
               <div
-                className="scroll-reveal delay-1 bento-hover"
+                className="scroll-reveal delay-1 bento-hover bento-span2 bento-rowcard"
                 style={{
                   gridColumn: 'span 2',
                   borderRadius: '20px',
@@ -594,7 +600,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════════════
             FAQ
         ══════════════════════════════════════════════════ */}
-        <section style={{ padding: '80px 0', backgroundColor: '#F7F5F0', borderTop: '1px solid #E8E2D9' }}>
+        <section className="sec-pad" style={{ padding: '80px 0', backgroundColor: '#F7F5F0', borderTop: '1px solid #E8E2D9' }}>
           <div style={{ maxWidth: '760px', margin: '0 auto', padding: '0 24px' }}>
             <div className="scroll-reveal" style={{ textAlign: 'center', marginBottom: '48px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
@@ -665,7 +671,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════════════
             CTA
         ══════════════════════════════════════════════════ */}
-        <section style={{ backgroundColor: '#0A3D2C', padding: '80px 0' }}>
+        <section className="sec-pad" style={{ backgroundColor: '#0A3D2C', padding: '80px 0' }}>
           <div className="scroll-reveal" style={{ maxWidth: '640px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
             <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(212,175,55,0.75)', textTransform: 'uppercase', letterSpacing: '0.18em', display: 'block', marginBottom: '16px' }}>
               {t('ctaEyebrow')}

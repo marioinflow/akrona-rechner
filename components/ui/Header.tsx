@@ -75,6 +75,7 @@ export default function Header() {
       }}
     >
       <div
+        className="hdr-grid"
         style={{
           maxWidth: '1280px',
           margin: '0 auto',
@@ -103,6 +104,7 @@ export default function Header() {
           </Link>
 
           {/* Nav links */}
+          <div className="hdr-nav" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {(['baufinanzierung', 'privatkredit'] as const).map((tab) => (
             <button
               key={tab}
@@ -136,10 +138,12 @@ export default function Header() {
               {tab === 'baufinanzierung' ? t('mortgage') : t('personalLoan')}
             </button>
           ))}
+          </div>
         </div>
 
         {/* ── Zone 2: IHK Badge (center, auto width) ── */}
         <div
+          className="hdr-badge"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -165,14 +169,16 @@ export default function Header() {
             <FlagLink lang="ro" current={lang} />
           </div>
 
-          <AkronaAnimatedButton
-            label={t('calculateNow')}
-            size="sm"
-            onClick={() => {
-              const el = document.getElementById('rechner');
-              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-          />
+          <div className="hdr-cta">
+            <AkronaAnimatedButton
+              label={t('calculateNow')}
+              size="sm"
+              onClick={() => {
+                const el = document.getElementById('rechner');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            />
+          </div>
         </div>
       </div>
     </header>

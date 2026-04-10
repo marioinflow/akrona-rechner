@@ -340,7 +340,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
         {/* 03: Finanzierungsoptionen */}
         <SectionCard step="03" title={t('financingOptions')}>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {FINANZIERUNGSOPTIONEN.map((opt) => {
               const isActive = form.finanzierungsanteil === opt.anteil;
               const anzahlung = form.kaufpreis ? Math.round(form.kaufpreis * (1 - opt.anteil / 100)) : null;

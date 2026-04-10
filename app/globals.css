@@ -441,6 +441,35 @@ input[type="checkbox"] {
 }
 
 /* ─────────────────────────────────────────
+   Responsive — Phone (≤ 767px)
+───────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* ── Header ── */
+  .hdr-grid  { display: flex !important; justify-content: space-between !important; align-items: center !important; }
+  .hdr-nav   { display: none !important; }
+  .hdr-badge { display: none !important; }
+  .hdr-cta   { display: none !important; }
+
+  /* ── Hero ── */
+  .hero-section  { min-height: 0 !important; }
+  .hero-grid     { grid-template-columns: 1fr !important; }
+  .hero-img-col  { display: none !important; }
+  .hero-text-col { padding: 32px 0 48px !important; }
+
+  /* ── Bento ── */
+  .bento-g       { grid-template-columns: 1fr !important; }
+  .bento-span2   { grid-column: span 1 !important; }
+  .bento-rowcard { flex-direction: column !important; gap: 20px !important; align-items: flex-start !important; }
+
+  /* ── Section padding ── */
+  .sec-pad { padding-top: 48px !important; padding-bottom: 48px !important; }
+
+  /* ── Rechner tabs ── */
+  .rech-tabs { display: flex !important; width: 100% !important; }
+  .rech-tab  { flex: 1 !important; text-align: center !important; padding: 9px 8px !important; }
+}
+
+/* ─────────────────────────────────────────
    iOS-Style Fill Inputs
 ───────────────────────────────────────── */
 .input-ios {
