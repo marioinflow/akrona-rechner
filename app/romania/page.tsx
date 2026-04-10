@@ -1,5 +1,5 @@
 import HomePageContent from '@/components/HomePageContent';
 
-export default function Page() {
+export default function RomaniaPage() {
   return <HomePageContent />;
 }

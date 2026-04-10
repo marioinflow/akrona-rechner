@@ -1,16 +1,18 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 import { useLanguage, useT } from '@/lib/language-context';
 
-function FlagButton({ lang, current, onClick }: { lang: 'de' | 'ro'; current: string; onClick: () => void }) {
+function FlagLink({ lang, current }: { lang: 'de' | 'ro'; current: string }) {
   const flag = lang === 'de' ? '🇩🇪' : '🇷🇴';
+  const href = lang === 'de' ? '/' : '/romania';
   const active = current === lang;
   return (
-    <button
-      onClick={onClick}
+    <Link
+      href={href}
       title={lang === 'de' ? 'Deutsch' : 'Română'}
       style={{
         fontSize: '18px',
@@ -19,7 +21,6 @@ function FlagButton({ lang, current, onClick }: { lang: 'de' | 'ro'; current: st
         borderRadius: '6px',
         border: active ? '1.5px solid rgba(10,61,44,0.25)' : '1.5px solid transparent',
         background: active ? 'rgba(10,61,44,0.08)' : 'transparent',
-        cursor: active ? 'default' : 'pointer',
         opacity: active ? 1 : 0.55,
         transition: 'opacity 150ms, background 150ms, border-color 150ms',
         display: 'flex',
@@ -27,17 +28,18 @@ function FlagButton({ lang, current, onClick }: { lang: 'de' | 'ro'; current: st
         justifyContent: 'center',
         minWidth: '36px',
         minHeight: '32px',
+        textDecoration: 'none',
       }}
     >
       {flag}
-    </button>
+    </Link>
   );
 }
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const { lang, setLang } = useLanguage();
+  const { lang } = useLanguage();
   const t = useT();
 
   useEffect(() => {
@@ -86,8 +88,8 @@ export default function Header() {
       >
         {/* ── Zone 1: Logo + Nav links (left) ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <a
-            href="/"
+          <Link
+            href={lang === 'ro' ? '/romania' : '/'}
             style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', marginRight: '12px', flexShrink: 0 }}
           >
             <Image
@@ -98,7 +100,7 @@ export default function Header() {
               priority
               style={{ height: '38px', width: 'auto', objectFit: 'contain' }}
             />
-          </a>
+          </Link>
 
           {/* Nav links */}
           {(['baufinanzierung', 'privatkredit'] as const).map((tab) => (
@@ -157,10 +159,10 @@ export default function Header() {
 
         {/* ── Zone 3: Language switcher + CTA button (right) ── */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
-          {/* Flag switcher */}
+          {/* Flag links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <FlagButton lang="de" current={lang} onClick={() => setLang('de')} />
-            <FlagButton lang="ro" current={lang} onClick={() => setLang('ro')} />
+            <FlagLink lang="de" current={lang} />
+            <FlagLink lang="ro" current={lang} />
           </div>
 
           <AkronaAnimatedButton

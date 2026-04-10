@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { translations, Lang, TranslationKey } from './translations';
 
 function interpolate(str: string, vars?: Record<string, string | number>): string {
@@ -10,34 +11,23 @@ function interpolate(str: string, vars?: Record<string, string | number>): strin
 
 interface LanguageContextType {
   lang: Lang;
-  setLang: (l: Lang) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType>({
-  lang: 'de',
-  setLang: () => {},
-});
+const LanguageContext = createContext<LanguageContextType>({ lang: 'de' });
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('de');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('akrona-lang') as Lang | null;
-    if (stored && stored in translations) {
-      setLangState(stored);
-    }
-  }, []);
-
-  const setLang = (l: Lang) => {
-    setLangState(l);
-    localStorage.setItem('akrona-lang', l);
-  };
+function LangDetector({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const lang: Lang = pathname.startsWith('/romania') ? 'ro' : 'de';
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang }}>
+    <LanguageContext.Provider value={{ lang }}>
       {children}
     </LanguageContext.Provider>
   );
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  return <LangDetector>{children}</LangDetector>;
 }
 
 export function useLanguage() {
