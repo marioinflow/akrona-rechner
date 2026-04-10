@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { LeadFormData } from '@/types';
-import { useT } from '@/lib/language-context';
+import { useT, useLanguage } from '@/lib/language-context';
 
 interface Props {
   isOpen: boolean;
@@ -18,6 +18,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const t = useT();
+  const { lang } = useLanguage();
 
   if (!isOpen || !payload) return null;
 
@@ -44,6 +45,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
           ...form,
           telefon: form.telefon.trim() || undefined,
           ...payload,
+          lang,
           consents,
         }),
       });

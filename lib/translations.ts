@@ -230,6 +230,18 @@ export const translations = {
     medium: "Mittel",
     basis: "Basis",
 
+    // PDF Voucher
+    voucherEyebrow: "Ihr persönlicher Vorteilsgutschein",
+    voucherWeGiveYou: "Wir schenken Ihnen:",
+    voucherService1Title: "Kostenlose Erstberatung",
+    voucherService1Desc: "persönlich oder telefonisch, ohne Verpflichtung",
+    voucherService2Title: "Umfassender Bankvergleich",
+    voucherService2Desc: "Ihr bestes individuelles Finanzierungsangebot aus über 400 Banken, persönlich für Sie analysiert",
+    voucherCodeLabel: "Ihr Gutschein-Code",
+    voucherValidUntil: "Gültig bis",
+    ceoTitle: "Geschäftsführer",
+    confidential: "Vertraulich",
+
     // Impressum
     imprintTitle: "Impressum | Akrona GmbH",
     backToCalculator: "Zurück zum Rechner",
@@ -591,6 +603,18 @@ export const translations = {
     veryGood: "Foarte bun",
     medium: "Mediu",
     basis: "De bază",
+
+    // PDF Voucher
+    voucherEyebrow: "Voucherul dumneavoastră de beneficii",
+    voucherWeGiveYou: "Vă oferim:",
+    voucherService1Title: "Consultanță inițială gratuită",
+    voucherService1Desc: "personal sau telefonic, fără obligații",
+    voucherService2Title: "Comparație bancară completă",
+    voucherService2Desc: "Cea mai bună ofertă de finanțare personalizată din peste 400 de bănci, analizată individual pentru dumneavoastră",
+    voucherCodeLabel: "Codul dumneavoastră de voucher",
+    voucherValidUntil: "Valabil până la",
+    ceoTitle: "Director General",
+    confidential: "Confidențial",
 
     // Impressum
     imprintTitle: "Informații legale | Akrona GmbH",

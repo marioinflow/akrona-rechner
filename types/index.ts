@@ -84,6 +84,7 @@ export interface LeadFormData {
   email: string;
   telefon?: string;
   typ: RechnerTyp;
+  lang?: 'de' | 'ro';
   eingaben: BaufinanzierungEingaben | PrivatkreditEingaben;
   ergebnis: BaufinanzierungErgebnis | PrivatkreditErgebnis;
   consents: {
