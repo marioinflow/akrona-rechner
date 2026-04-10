@@ -697,20 +697,26 @@ export default function HomePageContent() {
               href="mailto:info@akrona-gmbh.de"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '10px',
-                height: '52px', padding: '0 36px',
+                height: '52px', padding: '0 32px',
                 backgroundColor: '#D4AF37', color: '#0A3D2C',
-                borderRadius: '12px', fontSize: '15px', fontWeight: 700,
+                borderRadius: '12px', fontSize: '15px', fontWeight: 800,
                 textDecoration: 'none', letterSpacing: '0.02em',
                 transition: 'transform 0.1s ease, opacity 0.1s ease',
+                boxShadow: '0 4px 20px rgba(212,175,55,0.35)',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
               onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
               onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
             >
+              {/* Sparkle icon — same as AkronaAnimatedButton, but dark green */}
+              <svg width="16" height="16" fill="#0A3D2C" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
               {t('contactUs')}
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+              {/* Arrow — größer und kontraststark */}
+              <svg width="17" height="17" fill="none" stroke="#0A3D2C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <line x1="4" y1="8.5" x2="13" y2="8.5" /><polyline points="9 4 13 8.5 9 13" />
               </svg>
             </a>
           </div>

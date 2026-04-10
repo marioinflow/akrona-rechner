@@ -31,9 +31,9 @@ export default function Footer() {
         <Image
           src="/akrona-logo.png"
           alt="Akrona GmbH"
-          width={120}
-          height={38}
-          style={{ height: '36px', width: 'auto', objectFit: 'contain', opacity: 0.85 }}
+          width={150}
+          height={48}
+          style={{ height: '44px', width: 'auto', objectFit: 'contain', opacity: 1 }}
         />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>

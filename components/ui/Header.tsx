@@ -96,10 +96,10 @@ export default function Header() {
             <Image
               src="/akrona-logo.png"
               alt="Akrona GmbH"
-              width={160}
-              height={52}
+              width={180}
+              height={58}
               priority
-              style={{ height: '38px', width: 'auto', objectFit: 'contain' }}
+              style={{ height: '46px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>
 
@@ -112,26 +112,28 @@ export default function Header() {
               style={{
                 padding: '6px 14px',
                 borderRadius: '9999px',
-                border: 'none',
+                border: activeSection === tab ? '1.5px solid rgba(10,61,44,0.30)' : '1.5px solid rgba(10,61,44,0.18)',
                 background: activeSection === tab ? 'rgba(10,61,44,0.10)' : 'transparent',
-                color: activeSection === tab ? '#0A3D2C' : '#555',
+                color: activeSection === tab ? '#0A3D2C' : '#444',
                 fontSize: '13px',
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                transition: 'background 150ms, color 150ms',
+                transition: 'background 150ms, color 150ms, border-color 150ms',
                 whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => {
                 if (activeSection !== tab) {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(10,61,44,0.06)';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(10,61,44,0.07)';
                   (e.currentTarget as HTMLButtonElement).style.color = '#0A3D2C';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,61,44,0.28)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (activeSection !== tab) {
                   (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLButtonElement).style.color = '#555';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#444';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,61,44,0.18)';
                 }
               }}
             >
