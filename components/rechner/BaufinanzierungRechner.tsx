@@ -42,7 +42,7 @@ const FINANZIERUNGSOPTIONEN: {
 const DEFAULT: BaufinanzierungEingaben = {
   nettoeinkommen: 0,
   eigenkapital: 0,
-  haushaltsgroesse: 2,
+  haushaltsgroesse: 1,
   laufzeit: 20,
   status: 'angestellt',
   verwendungszweck: 'kauf',
