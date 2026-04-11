@@ -86,7 +86,7 @@ const s = StyleSheet.create({
   coverTitle:    { fontSize: 26, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
   coverSubtitle: { fontSize: 10, color: 'rgba(255,255,255,0.45)', marginBottom: 16, letterSpacing: 0.5, textAlign: 'center' },
 
-  coverTeamBorder: { borderWidth: 2, borderColor: '#B8973E', borderStyle: 'solid', borderRadius: 4, alignItems: 'center' },
+  coverTeamBorder: { borderWidth: 2, borderColor: '#B8973E', borderStyle: 'solid', alignItems: 'center' },
   coverTeamImg:    { width: 330, height: 185 },
 
   coverMeta:      { borderTopWidth: 1, borderTopColor: '#3A2E10', borderTopStyle: 'solid', paddingTop: 18, marginTop: 8 },
@@ -125,12 +125,12 @@ const s = StyleSheet.create({
   resultCardMain:      { flex: 1, backgroundColor: C.darkGreen, borderRadius: 8, padding: 14, marginRight: 8 },
   resultCardMainLabel: { fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
   resultCardMainValue: { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.gold },
-  resultCard:          { flex: 1, backgroundColor: C.bg, borderRadius: 8, padding: 14, marginRight: 8, border: '1px solid #E8E2D9' },
+  resultCard:          { flex: 1, backgroundColor: C.bg, padding: 14, marginRight: 8, borderWidth: 1, borderColor: '#E8E2D9', borderStyle: 'solid' },
   resultCardLabel:     { fontSize: 8, color: C.muted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
   resultCardValue:     { fontSize: 16, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
 
   // Bonitäts Badge
-  bonitaetBadge:  { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 8, marginBottom: 16, borderWidth: 1, borderStyle: 'solid' },
+  bonitaetBadge:  { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 16, borderWidth: 1, borderStyle: 'solid' },
   bonitaetDot:    { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
   bonitaetLabel:  { fontSize: 12, fontFamily: 'Helvetica-Bold' },
   bonitaetSub:    { fontSize: 8.5, color: C.muted, marginTop: 2 },
@@ -159,25 +159,25 @@ const s = StyleSheet.create({
   voucherStepTitle:   { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.white, marginBottom: 3 },
   voucherStepText:    { fontSize: 9, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 },
 
-  voucherCert:         { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', borderRadius: 8, marginTop: 12, overflow: 'hidden' },
+  voucherCert:         { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', marginTop: 12 },
   voucherCertHeader:   { backgroundColor: '#1E5A3C', paddingVertical: 10, paddingHorizontal: 18, borderBottomWidth: 1, borderBottomColor: '#D4AF37', borderBottomStyle: 'solid' },
   voucherCertBody:     { backgroundColor: '#0F4A33', padding: 16 },
   voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 2 },
   voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold },
   voucherServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 7 },
-  voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: '#8A7030', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
+  voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#2A5A3C', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
   voucherCheckText:    { fontSize: 8, color: C.gold },
   voucherServiceText:  { fontSize: 9.5, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.5 },
 
   voucherCodeRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#5A4A1A', borderTopStyle: 'solid' },
   voucherCodeLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
-  voucherCodeValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 2, backgroundColor: '#1E5A3C', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 4, borderWidth: 1, borderColor: '#D4AF37', borderStyle: 'solid' },
+  voucherCodeValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 2, backgroundColor: '#1E5A3C', paddingVertical: 5, paddingHorizontal: 10, borderWidth: 1, borderColor: '#D4AF37', borderStyle: 'solid' },
   voucherValidLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4, textAlign: 'right' },
   voucherValidValue: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
 
-  voucherContact:     { flexDirection: 'row', alignItems: 'center', marginTop: 12, padding: '12 14', backgroundColor: 'rgba(212,175,55,0.05)', borderRadius: 6, borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
+  voucherContact:     { flexDirection: 'row', alignItems: 'center', marginTop: 12, padding: '12 14', backgroundColor: '#0C4A32', borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
   voucherPortraitWrap: { width: 56, height: 56, marginRight: 14, flexShrink: 0 },
-  voucherPortrait:     { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: '#C9A832', borderStyle: 'solid', objectFit: 'cover' },
+  voucherPortrait:     { width: 56, height: 56, borderRadius: 28, objectFit: 'cover' },
   voucherContactName:  { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 3 },
   voucherContactInfo:  { fontSize: 8.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 },
 
