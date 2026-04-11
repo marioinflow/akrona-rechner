@@ -175,16 +175,22 @@ export async function POST(request: NextRequest) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F5F0;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-        <tr><td style="background:#0A3D2C;padding:32px 40px;border-bottom:1px solid rgba(212,175,55,0.2);">
-          <p style="margin:0;color:#D4AF37;font-size:22px;font-weight:700;letter-spacing:1px;">AKRONA <span style="color:#fff;font-weight:300;">GmbH</span></p>
-          <p style="margin:6px 0 0;font-size:11px;color:rgba(255,255,255,0.45);">§ 34c &amp; § 34i GewO · IHK Region Stuttgart</p>
+        <tr><td style="background:#0A3D2C;padding:28px 40px;border-bottom:2px solid #D4AF37;">
+          <table width="100%" cellpadding="0" cellspacing="0"><tr>
+            <td style="vertical-align:middle;">
+              <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.45);">§ 34c &amp; § 34i GewO · IHK Region Stuttgart</p>
+            </td>
+            <td style="vertical-align:middle;text-align:right;">
+              <img src="https://rechner.akrona.de/akrona-logo-transparent.png" alt="Akrona GmbH" width="120" style="display:block;height:auto;margin-left:auto;">
+            </td>
+          </tr></table>
         </td></tr>
         <tr><td style="padding:40px;">
           <p style="margin:0 0 16px;color:#1a1a1a;font-size:16px;">Guten Tag ${vorname},</p>
           <p style="margin:0 0 24px;color:#444;line-height:1.7;font-size:14px;">vielen Dank für Ihre Anfrage. Anbei finden Sie Ihre persönliche <strong>Finanzierungsauswertung als PDF</strong>.</p>
 
           <div style="background:#F7F5F0;border-radius:8px;padding:24px;margin-bottom:28px;border:1px solid #E8E2D9;">
-            <p style="margin:0 0 4px;font-size:10px;color:#6b6b6b;text-transform:uppercase;letter-spacing:1px;">Ihre Bonität</p>
+            <p style="margin:0 0 12px;font-size:17px;font-weight:600;color:#1a1a1a;">Ihre <span style="color:#D4AF37;">persönliche</span> Einschätzung</p>
             <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#0A3D2C;">${bonitaetLabel}</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
@@ -209,7 +215,8 @@ export async function POST(request: NextRequest) {
 
           <p style="margin:0 0 2px;color:#1a1a1a;font-size:14px;font-weight:600;">Mit freundlichen Grüßen,</p>
           <p style="margin:0;color:#0A3D2C;font-size:14px;font-weight:700;">Alperen Akbal</p>
-          <p style="margin:0;color:#6b6b6b;font-size:13px;">Akrona GmbH</p>
+          <p style="margin:0;color:#6b6b6b;font-size:12px;">Geschäftsführer</p>
+          <p style="margin:2px 0 0;color:#6b6b6b;font-size:13px;">Akrona GmbH</p>
         </td></tr>
         <tr><td style="background:#0A3D2C;padding:20px 40px;text-align:center;">
           <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);">© 2025 Akrona GmbH · <a href="mailto:info@akrona.de" style="color:#D4AF37;text-decoration:none;">info@akrona.de</a></p>
