@@ -59,8 +59,10 @@ export default function DatenschutzRomania() {
             <Section num="2" title={t('responsibleParty')}>
               <p>
                 {t('companyNameLabel')} Akrona GmbH<br />
-                {t('representedByLabel')} Alperen Akbal<br />
-                {t('addressLabel')} Esslingen Str. 9, 73207 Plochingen<br />
+                {t('representedByLabel')} Alperen Akbal ({t('managingDirector')})<br />
+                {t('businessAddressLabel')} Esslingen Str. 9, 73207 Plochingen<br />
+                Instanța de înregistrare: Amtsgericht Stuttgart<br />
+                Număr de înregistrare: HRB 804639<br />
                 {t('emailLabel')} <a href="mailto:info@akrona.de" style={{ color: '#0A3D2C' }}>info@akrona.de</a><br />
                 {t('phoneLabel')} +49 1523 4653532 / 07153 6186833
               </p>

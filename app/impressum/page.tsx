@@ -53,7 +53,8 @@ export default function Impressum() {
 
             <Section title="Handelsregister">
               <p>
-                Die Eintragung im Handelsregister befindet sich derzeit im Prozess der Anmeldung. Registergericht und Registernummer werden nach erfolgter Eintragung an dieser Stelle ergänzt.
+                Registergericht: Amtsgericht Stuttgart<br />
+                Registernummer: HRB 804639
               </p>
             </Section>
 
@@ -66,7 +67,7 @@ export default function Impressum() {
             <Section title="Aufsichtsbehörden & Erlaubnisse">
               <p className="font-medium mb-1">Erlaubnis gemäß § 34c GewO</p>
               <p>
-                Die Akrona GmbH verfügt über die erforderliche Erlaubnis zur Tätigkeit als Immobilienmakler gemäß § 34c Gewerbeordnung (GewO).<br />
+                Die Akrona GmbH verfügt über die erforderliche Erlaubnis gemäß § 34c Gewerbeordnung (GewO) zur Vermittlung von Privatkrediten sowie damit verbundenen Finanzdienstleistungen.<br />
                 Zuständige Aufsichtsbehörde: IHK Region Stuttgart<br />
                 Adresse: Jägerstr. 30, 70174 Stuttgart
               </p>
@@ -83,8 +84,6 @@ export default function Impressum() {
               <ul className="mt-2 space-y-1 list-disc list-inside" style={{ color: '#6b6b6b' }}>
                 <li>§ 34c GewO</li>
                 <li>§ 34i GewO</li>
-                <li>Makler- und Bauträgerverordnung (MaBV)</li>
-                <li>Immobiliardarlehensvermittlungsverordnung (ImmVermV)</li>
               </ul>
               <p className="mt-3">
                 Die berufsrechtlichen Regelungen sind einsehbar unter:{' '}
@@ -128,7 +127,7 @@ export default function Impressum() {
             </Section>
 
             <div style={{ borderTop: '1px solid #E8E2D9', paddingTop: '24px', color: '#6b6b6b', fontSize: '12px' }}>
-              <p>Stand: Februar 2026</p>
+              <p>Stand: April 2026</p>
             </div>
 
           </div>

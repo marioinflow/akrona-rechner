@@ -55,7 +55,10 @@ export default function ImpresumRomania() {
             </Section>
 
             <Section title={t('commercialRegister')}>
-              <p>{t('commercialRegisterPending')}</p>
+              <p>
+                Instanța de înregistrare: Amtsgericht Stuttgart<br />
+                Număr de înregistrare: HRB 804639
+              </p>
             </Section>
 
             <Section title={t('vatId')}>
@@ -82,8 +85,6 @@ export default function ImpresumRomania() {
               <ul className="mt-2 space-y-1 list-disc list-inside" style={{ color: '#6b6b6b' }}>
                 <li>§ 34c GewO</li>
                 <li>§ 34i GewO</li>
-                <li>{t('mabv')}</li>
-                <li>{t('immVermV')}</li>
               </ul>
               <p className="mt-3">
                 {t('regulationsAvailableAt')}{' '}

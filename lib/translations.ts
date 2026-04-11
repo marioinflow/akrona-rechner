@@ -629,12 +629,12 @@ export const translations = {
     emailLabel: "E-Mail:",
     phoneLabel: "Telefon:",
     commercialRegister: "Registrul Comerțului",
-    commercialRegisterPending: "Înscrierea în Registrul Comerțului se află în prezent în curs de procesare. Instanța de înregistrare și numărul de ordine vor fi adăugate în această secțiune după finalizarea procedurii.",
+    commercialRegisterPending: "Instanța de înregistrare: Amtsgericht Stuttgart\nNumăr de înregistrare: HRB 804639",
     vatId: "Cod de Înregistrare în Scopuri de TVA",
     vatIdPending: "Codul de identificare fiscală conform § 27a din Legea privind taxa pe valoarea adăugată (UStG) va fi publicat în această secțiune imediat după alocarea sa de către autoritatea fiscală competentă.",
     supervisoryAuthorities: "Autorități de supraveghere și Autorizații",
     permission34c: "Autorizație conform § 34c GewO (Codul Comercial German)",
-    permission34cDesc: "Akrona GmbH deține autorizația necesară pentru a activa ca agenție imobiliară în conformitate cu § 34c din Codul Comercial German (GewO).",
+    permission34cDesc: "Akrona GmbH deține autorizația necesară conform § 34c din Codul Comercial German (GewO) pentru intermedierea creditelor private și a serviciilor financiare conexe.",
     competentAuthority: "Autoritatea de supraveghere competentă: IHK Regiunea Stuttgart",
     addressLabel: "Adresă:",
     permission34i: "Autorizație conform § 34i GewO (Intermediar de credite ipotecare)",
@@ -655,7 +655,7 @@ export const translations = {
     linksLiabilityDesc: "Oferta noastră conține link-uri către site-uri web externe ale unor terțe părți, asupra cărora nu avem nicio influență. Prin urmare, nu ne asumăm nicio responsabilitate pentru acest conținut extern. Furnizorul sau operatorul respectivelor pagini este întotdeauna responsabil pentru conținutul paginilor către care se face trimitere. Paginile conectate au fost verificate pentru posibile încălcări ale legii la momentul creării link-ului. Conținuturile ilegale nu au fost identificate la acel moment.",
     copyrightHeading: "Drepturi de autor",
     copyrightDesc: "Conținutul și materialele create de operatorii acestui site sunt supuse legislației germane privind drepturile de autor. Reproducerea, editarea, distribuția și orice tip de utilizare în afara limitelor drepturilor de autor necesită acordul scris al autorului sau creatorului respectiv. Descărcarea și copierea acestei pagini sunt permise doar pentru utilizare privată, necomercială.",
-    statusDate: "Versiune: Februarie 2026",
+    statusDate: "Versiune: Aprilie 2026",
 
     // Datenschutz
     privacyTitle: "Politica de confidențialitate | Akrona GmbH",
