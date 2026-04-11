@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { LeadFormData } from '@/types';
 import { useT, useLanguage } from '@/lib/language-context';
+import ButtonLoader from '@/components/ui/loader';
 
 interface Props {
   isOpen: boolean;
@@ -233,13 +234,14 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
               <button
                 onClick={submit}
                 disabled={!canSubmit}
-                className="w-full py-3.5 rounded-xl text-sm font-semibold transition-all"
+                className="w-full py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2.5"
                 style={{
                   backgroundColor: canSubmit ? '#D4AF37' : '#E8E2D9',
                   color: canSubmit ? '#0A3D2C' : '#6b6b6b',
                   cursor: canSubmit ? 'pointer' : 'not-allowed',
                 }}
               >
+                {loading && <ButtonLoader />}
                 {loading ? t('processing') : t('receiveEvaluationByEmail')}
               </button>
 
