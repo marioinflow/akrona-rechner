@@ -5,6 +5,8 @@ import {
   View,
   StyleSheet,
   Image,
+  Svg,
+  Path,
 } from '@react-pdf/renderer';
 import path from 'path';
 import type { LeadFormData } from '@/types';
@@ -165,8 +167,7 @@ const s = StyleSheet.create({
   voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 2 },
   voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold },
   voucherServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 7 },
-  voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#2A5A3C', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
-  voucherCheckText:    { fontSize: 8, color: C.gold },
+  voucherServiceCheck: { width: 16, height: 16, borderRadius: 8, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1, flexShrink: 0 },
   voucherServiceText:  { fontSize: 9.5, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.5 },
 
   voucherCodeRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#5A4A1A', borderTopStyle: 'solid' },
@@ -583,7 +584,9 @@ function VoucherPage({ vorname, nachname, lang, t }: {
             <View style={s.voucherCertBody}>
               <View style={s.voucherServiceRow}>
                 <View style={s.voucherServiceCheck}>
-                  <Text style={s.voucherCheckText}>✓</Text>
+                  <Svg width="9" height="7" viewBox="0 0 9 7">
+                    <Path d="M1 3.5 L3.5 6 L8 1" stroke={C.darkGreen} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </Svg>
                 </View>
                 <Text style={s.voucherServiceText}>
                   <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService1Title}</Text>
@@ -593,7 +596,9 @@ function VoucherPage({ vorname, nachname, lang, t }: {
 
               <View style={s.voucherServiceRow}>
                 <View style={s.voucherServiceCheck}>
-                  <Text style={s.voucherCheckText}>✓</Text>
+                  <Svg width="9" height="7" viewBox="0 0 9 7">
+                    <Path d="M1 3.5 L3.5 6 L8 1" stroke={C.darkGreen} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </Svg>
                 </View>
                 <Text style={s.voucherServiceText}>
                   <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService2Title}</Text>
