@@ -49,7 +49,12 @@ export async function POST(request: NextRequest) {
 
     const ip = getClientIP(request);
     const supabase = createServerClient();
-    const typLabel = typ === 'baufinanzierung' ? 'Baufinanzierung' : 'Privatkredit';
+    const lang = body.lang ?? 'de';
+    const isRO = lang === 'ro';
+
+    const typLabel = isRO
+      ? (typ === 'baufinanzierung' ? 'Finanțare imobiliară' : 'Credit personal')
+      : (typ === 'baufinanzierung' ? 'Baufinanzierung' : 'Privatkredit');
 
     // ── Serverseitige Neuberechnung (authoritative Grundlage für PDF & DB) ──
     let ergebnis;
@@ -158,6 +163,37 @@ export async function POST(request: NextRequest) {
     const dateiname = `Akrona_Finanzierungsauswertung_${vorname}_${nachname}.pdf`.replace(/\s+/g, '_');
 
     // ── [5] E-Mail an Nutzer (mit PDF) ──
+    const bonitaetLabelRO: Record<string, string> = {
+      'Sehr gut': 'Foarte bun',
+      'Mittel': 'Mediu',
+      'Basis': 'Standard',
+    };
+    const bonitaetLabelEmail = isRO ? (bonitaetLabelRO[bonitaetLabel] ?? bonitaetLabel) : bonitaetLabel;
+
+    const emailSubject = isRO
+      ? 'Analiza dvs. completă – Calculator Akrona'
+      : 'Ihre vollständige Auswertung – Akrona Finanzierungsrechner';
+
+    const emailLang = isRO ? 'ro' : 'de';
+    const emailGreeting = isRO ? `Bună ziua, ${vorname},` : `Guten Tag ${vorname},`;
+    const emailIntro = isRO
+      ? `Vă mulțumim pentru solicitare. Găsiți atașat <strong>analiza dvs. personalizată de finanțare în format PDF</strong>.`
+      : `vielen Dank für Ihre Anfrage. Anbei finden Sie Ihre persönliche <strong>Finanzierungsauswertung als PDF</strong>.`;
+    const emailBoxHeading = isRO
+      ? `Evaluarea dvs. <span style="color:#D4AF37;">personalizată</span>`
+      : `Ihre <span style="color:#D4AF37;">persönliche</span> Einschätzung`;
+    const emailZinssatzLabel = isRO ? 'Dobândă nominală' : 'Zinssatz-Basis';
+    const emailMaxKreditLabel = isRO ? 'Plafon maxim de finanțare' : `Max. ${typ === 'baufinanzierung' ? 'Kredit' : 'Kreditrahmen'}`;
+    const emailMonatsrateLabel = isRO ? 'Rată lunară de rambursare' : 'Monatliche Rate';
+    const emailPdfHint = isRO
+      ? `Analiza completă cu planul de amortizare, scenarii și pașii următori o găsiți în <strong>PDF-ul atașat</strong>.`
+      : `Die vollständige Auswertung mit Tilgungsplan, Szenarien und nächsten Schritten finden Sie im <strong>beigefügten PDF</strong>.`;
+    const emailDisclaimer = isRO
+      ? `Calcul estimativ, fără caracter obligatoriu — nu constituie o aprobare de finanțare bancară.`
+      : `Unverbindliche Beispielrechnung — keine Finanzierungszusage einer Bank.`;
+    const emailSalutation = isRO ? 'Cu stimă,' : 'Mit freundlichen Grüßen,';
+    const emailPosition = isRO ? 'Director General' : 'Geschäftsführer';
+
     let emailSuccess = false;
     let emailErrorMessage: string | undefined;
 
@@ -166,10 +202,10 @@ export async function POST(request: NextRequest) {
         from: 'Akrona GmbH <noreply@akrona.de>',
         to: email,
         replyTo: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
-        subject: 'Ihre vollständige Auswertung – Akrona Finanzierungsrechner',
+        subject: emailSubject,
         attachments: [{ filename: dateiname, content: pdfBuffer }],
         html: `<!DOCTYPE html>
-<html lang="de">
+<html lang="${emailLang}">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#F7F5F0;font-family:Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F5F0;padding:40px 20px;">
@@ -186,36 +222,36 @@ export async function POST(request: NextRequest) {
           </tr></table>
         </td></tr>
         <tr><td style="padding:40px;">
-          <p style="margin:0 0 16px;color:#1a1a1a;font-size:16px;">Guten Tag ${vorname},</p>
-          <p style="margin:0 0 24px;color:#444;line-height:1.7;font-size:14px;">vielen Dank für Ihre Anfrage. Anbei finden Sie Ihre persönliche <strong>Finanzierungsauswertung als PDF</strong>.</p>
+          <p style="margin:0 0 16px;color:#1a1a1a;font-size:16px;">${emailGreeting}</p>
+          <p style="margin:0 0 24px;color:#444;line-height:1.7;font-size:14px;">${emailIntro}</p>
 
           <div style="background:#F7F5F0;border-radius:8px;padding:24px;margin-bottom:28px;border:1px solid #E8E2D9;">
-            <p style="margin:0 0 12px;font-size:17px;font-weight:600;color:#1a1a1a;">Ihre <span style="color:#D4AF37;">persönliche</span> Einschätzung</p>
-            <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#0A3D2C;">${bonitaetLabel}</p>
+            <p style="margin:0 0 12px;font-size:17px;font-weight:600;color:#1a1a1a;">${emailBoxHeading}</p>
+            <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#0A3D2C;">${bonitaetLabelEmail}</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding:0 16px 0 0;">
-                  <p style="margin:0;font-size:11px;color:#6b6b6b;">Zinssatz-Basis</p>
+                  <p style="margin:0;font-size:11px;color:#6b6b6b;">${emailZinssatzLabel}</p>
                   <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#0A3D2C;">${(zinssatz * 100).toFixed(1)} %</p>
                 </td>
                 <td>
-                  <p style="margin:0;font-size:11px;color:#6b6b6b;">Max. ${typLabel === 'Baufinanzierung' ? 'Kredit' : 'Kreditrahmen'}</p>
+                  <p style="margin:0;font-size:11px;color:#6b6b6b;">${emailMaxKreditLabel}</p>
                   <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#0A3D2C;">${fEuro(maxKredit)}</p>
                 </td>
               </tr>
               <tr><td colspan="2" style="padding-top:16px;border-top:1px solid #E8E2D9;">
-                <p style="margin:0;font-size:11px;color:#6b6b6b;">Monatliche Rate</p>
+                <p style="margin:0;font-size:11px;color:#6b6b6b;">${emailMonatsrateLabel}</p>
                 <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#D4AF37;">ca. ${fEuro(monatsRate)}</p>
               </td></tr>
             </table>
           </div>
 
-          <p style="margin:0 0 6px;font-size:13px;color:#444;line-height:1.7;">Die vollständige Auswertung mit Tilgungsplan, Szenarien und nächsten Schritten finden Sie im <strong>beigefügten PDF</strong>.</p>
-          <p style="margin:0 0 32px;font-size:13px;color:#6b6b6b;line-height:1.7;font-style:italic;">Unverbindliche Beispielrechnung — keine Finanzierungszusage einer Bank.</p>
+          <p style="margin:0 0 6px;font-size:13px;color:#444;line-height:1.7;">${emailPdfHint}</p>
+          <p style="margin:0 0 32px;font-size:13px;color:#6b6b6b;line-height:1.7;font-style:italic;">${emailDisclaimer}</p>
 
-          <p style="margin:0 0 2px;color:#1a1a1a;font-size:14px;font-weight:600;">Mit freundlichen Grüßen,</p>
+          <p style="margin:0 0 2px;color:#1a1a1a;font-size:14px;font-weight:600;">${emailSalutation}</p>
           <p style="margin:0;color:#0A3D2C;font-size:14px;font-weight:700;">Alperen Akbal</p>
-          <p style="margin:0;color:#6b6b6b;font-size:12px;">Geschäftsführer</p>
+          <p style="margin:0;color:#6b6b6b;font-size:12px;">${emailPosition}</p>
           <p style="margin:2px 0 0;color:#6b6b6b;font-size:13px;">Akrona GmbH</p>
         </td></tr>
         <tr><td style="background:#0A3D2C;padding:20px 40px;text-align:center;">
@@ -238,7 +274,7 @@ export async function POST(request: NextRequest) {
       await supabase.from('email_logs').insert({
         pdf_report_id: pdfReportId ?? null,
         recipient_email: email,
-        subject: 'Ihre vollständige Auswertung – Akrona Finanzierungsrechner',
+        subject: emailSubject,
         status: emailSuccess ? 'sent' : 'failed',
         error_message: emailErrorMessage ?? null,
       });
