@@ -86,10 +86,10 @@ const s = StyleSheet.create({
   coverTitle:    { fontSize: 26, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
   coverSubtitle: { fontSize: 10, color: 'rgba(255,255,255,0.45)', marginBottom: 16, letterSpacing: 0.5, textAlign: 'center' },
 
-  coverTeamBorder: { border: '2px solid rgba(212,175,55,0.55)', borderRadius: 4, alignItems: 'center' },
+  coverTeamBorder: { borderWidth: 2, borderColor: '#B8973E', borderStyle: 'solid', borderRadius: 4, alignItems: 'center' },
   coverTeamImg:    { width: 330, height: 185 },
 
-  coverMeta:      { borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: 18, marginTop: 8 },
+  coverMeta:      { borderTopWidth: 1, borderTopColor: '#3A2E10', borderTopStyle: 'solid', paddingTop: 18, marginTop: 8 },
   coverMetaRow:   { flexDirection: 'row', marginBottom: 10 },
   coverMetaItem:  { flex: 1 },
   coverMetaLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
@@ -153,7 +153,7 @@ const s = StyleSheet.create({
   voucherTitle:   { fontSize: 22, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2 },
   voucherLogoImg: { width: 90, height: 60 },
 
-  voucherStep:        { flexDirection: 'row', marginBottom: 14, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#1A4C38', borderBottomStyle: 'solid' },
+  voucherStep:        { flexDirection: 'row', marginBottom: 14, paddingBottom: 14 },
   voucherStepNum:     { width: 30, height: 30, borderRadius: 15, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 14, flexShrink: 0 },
   voucherStepNumText: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
   voucherStepTitle:   { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.white, marginBottom: 3 },
@@ -165,7 +165,7 @@ const s = StyleSheet.create({
   voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 2 },
   voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold },
   voucherServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 7 },
-  voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: 'rgba(212,175,55,0.5)', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
+  voucherServiceCheck: { width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: '#8A7030', alignItems: 'center', justifyContent: 'center', marginRight: 8, marginTop: 1, flexShrink: 0 },
   voucherCheckText:    { fontSize: 8, color: C.gold },
   voucherServiceText:  { fontSize: 9.5, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.5 },
 
@@ -176,8 +176,8 @@ const s = StyleSheet.create({
   voucherValidValue: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
 
   voucherContact:     { flexDirection: 'row', alignItems: 'center', marginTop: 12, padding: '12 14', backgroundColor: 'rgba(212,175,55,0.05)', borderRadius: 6, borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
-  voucherPortraitWrap: { width: 52, height: 52, borderRadius: 26, overflow: 'hidden', marginRight: 14, flexShrink: 0, borderWidth: 2, borderColor: '#C9A832', borderStyle: 'solid' },
-  voucherPortrait:     { width: 52, height: 52, objectFit: 'cover' },
+  voucherPortraitWrap: { width: 56, height: 56, marginRight: 14, flexShrink: 0 },
+  voucherPortrait:     { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: '#C9A832', borderStyle: 'solid', objectFit: 'cover' },
   voucherContactName:  { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 3 },
   voucherContactInfo:  { fontSize: 8.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 },
 
