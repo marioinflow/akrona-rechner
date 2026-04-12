@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     let emailErrorMessage: string | undefined;
 
     try {
-      await resend.emails.send({
+      const { error: emailError } = await resend.emails.send({
         from: 'Akrona GmbH <noreply@akrona.de>',
         to: email,
         replyTo: process.env.AKRONA_EMAIL ?? 'info@akrona.de',
@@ -263,7 +263,12 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`,
       });
-      emailSuccess = true;
+      if (emailError) {
+        console.error('[Step 5] Resend error:', emailError);
+        emailErrorMessage = emailError.message;
+      } else {
+        emailSuccess = true;
+      }
     } catch (e) {
       console.error('[Step 5] Resend error:', e);
       emailErrorMessage = e instanceof Error ? e.message : String(e);
