@@ -15,6 +15,7 @@ import type { BaufinanzierungEingaben, BaufinanzierungErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 import { useT } from '@/lib/language-context';
+import { parseNumberInput, parseOptionalNumberInput, formatNumberInput } from '@/lib/utils';
 
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
 
@@ -251,7 +252,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               <div className="sm:col-span-2">
                 <FieldLabel required>{t('monthlyNetIncome')}</FieldLabel>
                 <div style={{ position: 'relative' }}>
-                  <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.500"
+                  <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen)} onChange={(e) => update('nettoeinkommen', parseNumberInput(e.target.value))} placeholder="z.B. 3.500"
                     style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                   <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                 </div>
@@ -261,7 +262,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 <div>
                   <FieldLabel required>{t('netIncomeApplicant1')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
-                    <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.500"
+                    <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen)} onChange={(e) => update('nettoeinkommen', parseNumberInput(e.target.value))} placeholder="z.B. 2.500"
                       style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
@@ -269,7 +270,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 <div>
                   <FieldLabel required>{t('netIncomeApplicant2')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
-                    <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 2.000"
+                    <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen2)} onChange={(e) => update('nettoeinkommen2', parseNumberInput(e.target.value))} placeholder="z.B. 2.000"
                       style={{ ...IS, height: '44px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
@@ -289,7 +290,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             <div className="sm:col-span-2">
               <FieldLabel>{t('purchasePrice')}</FieldLabel>
               <div style={{ position: 'relative' }}>
-                <input type="number" value={form.kaufpreis || ''} onChange={(e) => update('kaufpreis', e.target.value ? Number(e.target.value) : undefined)} placeholder="z.B. 400.000"
+                <input type="text" inputMode="numeric" value={formatNumberInput(form.kaufpreis)} onChange={(e) => update('kaufpreis', parseOptionalNumberInput(e.target.value))} placeholder="z.B. 400.000"
                   style={{ ...IS, height: '48px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }} onFocus={onFocus} onBlur={onBlur} />
                 <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: '#6b6b6b', fontWeight: 700, pointerEvents: 'none' }}>€</span>
               </div>

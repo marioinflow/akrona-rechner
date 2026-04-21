@@ -6,6 +6,7 @@ import type { PrivatkreditEingaben, PrivatkreditErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 import { useT } from '@/lib/language-context';
+import { parseNumberInput, parseOptionalNumberInput, formatNumberInput } from '@/lib/utils';
 
 const DEFAULT: PrivatkreditEingaben = {
   nettoeinkommen: 0,
@@ -174,7 +175,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               <div className="sm:col-span-2">
                 <FieldLabel required>{t('monthlyNetIncome')}</FieldLabel>
                 <div style={{ position: 'relative' }}>
-                  <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 3.000"
+                  <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen)} onChange={(e) => update('nettoeinkommen', parseNumberInput(e.target.value))} placeholder="z.B. 3.000"
                     style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                   <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                 </div>
@@ -184,7 +185,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                 <div>
                   <FieldLabel required>{t('netIncomeApplicant1')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
-                    <input type="number" value={form.nettoeinkommen || ''} onChange={(e) => update('nettoeinkommen', Number(e.target.value))} placeholder="z.B. 2.000"
+                    <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen)} onChange={(e) => update('nettoeinkommen', parseNumberInput(e.target.value))} placeholder="z.B. 2.000"
                       style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
@@ -192,7 +193,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
                 <div>
                   <FieldLabel required>{t('netIncomeApplicant2')}</FieldLabel>
                   <div style={{ position: 'relative' }}>
-                    <input type="number" value={form.nettoeinkommen2 || ''} onChange={(e) => update('nettoeinkommen2', Number(e.target.value))} placeholder="z.B. 1.500"
+                    <input type="text" inputMode="numeric" value={formatNumberInput(form.nettoeinkommen2)} onChange={(e) => update('nettoeinkommen2', parseNumberInput(e.target.value))} placeholder="z.B. 1.500"
                       style={{ ...IS, height: '52px', paddingRight: '44px', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }} onFocus={onFocus} onBlur={onBlur} />
                     <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: '#6b6b6b', fontWeight: 600, pointerEvents: 'none' }}>€</span>
                   </div>
@@ -213,9 +214,10 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               <FieldLabel>{t('desiredLoanAmount')}</FieldLabel>
               <div style={{ position: 'relative' }}>
                 <input
-                  type="number"
-                  value={form.wunschkredit || ''}
-                  onChange={(e) => update('wunschkredit', e.target.value ? Number(e.target.value) : undefined)}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatNumberInput(form.wunschkredit)}
+                  onChange={(e) => update('wunschkredit', parseOptionalNumberInput(e.target.value))}
                   placeholder={t('maxPossible')}
                   style={{ ...IS, height: '56px', paddingRight: '44px', fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }}
                   onFocus={onFocus} onBlur={onBlur}
