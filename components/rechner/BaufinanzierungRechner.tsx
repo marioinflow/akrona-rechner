@@ -607,7 +607,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 </p>
               </div>
 
-              {/* Kennzahlen */}
+              {/* Kennzahlen — Finanzierung */}
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
                 {[
                   { label: t('interestRatePa'), value: `${(ergebnis.zinssatz * 100).toFixed(1)} %` },
@@ -616,7 +616,6 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   { label: t('residualDebtAfterYears', { years: String(form.laufzeit) }), value: formatEuro(restschuld) },
                   { label: t('maxCreditLimit'), value: formatEuro(ergebnis.maxKredit) },
                   { label: t('totalPurchasingPower'), value: formatEuro(ergebnis.kaufkraft) },
-                  ...(ergebnis.gesamtkaufkosten ? [{ label: t('totalPurchaseCosts'), value: formatEuro(ergebnis.gesamtkaufkosten) }] : []),
                 ].map((item) => (
                   <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F7F5F0' }}>
                     <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item.label}</span>
@@ -624,6 +623,35 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   </div>
                 ))}
               </div>
+
+              {/* Kaufnebenkosten — nur wenn Kaufpreis eingegeben */}
+              {ergebnis.gesamtkaufkosten && ergebnis.gesamtkaufkosten > 0 ? (
+                <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 800, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.14em', margin: '0 0 10px' }}>
+                    {t('additionalCostsSection')}
+                  </p>
+                  {[
+                    ...(ergebnis.grunderwerbsteuer ? [{ label: t('propertyTransferTax'), value: formatEuro(ergebnis.grunderwerbsteuer) }] : []),
+                    ...(ergebnis.notar ? [{ label: t('notaryLandRegistry'), value: formatEuro(ergebnis.notar) }] : []),
+                    ...(ergebnis.maklergebuehr ? [{ label: t('brokerFee'), value: formatEuro(ergebnis.maklergebuehr) }] : []),
+                  ].map((item) => (
+                    <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #F7F5F0' }}>
+                      <span style={{ fontSize: '12px', color: '#6b6b6b' }}>{item.label}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#0A3D2C' }}>{item.value}</span>
+                    </div>
+                  ))}
+                  {ergebnis.nebenkosten ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0 7px', borderTop: '1px solid #E8E2D9', marginTop: '2px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#0A3D2C' }}>{t('totalAdditionalCosts')}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A3D2C' }}>{formatEuro(ergebnis.nebenkosten)}</span>
+                    </div>
+                  ) : null}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#0A3D2C' }}>{t('totalPurchaseCosts')}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A3D2C' }}>{formatEuro(ergebnis.gesamtkaufkosten)}</span>
+                  </div>
+                </div>
+              ) : null}
 
               {/* Bonität — subtil */}
               <div style={{ padding: '14px 24px', borderBottom: '1px solid #F0EDE8' }}>

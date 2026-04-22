@@ -51,6 +51,7 @@ export interface BaufinanzierungErgebnis {
   bonitaetLabel: BonitaetLabel;
   zinssatz: number;
   grunderwerbsteuer?: number;
+  notar?: number;
   maklergebuehr?: number;
   nebenkosten?: number;
   gesamtkaufkosten?: number;

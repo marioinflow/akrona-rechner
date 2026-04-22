@@ -102,6 +102,7 @@ export function berechneBaufinanzierung(
 
   // ── Nebenkosten & Gesamtkaufkosten ──
   let grunderwerbsteuerBetrag: number | undefined;
+  let notarBetrag: number | undefined;
   let maklergebuehrBetrag: number | undefined;
   let nebenkosten: number | undefined;
   let gesamtkaufkosten: number | undefined;
@@ -110,8 +111,8 @@ export function berechneBaufinanzierung(
     const gst = bundesland ? (RECHNER_CONFIG.grunderwerbsteuerSaetze[bundesland] ?? 0.05) : 0.05;
     grunderwerbsteuerBetrag = Math.round(kaufpreis * gst);
     maklergebuehrBetrag = Math.round(kaufpreis * (maklergebuehr / 100));
-    const notar = Math.round(kaufpreis * RECHNER_CONFIG.notarGrundbuchSatz);
-    nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notar;
+    notarBetrag = Math.round(kaufpreis * RECHNER_CONFIG.notarGrundbuchSatz);
+    nebenkosten = grunderwerbsteuerBetrag + maklergebuehrBetrag + notarBetrag;
     gesamtkaufkosten = kaufpreis + nebenkosten;
   }
 
@@ -170,6 +171,7 @@ export function berechneBaufinanzierung(
     bonitaetLabel,
     zinssatz,
     grunderwerbsteuer: grunderwerbsteuerBetrag,
+    notar: notarBetrag,
     maklergebuehr: maklergebuehrBetrag,
     nebenkosten,
     gesamtkaufkosten,
