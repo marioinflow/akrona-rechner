@@ -448,8 +448,8 @@ function ErgebnisPage({ vorname, nachname, typ, ergebnis, eingaben, t, totalPage
                 {[
                   { label: t.purchasePrice, value: fEuro(bauEing.kaufpreis), total: false },
                   { label: `${t.propertyTransferTax} (${bauEing.bundesland ?? 'Bayern'})`, value: fEuro(bauErg.grunderwerbsteuer ?? 0), total: false },
+                  { label: `${t.notaryLandRegistry} (ca. 2,0 %)`, value: fEuro(bauErg.notar ?? 0), total: false },
                   { label: `${t.brokerFee} (${bauEing.maklergebuehr ?? 0} %)`, value: fEuro(bauErg.maklergebuehr ?? 0), total: false },
-                  { label: t.notaryAndLandRegister, value: fEuro((bauErg.nebenkosten ?? 0) - (bauErg.grunderwerbsteuer ?? 0) - (bauErg.maklergebuehr ?? 0)), total: false },
                   { label: t.totalAdditionalCosts, value: fEuro(bauErg.nebenkosten ?? 0), total: false },
                   { label: t.downPaymentEquity, value: fEuro(bauEing.eigenkapital), total: false },
                   { label: t.totalPurchaseCosts, value: fEuro(bauErg.gesamtkaufkosten), total: true },
