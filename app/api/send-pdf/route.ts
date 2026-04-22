@@ -168,7 +168,19 @@ export async function POST(request: NextRequest) {
       'Mittel': 'Mediu',
       'Basis': 'Standard',
     };
+    const bonitaetDescDE: Record<string, string> = {
+      'Sehr gut': 'Ausgezeichnete Konditionen bei allen Banken möglich.',
+      'Mittel': 'Gute Finanzierungschancen bei den meisten Banken.',
+      'Basis': 'Grundlegende Finanzierbarkeit, individuelle Prüfung durch die Bank.',
+    };
+    const bonitaetDescRO: Record<string, string> = {
+      'Sehr gut': 'Condiții excelente disponibile la toate băncile.',
+      'Mittel': 'Șanse bune de finanțare la majoritatea băncilor.',
+      'Basis': 'Finanțare de bază posibilă, evaluare individuală de către bancă.',
+    };
     const bonitaetLabelEmail = isRO ? (bonitaetLabelRO[bonitaetLabel] ?? bonitaetLabel) : bonitaetLabel;
+    const bonitaetPrefix = isRO ? 'Bonitate' : 'Bonität';
+    const bonitaetDescription = isRO ? (bonitaetDescRO[bonitaetLabel] ?? '') : (bonitaetDescDE[bonitaetLabel] ?? '');
 
     const emailSubject = isRO
       ? 'Analiza dvs. completă – Calculator Akrona'
@@ -227,7 +239,8 @@ export async function POST(request: NextRequest) {
 
           <div style="background:#F7F5F0;border-radius:8px;padding:24px;margin-bottom:28px;border:1px solid #E8E2D9;">
             <p style="margin:0 0 12px;font-size:17px;font-weight:600;color:#1a1a1a;">${emailBoxHeading}</p>
-            <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#0A3D2C;">${bonitaetLabelEmail}</p>
+            <p style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0A3D2C;">${bonitaetPrefix}: ${bonitaetLabelEmail}</p>
+            <p style="margin:0 0 20px;font-size:13px;font-weight:400;color:#6b6b6b;line-height:1.5;">${bonitaetDescription}</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding:0 16px 0 0;">
