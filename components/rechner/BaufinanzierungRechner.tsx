@@ -29,15 +29,16 @@ const LAENDER = [
 ];
 
 const FINANZIERUNGSOPTIONEN: {
-  anteil: 100 | 80 | 60;
+  anteil: 110 | 100 | 80 | 60;
   label: string;
   sublabel: string;
   badge: string;
   approxZins: number;
 }[] = [
-  { anteil: 100, label: '100 %', sublabel: 'Vollfinanzierung', badge: '', approxZins: 4.8 },
-  { anteil: 80,  label: '80 %',  sublabel: 'Empfohlen',        badge: 'Beliebt', approxZins: 3.6 },
-  { anteil: 60,  label: '60 %',  sublabel: 'Sicherste Option', badge: '',  approxZins: 3.6 },
+  { anteil: 110, label: '110 %', sublabel: 'Inkl. Nebenkosten', badge: '', approxZins: 5.2 },
+  { anteil: 100, label: '100 %', sublabel: 'Vollfinanzierung',  badge: '', approxZins: 4.8 },
+  { anteil: 80,  label: '80 %',  sublabel: 'Empfohlen',         badge: 'Beliebt', approxZins: 3.6 },
+  { anteil: 60,  label: '60 %',  sublabel: 'Sicherste Option',  badge: '',  approxZins: 3.6 },
 ];
 
 const DEFAULT: BaufinanzierungEingaben = {
@@ -141,7 +142,9 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
       const next = { ...prev, [key]: value };
       if (key === 'kaufpreis' && next.finanzierungsanteil !== undefined) {
         const kp = Number(value) || 0;
-        next.eigenkapital = Math.round(kp * (1 - next.finanzierungsanteil / 100));
+        next.eigenkapital = next.finanzierungsanteil === 110
+          ? 0
+          : Math.round(kp * (1 - next.finanzierungsanteil / 100));
       }
       if (key === 'eigenkapital') {
         next.finanzierungsanteil = undefined;
@@ -152,9 +155,9 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
     setValidationError('');
   }, [ergebnis]);
 
-  const selectFinanzierung = (anteil: 100 | 80 | 60) => {
+  const selectFinanzierung = (anteil: 110 | 100 | 80 | 60) => {
     const kp = form.kaufpreis || 0;
-    const eigenkapital = Math.round(kp * (1 - anteil / 100));
+    const eigenkapital = anteil === 110 ? 0 : Math.round(kp * (1 - anteil / 100));
     setForm((prev) => ({ ...prev, finanzierungsanteil: anteil, eigenkapital }));
     if (ergebnis) setFormChanged(true);
   };
@@ -341,10 +344,18 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
         {/* 03: Finanzierungsoptionen */}
         <SectionCard step="03" title={t('financingOptions')}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {FINANZIERUNGSOPTIONEN.map((opt) => {
+          {(() => {
+            const visibleOptions = form.kaufpreis && form.kaufpreis > 0
+              ? FINANZIERUNGSOPTIONEN
+              : FINANZIERUNGSOPTIONEN.filter((o) => o.anteil !== 110);
+            const gridCols = visibleOptions.length === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-3';
+            return (
+          <div className={`grid grid-cols-1 ${gridCols} gap-3`}>
+            {visibleOptions.map((opt) => {
               const isActive = form.finanzierungsanteil === opt.anteil;
-              const anzahlung = form.kaufpreis ? Math.round(form.kaufpreis * (1 - opt.anteil / 100)) : null;
+              const anzahlung = form.kaufpreis
+                ? (opt.anteil === 110 ? 0 : Math.round(form.kaufpreis * (1 - opt.anteil / 100)))
+                : null;
               return (
                 <button key={opt.anteil} type="button" onClick={() => selectFinanzierung(opt.anteil)}
                   style={{ position: 'relative', border: `2px solid ${isActive ? '#0A5D3F' : '#E8E2D9'}`, borderRadius: '12px', padding: '12px', backgroundColor: isActive ? 'rgba(10,93,63,0.05)' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.15s, background-color 0.15s' }}
@@ -365,7 +376,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                   )}
                   <p style={{ fontSize: '22px', fontWeight: 800, color: isActive ? '#0A5D3F' : '#0A3D2C', lineHeight: 1, margin: '0 0 3px' }}>{opt.label}</p>
                   <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 10px' }}>
-                    {opt.anteil === 100 ? t('fullFinancing') : opt.anteil === 80 ? t('recommended') : t('safestOption')}
+                    {opt.anteil === 110 ? t('inklNebenkosten') : opt.anteil === 100 ? t('fullFinancing') : opt.anteil === 80 ? t('recommended') : t('safestOption')}
                   </p>
                   <div style={{ borderTop: '1px solid #E8E2D9', paddingTop: '10px' }}>
                     <p style={{ fontSize: '11px', color: '#6b6b6b', margin: '0 0 2px' }}>{t('fromRatePerAnnum', { rate: opt.approxZins.toFixed(1) })}</p>
@@ -377,6 +388,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
               );
             })}
           </div>
+            );
+          })()}
           <p style={{ fontSize: '11px', color: '#6b6b6b', marginTop: '10px' }}>
             {t('downPaymentAutoCalculated')}
           </p>

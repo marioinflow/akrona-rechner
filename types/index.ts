@@ -18,7 +18,7 @@ export interface BaufinanzierungEingaben {
   wohnsitzland?: string;
   staatsangehoerigkeit?: string;
   tilgungssatz?: number;
-  finanzierungsanteil?: 100 | 80 | 60;
+  finanzierungsanteil?: 110 | 100 | 80 | 60;
   /** Manuelle Bonitäts-Überschreibung (überschreibt den berechneten Score) */
   bonitaetOverride?: BonitaetLabel;
 }
