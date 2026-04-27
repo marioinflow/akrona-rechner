@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akrona PDF Preview — Vorschlag 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #2a2a2a;
+      font-family: 'Inter', sans-serif;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+    .page-label {
+      color: #999;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      align-self: flex-start;
+      margin-left: calc(50% - 297px);
+    }
+
+    /* A4 Page */
+    .page {
+      width: 594px;
+      min-height: 841px;
+      position: relative;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    /* ── PAGE 1: COVER ── */
+    .cover {
+      background: #0A3D2C;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .cover-border {
+      position: absolute;
+      inset: 16px;
+      border: 1.5px solid rgba(212,175,55,0.35);
+      pointer-events: none;
+    }
+    .cover-border-inner {
+      position: absolute;
+      inset: 20px;
+      border: 0.5px solid rgba(212,175,55,0.15);
+      pointer-events: none;
+    }
+    .cover-inner {
+      padding: 52px;
+      display: flex;
+      flex-direction: column;
+      height: 841px;
+    }
+    .cover-logo-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .cover-logo-img {
+      width: 220px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    .cover-logo-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Team photo on cover */
+    .cover-team-photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      margin-bottom: 4px;
+    }
+    .cover-team-photo {
+      width: 360px;
+      height: 200px;
+      object-fit: cover;
+      object-position: center top;
+      border: 2px solid rgba(212,175,55,0.55);
+      outline: 1px solid rgba(212,175,55,0.18);
+      outline-offset: 4px;
+      border-radius: 4px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    .cover-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .cover-ornament {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .cover-ornament-line {
+      width: 60px;
+      height: 1px;
+      background: rgba(212,175,55,0.5);
+    }
+    .cover-ornament-diamond {
+      width: 6px;
+      height: 6px;
+      background: #D4AF37;
+      transform: rotate(45deg);
+    }
+    .cover-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: #D4AF37;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .cover-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    .cover-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.5px;
+    }
+
+    .cover-meta {
+      border-top: 1px solid rgba(212,175,55,0.2);
+      padding-top: 28px;
+      margin-bottom: 20px;
+    }
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+    }
+    .cover-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cover-meta-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .cover-meta-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 600;
+    }
+    .cover-footer-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    /* ── CONTENT PAGES ── */
+    .content-page {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .content-header {
+      background: #0A3D2C;
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .content-header-logo {
+      height: 52px;
+      width: auto;
+      object-fit: contain;
+    }
+    .content-header-right {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.5px;
+    }
+    .content-header-divider {
+      height: 2px;
+      background: linear-gradient(to right, #D4AF37, rgba(212,175,55,0.1));
+    }
+    .content-body {
+      padding: 36px 40px;
+      flex: 1;
+    }
+
+    .section-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: #0A5D3F;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0A3D2C;
+      margin-bottom: 24px;
+    }
+
+    .table { width: 100%; margin-bottom: 24px; }
+    .table-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid #E8E2D9;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+    }
+    .table-row:nth-child(even) { background: #F7F5F0; padding: 9px 8px; }
+    .table-row .label { color: #6b6b6b; }
+    .table-row .value { font-weight: 600; color: #1a1a1a; }
+    .table-row.total {
+      background: #0A3D2C !important;
+      padding: 10px 8px;
+    }
+    .table-row.total .label { color: #fff; font-weight: bold; }
+    .table-row.total .value { color: #D4AF37; font-weight: bold; }
+
+    /* Bonitäts Badge */
+    .bonitaet-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .bonitaet-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #D4AF37;
+      flex-shrink: 0;
+    }
+    .bonitaet-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #D4AF37;
+    }
+    .bonitaet-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: #6b6b6b;
+      margin-top: 3px;
+    }
+
+    /* Result Cards */
+    .result-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .result-card {
+      background: #F7F5F0;
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid #E8E2D9;
+    }
+    .result-card.main {
+      background: #0A3D2C;
+      border-color: #0A3D2C;
+    }
+    .result-card-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: #6b6b6b;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .result-card.main .result-card-label { color: rgba(255,255,255,0.5); }
+    .result-card-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #0A3D2C;
+    }
+    .result-card.main .result-card-value { color: #D4AF37; font-size: 22px; }
+
+    /* Content Footer */
+    .content-footer {
+      background: #F7F5F0;
+      border-top: 1px solid #E8E2D9;
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .content-footer-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: #aaa;
+    }
+
+    /* ── PAGE 5: VOUCHER ── */
+    .voucher-page {
+      background: #0A3D2C;
+      display: flex;
+      flex-direction: column;
+    }
+    .voucher-inner {
+      padding: 52px;
+      display: flex;
+      flex-direction: column;
+      height: 841px;
+    }
+    .voucher-border {
+      position: absolute;
+      inset: 16px;
+      border: 1.5px solid rgba(212,175,55,0.35);
+      pointer-events: none;
+    }
+
+    .voucher-header-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .voucher-header-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .voucher-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(212,175,55,0.2);
+      margin: 28px 0;
+    }
+
+    .voucher-steps {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .voucher-step {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .voucher-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #D4AF37;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .voucher-step-num span {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0A3D2C;
+    }
+    .voucher-step-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .voucher-step-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+    }
+
+    /* The actual voucher certificate */
+    .voucher-certificate {
+      border: 1.5px solid rgba(212,175,55,0.5);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-top: 20px;
+      position: relative;
+      background: rgba(212,175,55,0.04);
+    }
+    .voucher-perforated-top {
+      position: absolute;
+      top: -1px;
+      left: 24px;
+      right: 24px;
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        rgba(212,175,55,0.6) 0px, rgba(212,175,55,0.6) 6px,
+        transparent 6px, transparent 12px
+      );
+    }
+    .voucher-scissors {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      font-size: 16px;
+      color: rgba(212,175,55,0.7);
+      background: #0A3D2C;
+      padding: 0 4px;
+    }
+    .voucher-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .voucher-gift-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #D4AF37;
+      margin-bottom: 16px;
+    }
+    .voucher-services {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .voucher-service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .voucher-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(212,175,55,0.2);
+      border: 1px solid rgba(212,175,55,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .voucher-check span {
+      font-size: 9px;
+      color: #D4AF37;
+    }
+    .voucher-service-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+    }
+    .voucher-code-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(212,175,55,0.2);
+    }
+    .voucher-code-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .voucher-code-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #D4AF37;
+      letter-spacing: 3px;
+      background: rgba(212,175,55,0.08);
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(212,175,55,0.25);
+    }
+    .voucher-validity {
+      text-align: right;
+    }
+    .voucher-validity-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .voucher-validity-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      font-weight: bold;
+    }
+
+    .voucher-contact {
+      margin-top: 16px;
+      padding: 16px 20px;
+      background: rgba(212,175,55,0.06);
+      border-radius: 6px;
+      border-left: 3px solid rgba(212,175,55,0.4);
+    }
+    .voucher-contact-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      color: #D4AF37;
+      margin-bottom: 4px;
+    }
+    .voucher-contact-info {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+
+    .voucher-disclaimer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .voucher-disclaimer-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 7.5px;
+      color: rgba(255,255,255,0.2);
+      line-height: 1.6;
+    }
+
+    /* Tilgungsplan */
+    .plan-header-row {
+      display: flex;
+      background: #0A3D2C;
+      padding: 8px 12px;
+      border-radius: 4px 4px 0 0;
+    }
+    .plan-header-cell {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: bold;
+      color: #fff;
+      flex: 1;
+      text-align: right;
+    }
+    .plan-header-cell:first-child { text-align: left; }
+    .plan-row {
+      display: flex;
+      padding: 7px 12px;
+      border-bottom: 1px solid #E8E2D9;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+    }
+    .plan-row:nth-child(even) { background: #F7F5F0; }
+    .plan-cell { flex: 1; text-align: right; color: #333; }
+    .plan-cell:first-child { color: #0A3D2C; font-weight: bold; text-align: left; }
+  </style>
+</head>
+<body>
+
+  <div class="page-label">Seite 1 · Deckblatt</div>
+
+  <!-- ── PAGE 1: COVER ── -->
+  <div class="page cover">
+    <div class="cover-border"></div>
+    <div class="cover-border-inner"></div>
+    <div class="cover-inner">
+      <div class="cover-logo-area">
+        <img class="cover-logo-img" src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Logo_Akrona/Akrona_Logo_Transparent.png" alt="Akrona Logo" />
+        <div class="cover-logo-text">§ 34c &amp; § 34i GewO · IHK Region Stuttgart</div>
+      </div>
+
+      <div class="cover-center">
+        <div class="cover-ornament">
+          <div class="cover-ornament-line"></div>
+          <div class="cover-ornament-diamond"></div>
+          <div class="cover-ornament-line"></div>
+        </div>
+        <div class="cover-eyebrow">Persönliche Finanzierungsauswertung</div>
+        <div class="cover-title">Ihre individuelle<br>Finanzierungsanalyse</div>
+        <div class="cover-subtitle">Baufinanzierung · Vertraulich</div>
+
+        <div class="cover-team-photo-wrap">
+          <img class="cover-team-photo" src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Teambild_Akrona.jpeg" alt="Akrona Team" />
+        </div>
+      </div>
+
+      <div class="cover-meta">
+        <div class="cover-meta-grid">
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Erstellt für</div>
+            <div class="cover-meta-value">Mario Albrecht</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Rechner-Typ</div>
+            <div class="cover-meta-value">Baufinanzierung</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Datum</div>
+            <div class="cover-meta-value">10. April 2026</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Ihr Berater</div>
+            <div class="cover-meta-value">Alperen Akbal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-footer-text">
+        Unverbindliche Beispielrechnung — keine verbindliche Finanzierungszusage einer Bank.
+      </div>
+    </div>
+  </div>
+
+  <div class="page-label">Seite 2 · Ihre Angaben</div>
+
+  <!-- ── PAGE 2: ANGABEN ── -->
+  <div class="page content-page">
+    <div class="content-header">
+      <img class="content-header-logo" src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Logo_Akrona/Akrona_Logo_Transparent.png" alt="Akrona Logo" />
+      <div class="content-header-right">Mario Albrecht · Ihre Angaben</div>
+    </div>
+    <div class="content-header-divider"></div>
+    <div class="content-body">
+      <div class="section-eyebrow">Eingabedaten</div>
+      <div class="section-title">Ihre Angaben im Überblick</div>
+      <div class="table">
+        <div class="table-row"><span class="label">Monatliches Nettoeinkommen</span><span class="value">3.500 €</span></div>
+        <div class="table-row"><span class="label">Eigenkapital / Anzahlung</span><span class="value">40.000 €</span></div>
+        <div class="table-row"><span class="label">Haushaltsgröße</span><span class="value">1 Person(en)</span></div>
+        <div class="table-row"><span class="label">Laufzeit</span><span class="value">20 Jahre</span></div>
+        <div class="table-row"><span class="label">Tilgungssatz</span><span class="value">2,0 %</span></div>
+        <div class="table-row"><span class="label">Beschäftigungsstatus</span><span class="value">Angestellt</span></div>
+        <div class="table-row"><span class="label">Verwendungszweck</span><span class="value">Kauf</span></div>
+        <div class="table-row"><span class="label">Kaufpreis</span><span class="value">200.000 €</span></div>
+        <div class="table-row"><span class="label">Bundesland</span><span class="value">Baden-Württemberg</span></div>
+        <div class="table-row"><span class="label">Maklergebühr</span><span class="value">0 %</span></div>
+        <div class="table-row"><span class="label">Wohnsitzland</span><span class="value">Deutschland</span></div>
+        <div class="table-row"><span class="label">Staatsangehörigkeit</span><span class="value">Deutschland</span></div>
+      </div>
+    </div>
+    <div class="content-footer">
+      <div class="content-footer-text">Akrona GmbH · § 34i GewO · IHK Region Stuttgart</div>
+      <div class="content-footer-text">Seite 2 von 5</div>
+    </div>
+  </div>
+
+  <div class="page-label">Seite 3 · Ergebnis</div>
+
+  <!-- ── PAGE 3: ERGEBNIS ── -->
+  <div class="page content-page">
+    <div class="content-header">
+      <img class="content-header-logo" src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Logo_Akrona/Akrona_Logo_Transparent.png" alt="Akrona Logo" />
+      <div class="content-header-right">Mario Albrecht · Ergebnis</div>
+    </div>
+    <div class="content-header-divider"></div>
+    <div class="content-body">
+      <div class="section-eyebrow">Ihre Ersteinschätzung</div>
+      <div class="section-title">Berechnungsergebnis</div>
+
+      <div class="bonitaet-badge">
+        <div class="bonitaet-dot"></div>
+        <div>
+          <div class="bonitaet-label">Bonität: Sehr gut</div>
+          <div class="bonitaet-sub">Score: 9 · Zinssatz-Basis: 3,6 %</div>
+        </div>
+      </div>
+
+      <div class="result-cards">
+        <div class="result-card main">
+          <div class="result-card-label">Monatliche Rate</div>
+          <div class="result-card-value">812 €</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">Finanzierungsbedarf</div>
+          <div class="result-card-value">174.000 €</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">Max. Kreditrahmen</div>
+          <div class="result-card-value">350.000 €</div>
+        </div>
+      </div>
+
+      <div class="section-eyebrow">Vollständige Übersicht</div>
+      <div class="table">
+        <div class="table-row"><span class="label">Max. Kreditrahmen</span><span class="value">350.000 €</span></div>
+        <div class="table-row"><span class="label">Kaufkraft gesamt</span><span class="value">390.000 €</span></div>
+        <div class="table-row"><span class="label">Finanzierungsbedarf</span><span class="value">174.000 €</span></div>
+        <div class="table-row"><span class="label">Zinssatz p.a.</span><span class="value">3,6 %</span></div>
+        <div class="table-row"><span class="label">Tilgungssatz p.a.</span><span class="value">2,0 %</span></div>
+        <div class="table-row"><span class="label">Monatliche Rate</span><span class="value">812 €</span></div>
+        <div class="table-row"><span class="label">Laufzeit</span><span class="value">20 Jahre</span></div>
+      </div>
+
+      <div class="section-eyebrow" style="margin-top:8px">Kaufnebenkosten</div>
+      <div class="table">
+        <div class="table-row"><span class="label">Kaufpreis</span><span class="value">200.000 €</span></div>
+        <div class="table-row"><span class="label">Grunderwerbsteuer (Baden-Württemberg)</span><span class="value">10.000 €</span></div>
+        <div class="table-row"><span class="label">Maklergebühr (0 %)</span><span class="value">0 €</span></div>
+        <div class="table-row"><span class="label">Notar &amp; Grundbuch (ca. 2,0 %)</span><span class="value">4.000 €</span></div>
+        <div class="table-row"><span class="label">Nebenkosten gesamt</span><span class="value">14.000 €</span></div>
+        <div class="table-row"><span class="label">Eigenkapital</span><span class="value">40.000 €</span></div>
+        <div class="table-row total"><span class="label">Gesamtkaufkosten</span><span class="value">214.000 €</span></div>
+      </div>
+    </div>
+    <div class="content-footer">
+      <div class="content-footer-text">Akrona GmbH · § 34i GewO · IHK Region Stuttgart</div>
+      <div class="content-footer-text">Seite 3 von 5</div>
+    </div>
+  </div>
+
+  <div class="page-label">Seite 4 · Tilgungsplan</div>
+
+  <!-- ── PAGE 4: TILGUNGSPLAN ── -->
+  <div class="page content-page">
+    <div class="content-header">
+      <img class="content-header-logo" src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Logo_Akrona/Akrona_Logo_Transparent.png" alt="Akrona Logo" />
+      <div class="content-header-right">Mario Albrecht · Tilgungsplan</div>
+    </div>
+    <div class="content-header-divider"></div>
+    <div class="content-body">
+      <div class="section-eyebrow">Jahresübersicht</div>
+      <div class="section-title">Ihr Tilgungsplan</div>
+      <div class="plan-header-row">
+        <div class="plan-header-cell" style="text-align:left">Jahr</div>
+        <div class="plan-header-cell">Restschuld</div>
+        <div class="plan-header-cell">Gez. Zinsen</div>
+        <div class="plan-header-cell">Gez. Tilgung</div>
+      </div>
+      <div class="plan-row"><div class="plan-cell">1. Jahr</div><div class="plan-cell">170.520 €</div><div class="plan-cell">6.264 €</div><div class="plan-cell">3.480 €</div></div>
+      <div class="plan-row"><div class="plan-cell">2. Jahr</div><div class="plan-cell">166.915 €</div><div class="plan-cell">12.403 €</div><div class="plan-cell">7.085 €</div></div>
+      <div class="plan-row"><div class="plan-cell">3. Jahr</div><div class="plan-cell">163.180 €</div><div class="plan-cell">18.412 €</div><div class="plan-cell">10.820 €</div></div>
+      <div class="plan-row"><div class="plan-cell">4. Jahr</div><div class="plan-cell">159.310 €</div><div class="plan-cell">24.286 €</div><div class="plan-cell">14.690 €</div></div>
+      <div class="plan-row"><div class="plan-cell">5. Jahr</div><div class="plan-cell">155.301 €</div><div class="plan-cell">30.021 €</div><div class="plan-cell">18.699 €</div></div>
+      <div class="plan-row"><div class="plan-cell">6. Jahr</div><div class="plan-cell">151.148 €</div><div class="plan-cell">35.612 €</div><div class="plan-cell">22.852 €</div></div>
+      <div class="plan-row"><div class="plan-cell">7. Jahr</div><div class="plan-cell">146.845 €</div><div class="plan-cell">41.053 €</div><div class="plan-cell">27.155 €</div></div>
+      <div class="plan-row"><div class="plan-cell">8. Jahr</div><div class="plan-cell">142.388 €</div><div class="plan-cell">46.340 €</div><div class="plan-cell">31.612 €</div></div>
+      <div class="plan-row"><div class="plan-cell">9. Jahr</div><div class="plan-cell">137.770 €</div><div class="plan-cell">51.466 €</div><div class="plan-cell">36.230 €</div></div>
+      <div class="plan-row"><div class="plan-cell">10. Jahr</div><div class="plan-cell">132.986 €</div><div class="plan-cell">56.426 €</div><div class="plan-cell">41.014 €</div></div>
+      <div class="plan-row"><div class="plan-cell">11. Jahr</div><div class="plan-cell">128.029 €</div><div class="plan-cell">61.213 €</div><div class="plan-cell">45.971 €</div></div>
+      <div class="plan-row"><div class="plan-cell">12. Jahr</div><div class="plan-cell">122.894 €</div><div class="plan-cell">65.822 €</div><div class="plan-cell">51.106 €</div></div>
+      <div class="plan-row"><div class="plan-cell">13. Jahr</div><div class="plan-cell">117.574 €</div><div class="plan-cell">70.246 €</div><div class="plan-cell">56.426 €</div></div>
+      <div class="plan-row"><div class="plan-cell">14. Jahr</div><div class="plan-cell">112.063 €</div><div class="plan-cell">74.479 €</div><div class="plan-cell">61.937 €</div></div>
+      <div class="plan-row"><div class="plan-cell">15. Jahr</div><div class="plan-cell">106.353 €</div><div class="plan-cell">78.513 €</div><div class="plan-cell">67.647 €</div></div>
+      <div class="plan-row"><div class="plan-cell">16. Jahr</div><div class="plan-cell">100.438 €</div><div class="plan-cell">82.342 €</div><div class="plan-cell">73.562 €</div></div>
+      <div class="plan-row"><div class="plan-cell">17. Jahr</div><div class="plan-cell">94.310 €</div><div class="plan-cell">85.958 €</div><div class="plan-cell">79.690 €</div></div>
+      <div class="plan-row"><div class="plan-cell">18. Jahr</div><div class="plan-cell">87.961 €</div><div class="plan-cell">89.353 €</div><div class="plan-cell">86.039 €</div></div>
+      <div class="plan-row"><div class="plan-cell">19. Jahr</div><div class="plan-cell">81.383 €</div><div class="plan-cell">92.519 €</div><div class="plan-cell">92.617 €</div></div>
+      <div class="plan-row"><div class="plan-cell">20. Jahr</div><div class="plan-cell">74.569 €</div><div class="plan-cell">95.449 €</div><div class="plan-cell">99.431 €</div></div>
+    </div>
+    <div class="content-footer">
+      <div class="content-footer-text">Akrona GmbH · § 34i GewO · IHK Region Stuttgart</div>
+      <div class="content-footer-text">Seite 4 von 5</div>
+    </div>
+  </div>
+
+  <div class="page-label">Seite 5 · Gutschein & Nächste Schritte</div>
+
+  <!-- ── PAGE 5: VOUCHER + NEXT STEPS ── -->
+  <div class="page voucher-page">
+    <div class="voucher-border"></div>
+    <div class="voucher-inner">
+
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 28px;">
+        <div>
+          <div style="font-family:'Inter',sans-serif; font-size:9px; color:#D4AF37; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;">Nächste Schritte</div>
+          <div style="font-family:'Inter',sans-serif; font-size:26px; font-weight:800; color:#fff; line-height:1.2;">Ihr Weg zur<br>Finanzierung</div>
+        </div>
+        <img src="/Users/marioalbrecht/NovaraPro_Claude_Code/Projekte/Alperen/Logo_Akrona/Akrona_Logo_Transparent.png" alt="Akrona Logo" style="height:72px; width:auto; object-fit:contain; margin-top:-4px;" />
+      </div>
+
+      <div class="voucher-steps">
+        <div class="voucher-step">
+          <div class="voucher-step-num"><span>01</span></div>
+          <div>
+            <div class="voucher-step-title">Persönliches Beratungsgespräch</div>
+            <div class="voucher-step-text">Kontaktieren Sie uns für ein unverbindliches Erstgespräch. Wir analysieren gemeinsam Ihre Finanzierungsmöglichkeiten bei verschiedenen Banken.</div>
+          </div>
+        </div>
+        <div class="voucher-step">
+          <div class="voucher-step-num"><span>02</span></div>
+          <div>
+            <div class="voucher-step-title">Unterlagen vorbereiten</div>
+            <div class="voucher-step-text">Halten Sie Einkommensnachweise, Kontoauszüge und ggf. Exposés bereit. Je vollständiger Ihre Unterlagen, desto schneller die Bearbeitung.</div>
+          </div>
+        </div>
+        <div class="voucher-step">
+          <div class="voucher-step-num"><span>03</span></div>
+          <div>
+            <div class="voucher-step-title">Bankvergleich &amp; bestes Angebot</div>
+            <div class="voucher-step-text">Wir vergleichen Angebote von über 400 Banken und Kreditgebern, um die optimalen Konditionen für Sie zu finden.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voucher Certificate -->
+      <div class="voucher-certificate">
+        <div class="voucher-perforated-top"></div>
+        <div class="voucher-scissors">✂</div>
+
+        <div class="voucher-eyebrow">Ihr persönlicher Vorteilsgutschein</div>
+        <div class="voucher-gift-title">Wir schenken Ihnen:</div>
+
+        <div class="voucher-services">
+          <div class="voucher-service-item">
+            <div class="voucher-check"><span>✓</span></div>
+            <div class="voucher-service-text"><strong style="color:#fff">Kostenlose Erstberatung</strong> — persönlich oder telefonisch, ohne Verpflichtung</div>
+          </div>
+          <div class="voucher-service-item">
+            <div class="voucher-check"><span>✓</span></div>
+            <div class="voucher-service-text"><strong style="color:#fff">Umfassender Bankvergleich</strong> — Ihr bestes individuelles Finanzierungsangebot aus über 400 Banken, persönlich für Sie analysiert</div>
+          </div>
+        </div>
+
+        <div class="voucher-code-row">
+          <div>
+            <div class="voucher-code-label">Ihr Gutschein-Code</div>
+            <div class="voucher-code-value">AKRONA-VORTEIL</div>
+          </div>
+          <div class="voucher-validity">
+            <div class="voucher-validity-label">Gültig bis</div>
+            <div class="voucher-validity-value">10. Mai 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="voucher-contact" style="display:flex; align-items:center; gap:18px;">
+        <img
+          src="/Users/marioalbrecht/Downloads/freepik_use-reference-image-img1-_2758145657.jpeg"
+          alt="Alperen Akbal"
+          style="width:64px; height:64px; object-fit:cover; object-position:center top; border-radius:50%; border:2px solid rgba(212,175,55,0.6); flex-shrink:0;"
+        />
+        <div>
+          <div class="voucher-contact-name">Alperen Akbal · Geschäftsführer</div>
+          <div class="voucher-contact-info">Akrona GmbH &nbsp;·&nbsp; E-Mail: info@akrona.de<br>IHK Region Stuttgart · § 34c &amp; § 34i GewO</div>
+        </div>
+      </div>
+
+      <div class="voucher-disclaimer">
+        <div class="voucher-disclaimer-text">
+          Diese Auswertung stellt eine unverbindliche Ersteinschätzung dar und ist keine verbindliche Kreditzusage einer Bank oder eines Kreditinstituts. Die tatsächlichen Konditionen können je nach Bonität, Anbieter und Marktlage abweichen. Alle Berechnungen erfolgen nach gängigen Bankfaustregeln ohne Gewähr.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
