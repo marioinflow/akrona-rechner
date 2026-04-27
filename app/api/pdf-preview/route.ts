@@ -40,7 +40,7 @@ export async function GET() {
   };
 
   const raw = await renderToBuffer(
-    React.createElement(AkronaPDF, { data }) as React.ReactElement
+    React.createElement(AkronaPDF, { data }) as any
   );
 
   return new NextResponse(Buffer.from(raw), {

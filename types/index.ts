@@ -21,6 +21,8 @@ export interface BaufinanzierungEingaben {
   finanzierungsanteil?: 110 | 100 | 80 | 60;
   /** Manuelle Bonitäts-Überschreibung (überschreibt den berechneten Score) */
   bonitaetOverride?: BonitaetLabel;
+  /** Antragsteller-Konstellation: 'allein' = einzelner Kreditnehmer, 'gemeinschaft' = zwei Kreditnehmer */
+  kreditnehmer?: 'allein' | 'gemeinschaft';
 }
 
 export interface PrivatkreditEingaben {
