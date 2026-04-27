@@ -388,8 +388,8 @@ export const translations = {
 
     // Landing Page (Hero)
     freeAndNonBinding: "Gratuit și fără obligații",
-    heroTitle: "Ce valoare poate avea finanțarea dumneavoastră?",
-    heroSubtitle: "Aflați opțiunile personale de finanțare în câteva secunde — realist, transparent și fără programare la bancă.",
+    heroTitle: "Cât puteți să finanțați.",
+    heroSubtitle: "Aflați la ce sumă vă încadrați în câteva secunde — realist, transparent și fără programare la bancă.",
     instantResult: "Rezultat instantaneu · Fără programare",
     banksCount: "400+ Bănci",
     sslSecured: "Securizat prin SSL",
@@ -403,8 +403,8 @@ export const translations = {
 
     // Calculator Section
     calculatorEyebrow: "Calculator de credit",
-    calculatorTitle: "Calculați plafonul maxim de finanțare",
-    calculatorDisclaimer: "Evaluare inițială orientativă — nu reprezintă o ofertă fermă din partea băncii. Toate informațiile sunt oferite fără garanție.",
+    calculatorTitle: "Calculați suma maximă la care vă încadrați",
+    calculatorDisclaimer: "Calcul orientativ — nu reprezintă o ofertă sau o aprobare fermă de credit din partea băncii.",
 
     // Form Common
     personalData: "Date personale",
@@ -416,14 +416,14 @@ export const translations = {
     selfEmployed: "Activitate independentă",
     pensioner: "Pensionar",
     borrowers: "Solicitanți credit",
-    singleApplicant: "Aplicant unic",
+    singleApplicant: "Ofertă pe o singură persoană",
     onePerson: "1 persoană",
     jointApplicant: "Co-debitor",
     twoPersons: "2 persoane",
-    monthlyNetIncome: "Venit net eligibil",
-    netIncomeApplicant1: "Venit net eligibil solicitant 1",
-    netIncomeApplicant2: "Venit net eligibil solicitant 2",
-    jointNetIncome: "Venit net eligibil cumulat",
+    monthlyNetIncome: "Venit net",
+    netIncomeApplicant1: "Venit net solicitant 1",
+    netIncomeApplicant2: "Venit net co-debitor",
+    jointNetIncome: "Venit net cumulat",
 
     // Property & Financing (Credit ipotecar)
     propertyData: "Datele imobilului",
@@ -448,13 +448,13 @@ export const translations = {
     fromRatePerAnnum: "de la {rate} % p.a.",
     downPaymentAmount: "{amount} avans",
     noDownPayment: "0 € avans",
-    downPaymentAutoCalculated: "Avansul este calculat automat odată ce este introdusă valoarea imobilului.",
+    downPaymentAutoCalculated: "Avansul este calculat automat odată ce este introdus prețul de cumpărare al imobilului.",
     details: "Detalii",
     repaymentRate: "Amortizare inițială",
-    downPaymentEquity: "Avans",
+    downPaymentEquity: "Avans / Capital propriu",
 
     // Privatkredit
-    loanRequest: "Detaliile creditului",
+    loanRequest: "Suma dorită",
     optionalLeaveEmptyMaxCredit: "Opțional — lăsați necompletat pentru a afla plafonul maxim de finanțare",
     desiredLoanAmount: "Suma dorită",
     maxPossible: "Maxim posibil",
@@ -497,7 +497,7 @@ export const translations = {
     monthlyInterestAmount: "Dobândă lunară",
     financingNeed: "Suma necesară pentru finanțare",
     residualDebtAfterYears: "Sold credit rămas ({years} ani)",
-    maxCreditLimit: "Plafon maxim de finanțare",
+    maxCreditLimit: "Suma maximă posibilă",
     totalPurchasingPower: "Sumă maximă posibilă de finanțare",
     totalPurchaseCosts: "Cost total investiție",
     additionalCostsSection: "Costuri suplimentare de achiziție",
@@ -554,7 +554,7 @@ export const translations = {
     faqQ1: "Cât de precisă este evaluarea inițială?",
     faqA1: "Evaluarea inițială se bazează pe standardele bancare curente și vă oferă o orientare realistă. Condițiile reale pot varia în funcție de bancă, situația personală și fluctuațiile dobânzilor.",
     faqQ2: "Ce se întâmplă după solicitarea mea?",
-    faqA2: "Veți primi instantaneu analiza personală prin e-mail, în format PDF. Echipa noastră de la Akrona GmbH vă va examina solicitarea și vă va contacta pentru o discuție consultativă, fără obligații.",
+    faqA2: "Veți primi instantaneu analiza personală prin e-mail, în format PDF. Echipa noastră de la Akrona GmbH vă va analiza solicitarea și vă va contacta pentru o discuție consultativă, fără obligații.",
     faqQ3: "Vor fi transmise datele mele mai departe?",
     faqA3: "Nu. Datele dumneavoastră sunt utilizate exclusiv pentru procesarea cererii și nu vor fi transmise către terți. Stocarea acestora se face în conformitate cu normele GDPR, pe servere din UE.",
     faqQ4: "Care este diferența dintre un scoring de credit 'Foarte bun' și unul 'De bază'?",
@@ -565,7 +565,7 @@ export const translations = {
     faqA6: "Da. Utilizarea calculatorului și evaluarea inițială sunt complet gratuite și nu implică nicio obligație. Akrona GmbH este remunerată prin comisioanele primite de la instituțiile financiare partenere.",
 
     // CTA
-    ctaEyebrow: "Consultanță financiară",
+    ctaEyebrow: "Consultanță financiară personală",
     ctaTitle: "Expertul dumneavoastră în finanțare",
     ctaText: "Alperen Akbal și echipa Akrona vă stau la dispoziție pentru o discuție inițială, fără obligații.",
     contactUs: "Contactați-ne acum",
@@ -577,7 +577,7 @@ export const translations = {
     calculatorType: "Tip calculator:",
     dateLabel: "Data:",
     advisor: "Consultant:",
-    pdfDisclaimerCover: "Calcul exemplificativ neangajant — nu reprezintă o ofertă sau o aprobare fermă de credit din partea băncii.",
+    pdfDisclaimerCover: "Calcul orientativ — nu reprezintă o ofertă sau o aprobare fermă de credit din partea băncii.",
     yourDetails: "Datele dumneavoastră",
     inputData: "Date introduse",
     yourDetailsAtAGlance: "Sinteza datelor introduse",
