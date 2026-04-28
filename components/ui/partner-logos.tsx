@@ -20,6 +20,7 @@ const BANK_LOGOS: BankLogo[] = [
   { id: "dsl",         name: "DSL Bank",                 image: "/logos/2.png" },
   { id: "hanseatic",   name: "Hanseatic Bank",           image: "/logos/1.png" },
   { id: "psd",         name: "PSD Bank",                 image: "/logos/7.png" },
+  { id: "consors",     name: "Consors Finanz",           image: "/logos/11.png" },
 ];
 
 interface PartnerLogosProps {
