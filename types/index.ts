@@ -9,7 +9,7 @@ export interface BaufinanzierungEingaben {
   nettoeinkommen2?: number;
   eigenkapital: number;
   haushaltsgroesse: 1 | 2 | 3 | 4 | 5;
-  laufzeit: 10 | 15 | 20 | 25 | 30;
+  laufzeit: 10 | 15 | 20 | 25 | 30 | 35;
   status: BeschaeftigungsStatus;
   verwendungszweck: Verwendungszweck;
   kaufpreis?: number;

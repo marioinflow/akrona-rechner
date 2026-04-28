@@ -184,7 +184,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
 
   const tSatz = form.tilgungssatz ?? 0.02;
   const tSatzPct = (tSatz * 100).toFixed(1);
-  const sliderFillTilgung = (((tSatz * 100) - 2) / 8) * 100;
+  const sliderFillTilgung = (((tSatz * 100) - 1) / 9) * 100;
   const anzahlungMax = form.kaufpreis || 500000;
   const sliderFillAnzahlung = anzahlungMax > 0 ? (form.eigenkapital / anzahlungMax) * 100 : 0;
 
@@ -322,8 +322,8 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
             <div>
               <FieldLabel>{t('duration')}</FieldLabel>
               <SelectWrapper>
-                <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 10 | 15 | 20 | 25 | 30)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  {[10, 15, 20, 25, 30].map((n) => <option key={n} value={n}>{n} {t('years')}</option>)}
+                <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 10 | 15 | 20 | 25 | 30 | 35)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
+                  {[10, 15, 20, 25, 30, 35].map((n) => <option key={n} value={n}>{n} {t('years')}</option>)}
                 </select>
               </SelectWrapper>
             </div>
@@ -404,11 +404,11 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 {tSatzPct} %
               </span>
             </div>
-            <input type="range" min={2} max={10} step={0.5} value={tSatz * 100}
+            <input type="range" min={1} max={10} step={0.5} value={tSatz * 100}
               onChange={(e) => update('tilgungssatz', Number(e.target.value) / 100)}
               style={{ background: `linear-gradient(to right, #0A3D2C 0%, #0A3D2C ${sliderFillTilgung}%, #E8E2D9 ${sliderFillTilgung}%, #E8E2D9 100%)` }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-              <span style={{ fontSize: '11px', color: '#6b6b6b' }}>2,0 %</span>
+              <span style={{ fontSize: '11px', color: '#6b6b6b' }}>1,0 %</span>
               <span style={{ fontSize: '11px', color: '#6b6b6b' }}>10,0 %</span>
             </div>
           </div>
@@ -425,7 +425,7 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
                 )}
               </span>
             </div>
-            <input type="range" min={0} max={anzahlungMax} step={5000} value={form.eigenkapital}
+            <input type="range" min={0} max={anzahlungMax} step={1000} value={form.eigenkapital}
               onChange={(e) => update('eigenkapital', Number(e.target.value))}
               style={{ background: `linear-gradient(to right, #0A3D2C 0%, #0A3D2C ${sliderFillAnzahlung}%, #E8E2D9 ${sliderFillAnzahlung}%, #E8E2D9 100%)` }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
