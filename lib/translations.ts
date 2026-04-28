@@ -8,6 +8,7 @@ export const translations = {
     certificationBadge: "§ 34i GewO · IHK Stuttgart",
     imprint: "Impressum",
     privacyPolicy: "Datenschutz",
+    website: "Webseite",
     copyright: "© 2025 Akrona GmbH · Alperen Akbal",
 
     // Landing Page (Hero)
@@ -384,6 +385,7 @@ export const translations = {
     certificationBadge: "§ 34i GewO · IHK Stuttgart",
     imprint: "Informații legale",
     privacyPolicy: "Politica de confidențialitate",
+    website: "Site web",
     copyright: "© 2025 Akrona GmbH · Alperen Akbal",
 
     // Landing Page (Hero)

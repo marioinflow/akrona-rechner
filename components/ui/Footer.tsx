@@ -38,25 +38,46 @@ export default function Footer() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           {[
-            { href: `${prefix}/impressum`, labelKey: 'imprint' as const },
-            { href: `${prefix}/datenschutz`, labelKey: 'privacyPolicy' as const },
-          ].map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              style={{
-                fontSize: '12px',
-                color: 'rgba(255,255,255,0.45)',
-                textDecoration: 'none',
-                letterSpacing: '0.04em',
-                transition: 'color 0.15s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#D4AF37')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
-            >
-              {t(l.labelKey)}
-            </Link>
-          ))}
+            { href: `${prefix}/impressum`, labelKey: 'imprint' as const, external: false },
+            { href: `${prefix}/datenschutz`, labelKey: 'privacyPolicy' as const, external: false },
+            { href: 'https://akrona.de', labelKey: 'website' as const, external: true },
+          ].map((l) =>
+            l.external ? (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.45)',
+                  textDecoration: 'none',
+                  letterSpacing: '0.04em',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#D4AF37')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+              >
+                {t(l.labelKey)}
+              </a>
+            ) : (
+              <Link
+                key={l.href}
+                href={l.href}
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.45)',
+                  textDecoration: 'none',
+                  letterSpacing: '0.04em',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#D4AF37')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+              >
+                {t(l.labelKey)}
+              </Link>
+            )
+          )}
         </div>
 
         <p

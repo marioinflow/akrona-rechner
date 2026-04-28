@@ -694,7 +694,7 @@ export default function HomePageContent() {
               {t('ctaText')}
             </p>
             <a
-              href="mailto:info@akrona-gmbh.de"
+              href="mailto:info@akrona.de"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '10px',
                 height: '52px', padding: '0 32px',
