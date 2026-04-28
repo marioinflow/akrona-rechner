@@ -388,8 +388,8 @@ export const translations = {
 
     // Landing Page (Hero)
     freeAndNonBinding: "Gratuit și fără obligații",
-    heroTitle: "Cât puteți să finanțați.",
-    heroSubtitle: "Aflați la ce sumă vă încadrați în câteva secunde — realist, transparent și fără programare la bancă.",
+    heroTitle: "Aflați chiar acum la ce sumă vă încadrați!",
+    heroSubtitle: "Aflați la ce sumă vă încadrați în câteva secunde, realist, transparent și fără programare la bancă.",
     instantResult: "Rezultat instantaneu · Fără programare",
     banksCount: "400+ Bănci",
     sslSecured: "Securizat prin SSL",
