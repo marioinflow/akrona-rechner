@@ -31,7 +31,7 @@ export interface PrivatkreditEingaben {
   nettoeinkommen2?: number;
   wunschkredit?: number;
   haushaltsgroesse: 1 | 2 | 3 | 4 | 5;
-  laufzeit: 12 | 24 | 36 | 48 | 60 | 84;
+  laufzeit: 12 | 24 | 36 | 48 | 60 | 84 | 96 | 120;
   status: BeschaeftigungsStatus;
   /** Manuelle Bonitäts-Überschreibung (überschreibt den berechneten Score) */
   bonitaetOverride?: BonitaetLabel;

@@ -229,8 +229,8 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             <div>
               <FieldLabel required>{t('duration')}</FieldLabel>
               <SelectWrapper>
-                <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 12 | 24 | 36 | 48 | 60 | 84)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
-                  {[12, 24, 36, 48, 60, 84].map((n) => (
+                <select value={form.laufzeit} onChange={(e) => update('laufzeit', Number(e.target.value) as 12 | 24 | 36 | 48 | 60 | 84 | 96 | 120)} style={{ ...IS, paddingRight: '36px' }} onFocus={onFocus} onBlur={onBlur}>
+                  {[12, 24, 36, 48, 60, 84, 96, 120].map((n) => (
                     <option key={n} value={n}>{n} {t('months')}</option>
                   ))}
                 </select>
