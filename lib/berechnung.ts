@@ -134,6 +134,8 @@ export function berechneBaufinanzierung(
   const ekQuote = referenzwert > 0 ? eigenkapital / referenzwert : 0;
   if (ekQuote >= 0.2) score += 2;
   else if (ekQuote >= 0.1) score += 1;
+  else if (kaufpreis && kaufpreis > 0 && ekQuote < 0.05) score -= 2;
+  else if (kaufpreis && kaufpreis > 0) score -= 1;
 
   if (haushaltsgroesse <= 2) score += 2;
   else if (haushaltsgroesse === 3) score += 1;
@@ -148,7 +150,7 @@ export function berechneBaufinanzierung(
   else if (belastung <= 0.38) score += 1;
 
   const kaufkraftPrelim = maxKredit + eigenkapital;
-  if (kaufpreis && kaufpreis > 0 && kaufpreis < kaufkraftPrelim * 0.70) score += 1;
+  if (kaufpreis && kaufpreis > 0 && kaufpreis < kaufkraftPrelim * 0.70 && ekQuote >= 0.10) score += 1;
 
   // ── Bonität & Zinssatz ──
   const berechneteBonitaet = getBonitaetLabel(score);
@@ -250,6 +252,32 @@ export function berechnePrivatkredit(
     bonitaetLabel,
     zinssatz,
   };
+}
+
+// ──────────────────────────────────────────────
+// Eigenkapital-Berechnung für Finanzierungsoptionen
+// 110 % = inkl. Nebenkosten finanziert (EK = 0)
+// 100 % = nur Kaufpreis finanziert (EK = Nebenkosten)
+//  80 % / 60 % = klassische EK-Quote vom Kaufpreis
+// ──────────────────────────────────────────────
+
+export function computeEigenkapitalFuerAnteil(
+  anteil: 110 | 100 | 80 | 60,
+  kaufpreis: number,
+  bundesland?: string,
+  maklergebuehrPct?: number
+): number {
+  if (!kaufpreis || kaufpreis <= 0) return 0;
+  if (anteil === 110) return 0;
+  if (anteil === 100) {
+    const gst = bundesland
+      ? (RECHNER_CONFIG.grunderwerbsteuerSaetze[bundesland] ?? 0.05)
+      : 0.05;
+    const makler = (maklergebuehrPct ?? 0) / 100;
+    const notar = RECHNER_CONFIG.notarGrundbuchSatz;
+    return Math.round(kaufpreis * (gst + makler + notar));
+  }
+  return Math.round(kaufpreis * (1 - anteil / 100));
 }
 
 // ──────────────────────────────────────────────

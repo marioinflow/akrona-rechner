@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { berechneBaufinanzierung, formatEuro, GRUNDERWERBSTEUER } from '@/lib/berechnung';
+import { berechneBaufinanzierung, formatEuro, GRUNDERWERBSTEUER, computeEigenkapitalFuerAnteil } from '@/lib/berechnung';
 import type { BaufinanzierungEingaben, BaufinanzierungErgebnis } from '@/types';
 import BonitaetBadge from '@/components/ui/BonitaetBadge';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
@@ -141,10 +141,22 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
       if (key === 'kaufpreis' && next.finanzierungsanteil !== undefined) {
-        const kp = Number(value) || 0;
-        next.eigenkapital = next.finanzierungsanteil === 110
-          ? 0
-          : Math.round(kp * (1 - next.finanzierungsanteil / 100));
+        next.eigenkapital = computeEigenkapitalFuerAnteil(
+          next.finanzierungsanteil,
+          Number(value) || 0,
+          next.bundesland,
+          next.maklergebuehr
+        );
+      }
+      if ((key === 'bundesland' || key === 'maklergebuehr')
+          && next.finanzierungsanteil === 100
+          && next.kaufpreis) {
+        next.eigenkapital = computeEigenkapitalFuerAnteil(
+          100,
+          next.kaufpreis,
+          next.bundesland,
+          next.maklergebuehr
+        );
       }
       if (key === 'eigenkapital') {
         next.finanzierungsanteil = undefined;
@@ -156,8 +168,12 @@ export default function BaufinanzierungRechner({ onLeadTrigger }: Props) {
   }, [ergebnis]);
 
   const selectFinanzierung = (anteil: 110 | 100 | 80 | 60) => {
-    const kp = form.kaufpreis || 0;
-    const eigenkapital = anteil === 110 ? 0 : Math.round(kp * (1 - anteil / 100));
+    const eigenkapital = computeEigenkapitalFuerAnteil(
+      anteil,
+      form.kaufpreis || 0,
+      form.bundesland,
+      form.maklergebuehr
+    );
     setForm((prev) => ({ ...prev, finanzierungsanteil: anteil, eigenkapital }));
     if (ergebnis) setFormChanged(true);
   };
