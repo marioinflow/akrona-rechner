@@ -24,11 +24,13 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
   if (!isOpen || !payload) return null;
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+  const phoneValid = /[0-9]/.test(form.telefon) && form.telefon.replace(/\D/g, '').length >= 6;
 
   const canSubmit =
     form.vorname.trim() &&
     form.nachname.trim() &&
     emailValid &&
+    phoneValid &&
     consents.datenschutz &&
     consents.kontakt &&
     !loading;
@@ -44,7 +46,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          telefon: form.telefon.trim() || undefined,
+          telefon: form.telefon.trim(),
           ...payload,
           lang,
           consents,
@@ -161,9 +163,7 @@ export default function LeadModal({ isOpen, onClose, payload }: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>
-                  {t('phoneNumber')} <span style={{ color: '#9ca3af', fontWeight: 400 }}>{t('optional')}</span>
-                </label>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#6b6b6b' }}>{t('phoneNumber')} *</label>
                 <input
                   type="tel"
                   value={form.telefon}
