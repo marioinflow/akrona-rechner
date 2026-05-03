@@ -393,7 +393,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
             </div>
 
             {/* Blur-Overlay über Rest */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', minHeight: '280px', overflow: 'hidden' }}>
               {[
                 { label: t('totalInterestCosts'), value: formatEuro(zinsgesamt) },
                 { label: t('totalAmount'), value: formatEuro(ergebnis.gesamtkosten) },
@@ -406,7 +406,7 @@ export default function PrivatkreditRechner({ onLeadTrigger }: Props) {
               ))}
 
               {/* CTA-Overlay */}
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.96) 50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '24px' }}>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.98) 35%)', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
                 <div style={{ textAlign: 'center', maxWidth: '420px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#0A3D2C', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                     <svg width="18" height="20" fill="none" stroke="#D4AF37" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
