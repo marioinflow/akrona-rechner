@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { GRUNDERWERBSTEUER } from '@/lib/berechnung';
 import { useT, useLanguage } from '@/lib/language-context';
@@ -104,10 +104,20 @@ export default function ImmobilienbewertungRechner() {
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
+  const [calculating, setCalculating] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const t = useT();
   const { lang } = useLanguage();
+
+  // Bei jedem Schritt-/Statuswechsel zum Wizard-Anfang scrollen —
+  // sonst bleibt der Viewport beim kürzeren Folgeschritt in der nächsten Section hängen.
+  const wizardRef = useRef<HTMLDivElement>(null);
+  const didMount = useRef(false);
+  useEffect(() => {
+    if (!didMount.current) { didMount.current = true; return; }
+    wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [step, calculating, success]);
 
   const update = <K extends keyof BewertungEingaben>(key: K, value: BewertungEingaben[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -160,6 +170,15 @@ export default function ImmobilienbewertungRechner() {
     setError('');
     // Grundstück: Schritt 4 (Zustand & Ausstattung) überspringen
     if (step === 3 && istGrundstueck) { setStep(5); return; }
+    // Nach der letzten Sach-Frage: Berechnungs-Zwischenschritt, dann Kontakt-Gate
+    if (step === 5) {
+      setCalculating(true);
+      setTimeout(() => {
+        setCalculating(false);
+        setStep(6);
+      }, 2400);
+      return;
+    }
     setStep((s) => Math.min(TOTAL_STEPS, s + 1));
   };
 
@@ -200,10 +219,30 @@ export default function ImmobilienbewertungRechner() {
     }
   };
 
+  // ── Berechnungs-Zwischenschritt — inszeniert die Auswertung vor dem Kontakt-Gate ──
+  if (calculating) {
+    return (
+      <div ref={wizardRef} className="fade-in" style={{ maxWidth: '640px', margin: '0 auto', scrollMarginTop: '84px' }}>
+        <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', padding: '64px 28px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', textAlign: 'center' }}>
+          <svg className="animate-spin" width="44" height="44" viewBox="0 0 24 24" fill="none" style={{ display: 'block', margin: '0 auto 20px' }}>
+            <circle cx="12" cy="12" r="10" stroke="#E8E2D9" strokeWidth="3" />
+            <path d="M12 2 a 10 10 0 0 1 10 10" stroke="#D4AF37" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+          <p style={{ fontSize: '17px', fontWeight: 700, color: '#0A3D2C', margin: '0 0 8px' }}>
+            {t('bwCalculating')}
+          </p>
+          <p style={{ fontSize: '13px', color: '#6b6b6b', margin: 0 }}>
+            {t('bwCalculatingSub')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // ── Erfolgsansicht — KEIN Ergebnis auf der Seite ──
   if (success) {
     return (
-      <div className="fade-in" style={{ maxWidth: '640px', margin: '0 auto' }}>
+      <div ref={wizardRef} className="fade-in" style={{ maxWidth: '640px', margin: '0 auto', scrollMarginTop: '84px' }}>
         <div style={{
           backgroundColor: '#0A3D2C', borderRadius: '20px', padding: '56px 32px',
           textAlign: 'center', boxShadow: '0 20px 60px rgba(10,61,44,0.3)',
@@ -238,7 +277,7 @@ export default function ImmobilienbewertungRechner() {
   };
 
   return (
-    <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+    <div ref={wizardRef} style={{ maxWidth: '640px', margin: '0 auto', scrollMarginTop: '84px' }}>
       <div style={{ border: '1px solid #E8E2D9', borderRadius: '18px', padding: '28px', backgroundColor: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
 
         {/* ── Progress ── */}
