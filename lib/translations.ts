@@ -320,6 +320,9 @@ export const translations = {
     bwPdfDisclaimer: "Diese Werteinschätzung ist eine unverbindliche Ersteinschätzung auf Basis statistischer Vergleichswerte. Sie ist KEIN Verkehrswertgutachten im Sinne des § 194 BauGB und ersetzt keine Bewertung durch einen zertifizierten Sachverständigen. Der tatsächlich erzielbare Preis kann je nach Mikrolage, Objektzustand und Marktlage abweichen.",
     bwPdfCtaTitle: "Was ist Ihre Immobilie wirklich wert?",
     bwPdfCtaText: "Alperen Akbal und das Akrona-Team prüfen Ihre Immobilie gerne persönlich und begleiten Sie bei Verkauf, Kauf oder Anschlussfinanzierung — kostenlos und unverbindlich.",
+    bwPdfService0Title: "Persönliche Werteinschätzung",
+    bwPdfService0Desc: "Wir prüfen Ihre Immobilie individuell und präzisieren die Einschätzung über die Ersteinschätzung hinaus.",
+    bwPdfYourEstimate: "Ihre Ersteinschätzung im Überblick",
 
     // Impressum
     imprintTitle: "Impressum | Akrona GmbH",
@@ -773,6 +776,9 @@ export const translations = {
     bwPdfDisclaimer: "Această estimare este o evaluare inițială orientativă, bazată pe valori comparative statistice. NU reprezintă un raport de evaluare a valorii de piață în sensul § 194 BauGB și nu înlocuiește o evaluare realizată de un expert certificat. Prețul efectiv obtenabil poate varia în funcție de microlocație, starea imobilului și condițiile pieței.",
     bwPdfCtaTitle: "Cât valorează cu adevărat imobilul dumneavoastră?",
     bwPdfCtaText: "Alperen Akbal și echipa Akrona vă evaluează imobilul personal și vă însoțesc la vânzare, achiziție sau refinanțare — gratuit și fără obligații.",
+    bwPdfService0Title: "Evaluare personalizată",
+    bwPdfService0Desc: "Analizăm imobilul dumneavoastră individual și rafinăm estimarea dincolo de evaluarea inițială.",
+    bwPdfYourEstimate: "Evaluarea dumneavoastră inițială pe scurt",
 
     // Impressum
     imprintTitle: "Informații legale | Akrona GmbH",
