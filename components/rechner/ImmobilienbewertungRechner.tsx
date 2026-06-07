@@ -18,6 +18,10 @@ import type {
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
 const TOTAL_STEPS = 6;
 
+// Trust-Botschaften während des Berechnungs-Zwischenschritts (rotieren nacheinander)
+const CALC_MSG_KEYS = ['bwCalcMsg1', 'bwCalcMsg2', 'bwCalcMsg3', 'bwCalcMsg4'] as const;
+const CALC_MSG_DURATION = 1800; // ms pro Botschaft
+
 // ── Input-Styles (identisch zu Privatkredit-/Baufinanzierungsrechner) ──
 const IS: React.CSSProperties = {
   height: '44px',
@@ -105,10 +109,25 @@ export default function ImmobilienbewertungRechner() {
   const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
   const [calculating, setCalculating] = useState(false);
+  const [calcMsgIndex, setCalcMsgIndex] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const t = useT();
   const { lang } = useLanguage();
+
+  // Berechnungs-Zwischenschritt: Trust-Botschaften rotieren, danach Kontakt-Gate
+  useEffect(() => {
+    if (!calculating) return;
+    setCalcMsgIndex(0);
+    const interval = setInterval(() => {
+      setCalcMsgIndex((i) => Math.min(i + 1, CALC_MSG_KEYS.length - 1));
+    }, CALC_MSG_DURATION);
+    const timeout = setTimeout(() => {
+      setCalculating(false);
+      setStep(6);
+    }, CALC_MSG_KEYS.length * CALC_MSG_DURATION + 400);
+    return () => { clearInterval(interval); clearTimeout(timeout); };
+  }, [calculating]);
 
   // Bei jedem Schritt-/Statuswechsel zum Wizard-Anfang scrollen —
   // sonst bleibt der Viewport beim kürzeren Folgeschritt in der nächsten Section hängen.
@@ -173,10 +192,6 @@ export default function ImmobilienbewertungRechner() {
     // Nach der letzten Sach-Frage: Berechnungs-Zwischenschritt, dann Kontakt-Gate
     if (step === 5) {
       setCalculating(true);
-      setTimeout(() => {
-        setCalculating(false);
-        setStep(6);
-      }, 2400);
       return;
     }
     setStep((s) => Math.min(TOTAL_STEPS, s + 1));
@@ -234,6 +249,29 @@ export default function ImmobilienbewertungRechner() {
           <p style={{ fontSize: '13px', color: '#6b6b6b', margin: 0 }}>
             {t('bwCalculatingSub')}
           </p>
+
+          {/* Rotierende Trust-Botschaften */}
+          <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #F0EDE8', minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div key={calcMsgIndex} className="fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              {calcMsgIndex > 0 && (
+                <span style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: 'rgba(212,175,55,0.15)', border: '1.5px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="9" height="9" fill="none" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+              )}
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0A5D3F', lineHeight: 1.4, textAlign: 'left' }}>
+                {t(CALC_MSG_KEYS[calcMsgIndex])}
+              </span>
+            </div>
+          </div>
+
+          {/* Fortschritts-Punkte */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
+            {CALC_MSG_KEYS.map((_, i) => (
+              <span key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: i <= calcMsgIndex ? '#D4AF37' : '#E8E2D9', transition: 'background-color 0.3s' }} />
+            ))}
+          </div>
         </div>
       </div>
     );
