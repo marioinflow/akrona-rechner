@@ -88,53 +88,60 @@ const s = StyleSheet.create({
   contentFooter:        { backgroundColor: C.bg, borderTop: '1px solid #E8E2D9', paddingHorizontal: 36, paddingVertical: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   contentFooterText:    { fontSize: 7.5, color: '#aaa' },
 
-  sectionEyebrow: { fontSize: 7.5, color: C.lightGreen, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 5 },
-  sectionTitle:   { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 18 },
+  sectionEyebrow: { fontSize: 7.5, color: C.lightGreen, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 },
+  sectionTitle:   { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 10 },
 
-  table:          { marginBottom: 16 },
-  tableRow:       { flexDirection: 'row', borderBottom: '1px solid #E8E2D9', paddingVertical: 8 },
+  // Kompakte Maße — Seite 2 muss auch im Worst Case (14 Zeilen) auf eine Seite passen
+  table:          { marginBottom: 10 },
+  tableRow:       { flexDirection: 'row', borderBottom: '1px solid #E8E2D9', paddingVertical: 4.5 },
   tableRowAlt:    { backgroundColor: C.bg, paddingHorizontal: 6 },
-  tableLabel:     { fontSize: 9.5, color: C.muted, flex: 1 },
-  tableValue:     { fontSize: 9.5, color: C.text, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
+  tableLabel:     { fontSize: 9, color: C.muted, flex: 1 },
+  tableValue:     { fontSize: 9, color: C.text, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
 
   // Wertspannen-Karte (Ergebnisseite)
-  rangeCard:      { backgroundColor: C.darkGreen, padding: 20, marginBottom: 16, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 },
-  rangeLabel:     { fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  rangeValue:     { fontSize: 24, fontFamily: 'Helvetica-Bold', color: C.gold },
+  rangeCard:      { backgroundColor: C.darkGreen, padding: 14, marginBottom: 10, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 },
+  rangeLabel:     { fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 5 },
+  rangeValue:     { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.gold },
 
-  konfidenzBadge: { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 16, borderWidth: 1, borderStyle: 'solid' },
+  konfidenzBadge: { flexDirection: 'row', alignItems: 'center', padding: 10, marginBottom: 10, borderWidth: 1, borderStyle: 'solid' },
   konfidenzDot:   { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-  konfidenzLabel: { fontSize: 12, fontFamily: 'Helvetica-Bold' },
+  konfidenzLabel: { fontSize: 11, fontFamily: 'Helvetica-Bold' },
 
-  methodBox:      { backgroundColor: C.bg, borderWidth: 1, borderColor: '#E8E2D9', borderStyle: 'solid', padding: 16, marginBottom: 14 },
-  methodTitle:    { fontSize: 10, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 6 },
-  methodText:     { fontSize: 8.5, color: '#444', lineHeight: 1.6 },
+  methodBox:      { backgroundColor: C.bg, borderWidth: 1, borderColor: '#E8E2D9', borderStyle: 'solid', padding: 12, marginBottom: 10 },
+  methodTitle:    { fontSize: 10, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 5 },
+  methodText:     { fontSize: 8, color: '#444', lineHeight: 1.5 },
 
-  disclaimerBox:  { borderLeftWidth: 3, borderLeftColor: '#D4AF37', borderLeftStyle: 'solid', backgroundColor: C.bg, padding: 14, marginBottom: 14 },
-  disclaimerText: { fontSize: 8, color: C.muted, lineHeight: 1.6 },
+  disclaimerBox:  { borderLeftWidth: 3, borderLeftColor: '#D4AF37', borderLeftStyle: 'solid', backgroundColor: C.bg, padding: 10 },
+  disclaimerText: { fontSize: 7.5, color: C.muted, lineHeight: 1.5 },
 
-  // ── CTA Page (dark) ──
+  // ── CTA Page (dark) — großzügige Maße, Seite soll voll wirken ──
   ctaFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
-  ctaInner:      { padding: 36, flex: 1 },
-  ctaTopRow:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 },
-  ctaEyebrow:    { fontSize: 8, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 8 },
-  ctaTitle:      { fontSize: 22, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2 },
-  ctaLogoImg:    { width: 90, height: 60 },
-  ctaText:       { fontSize: 10, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 24 },
+  ctaInner:      { padding: 42, flex: 1 },
+  ctaTopRow:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 30 },
+  ctaEyebrow:    { fontSize: 9, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 10 },
+  ctaTitle:      { fontSize: 27, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2, maxWidth: 330 },
+  ctaLogoImg:    { width: 100, height: 66 },
+  ctaText:       { fontSize: 11.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, marginBottom: 28 },
 
-  ctaServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
-  ctaServiceCheck: { width: 16, height: 16, borderRadius: 8, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1, flexShrink: 0 },
-  ctaServiceText:  { fontSize: 9.5, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.5 },
+  // Wertspannen-Recap — füllt die Seite und wiederholt die Kernbotschaft
+  ctaValueBox:   { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', backgroundColor: '#0F4A33', paddingVertical: 24, paddingHorizontal: 28, alignItems: 'center', marginBottom: 34 },
+  ctaValueLabel: { fontSize: 8.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 9 },
+  ctaValueRange: { fontSize: 23, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 7 },
+  ctaValueKonf:  { fontSize: 10, color: 'rgba(255,255,255,0.6)' },
 
-  ctaContact:      { flexDirection: 'row', alignItems: 'center', marginTop: 20, padding: '12 14', backgroundColor: '#0C4A32', borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
-  ctaPortraitWrap: { width: 56, height: 56, marginRight: 14, flexShrink: 0 },
-  ctaPortrait:     { width: 56, height: 56, borderRadius: 28, objectFit: 'cover' },
-  ctaContactName:  { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 3 },
-  ctaContactInfo:  { fontSize: 8.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 },
+  ctaServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 19 },
+  ctaServiceCheck: { width: 20, height: 20, borderRadius: 10, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 13, marginTop: 1, flexShrink: 0 },
+  ctaServiceText:  { fontSize: 11, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.6 },
 
-  ctaDisclaimer:     { marginTop: 'auto', paddingTop: 12, borderTopWidth: 1, borderTopColor: '#163D2C', borderTopStyle: 'solid' },
-  ctaDisclaimerText: { fontSize: 7, color: 'rgba(255,255,255,0.25)', lineHeight: 1.6 },
-  ctaFooterLinks:    { fontSize: 7, color: 'rgba(255,255,255,0.35)', marginTop: 6 },
+  ctaContact:      { flexDirection: 'row', alignItems: 'center', marginTop: 34, padding: '18 20', backgroundColor: '#0C4A32', borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
+  ctaPortraitWrap: { width: 72, height: 72, marginRight: 16, flexShrink: 0 },
+  ctaPortrait:     { width: 72, height: 72, borderRadius: 36, objectFit: 'cover' },
+  ctaContactName:  { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 4 },
+  ctaContactInfo:  { fontSize: 10, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 },
+
+  ctaDisclaimer:     { marginTop: 'auto', paddingTop: 14, borderTopWidth: 1, borderTopColor: '#163D2C', borderTopStyle: 'solid' },
+  ctaDisclaimerText: { fontSize: 7.5, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 },
+  ctaFooterLinks:    { fontSize: 7.5, color: 'rgba(255,255,255,0.4)', marginTop: 6 },
 });
 
 // ─── Header / Footer (Content-Seiten) ─────────────────────
@@ -361,13 +368,21 @@ export function BewertungPDF({ data }: {
 
             <Text style={s.ctaText}>{t.bwPdfCtaText}</Text>
 
+            {/* Wertspannen-Recap */}
+            <View style={s.ctaValueBox}>
+              <Text style={s.ctaValueLabel}>{t.bwPdfYourEstimate}</Text>
+              <Text style={s.ctaValueRange}>{fEuro(ergebnis.wertVon)} – {fEuro(ergebnis.wertBis)}</Text>
+              <Text style={s.ctaValueKonf}>{t.bwPdfConfidence}: {konfidenz}</Text>
+            </View>
+
             {[
+              { title: t.bwPdfService0Title, desc: t.bwPdfService0Desc },
               { title: t.voucherService1Title, desc: t.voucherService1Desc },
               { title: t.bankComparisonAndOffer, desc: t.bankComparisonAndOfferDesc },
             ].map((srv, i) => (
               <View key={i} style={s.ctaServiceRow}>
                 <View style={s.ctaServiceCheck}>
-                  <Svg width="9" height="7" viewBox="0 0 9 7">
+                  <Svg width="11" height="9" viewBox="0 0 9 7">
                     <Path d="M1 3.5 L3.5 6 L8 1" stroke={C.darkGreen} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                   </Svg>
                 </View>
