@@ -19,6 +19,9 @@ import path from 'path';
 import type { BewertungEingaben, BewertungErgebnis, KonfidenzNote } from '@/types';
 import { translations } from '@/lib/translations';
 import { C } from '@/lib/pdf-template';
+import { registerPdfFonts } from '@/lib/pdf-fonts';
+
+registerPdfFonts();
 
 // ─── Asset Paths ───────────────────────────────────────────
 const LOGO    = path.join(process.cwd(), 'public', 'akrona-logo-transparent.png');
@@ -47,8 +50,8 @@ function getKonfidenzColor(k: KonfidenzNote) {
 
 // ─── Styles ───────────────────────────────────────────
 const s = StyleSheet.create({
-  page:     { fontFamily: 'Helvetica', backgroundColor: C.white, padding: 0 },
-  pageDark: { fontFamily: 'Helvetica', backgroundColor: C.darkGreen, padding: 0 },
+  page:     { fontFamily: 'Inter', backgroundColor: C.white, padding: 0 },
+  pageDark: { fontFamily: 'Inter', backgroundColor: C.darkGreen, padding: 0 },
 
   // ── Cover ──
   coverFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
@@ -62,20 +65,20 @@ const s = StyleSheet.create({
   coverOrnamentLine:    { width: 50, height: 1, backgroundColor: C.gold, opacity: 0.5 },
   coverOrnamentDiamond: { width: 6, height: 6, backgroundColor: C.gold, marginHorizontal: 10 },
   coverEyebrow:  { fontSize: 8, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 12, textAlign: 'center' },
-  coverTitle:    { fontSize: 26, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
+  coverTitle:    { fontSize: 26, fontFamily: 'Inter', fontWeight: 'bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
   coverSubtitle: { fontSize: 10, color: 'rgba(255,255,255,0.45)', marginBottom: 24, letterSpacing: 0.5, textAlign: 'center' },
 
   // Wertspannen-Box auf dem Cover
   coverValueBox:     { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', backgroundColor: '#0F4A33', paddingVertical: 20, paddingHorizontal: 36, alignItems: 'center' },
   coverValueLabel:   { fontSize: 8, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
-  coverValueRange:   { fontSize: 24, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 6 },
+  coverValueRange:   { fontSize: 24, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold, marginBottom: 6 },
   coverValueKonf:    { fontSize: 9, color: 'rgba(255,255,255,0.6)' },
 
   coverMeta:      { borderTopWidth: 1, borderTopColor: '#3A2E10', borderTopStyle: 'solid', paddingTop: 18, marginTop: 8 },
   coverMetaRow:   { flexDirection: 'row', marginBottom: 10 },
   coverMetaItem:  { flex: 1 },
   coverMetaLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
-  coverMetaValue: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: C.white },
+  coverMetaValue: { fontSize: 12, fontFamily: 'Inter', fontWeight: 'bold', color: C.white },
   coverFooterText: { fontSize: 7.5, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 14 },
 
   // ── Content Pages ──
@@ -89,26 +92,26 @@ const s = StyleSheet.create({
   contentFooterText:    { fontSize: 7.5, color: '#aaa' },
 
   sectionEyebrow: { fontSize: 7.5, color: C.lightGreen, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 },
-  sectionTitle:   { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 10 },
+  sectionTitle:   { fontSize: 18, fontFamily: 'Inter', fontWeight: 'bold', color: C.darkGreen, marginBottom: 10 },
 
   // Kompakte Maße — Seite 2 muss auch im Worst Case (14 Zeilen) auf eine Seite passen
   table:          { marginBottom: 10 },
   tableRow:       { flexDirection: 'row', borderBottom: '1px solid #E8E2D9', paddingVertical: 4.5 },
   tableRowAlt:    { backgroundColor: C.bg, paddingHorizontal: 6 },
   tableLabel:     { fontSize: 9, color: C.muted, flex: 1 },
-  tableValue:     { fontSize: 9, color: C.text, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
+  tableValue:     { fontSize: 9, color: C.text, fontFamily: 'Inter', fontWeight: 'bold', textAlign: 'right' },
 
   // Wertspannen-Karte (Ergebnisseite)
   rangeCard:      { backgroundColor: C.darkGreen, padding: 14, marginBottom: 10, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 },
   rangeLabel:     { fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 5 },
-  rangeValue:     { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.gold },
+  rangeValue:     { fontSize: 20, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold },
 
   konfidenzBadge: { flexDirection: 'row', alignItems: 'center', padding: 10, marginBottom: 10, borderWidth: 1, borderStyle: 'solid' },
   konfidenzDot:   { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-  konfidenzLabel: { fontSize: 11, fontFamily: 'Helvetica-Bold' },
+  konfidenzLabel: { fontSize: 11, fontFamily: 'Inter', fontWeight: 'bold' },
 
   methodBox:      { backgroundColor: C.bg, borderWidth: 1, borderColor: '#E8E2D9', borderStyle: 'solid', padding: 12, marginBottom: 10 },
-  methodTitle:    { fontSize: 10, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 5 },
+  methodTitle:    { fontSize: 10, fontFamily: 'Inter', fontWeight: 'bold', color: C.darkGreen, marginBottom: 5 },
   methodText:     { fontSize: 8, color: '#444', lineHeight: 1.5 },
 
   disclaimerBox:  { borderLeftWidth: 3, borderLeftColor: '#D4AF37', borderLeftStyle: 'solid', backgroundColor: C.bg, padding: 10 },
@@ -119,14 +122,14 @@ const s = StyleSheet.create({
   ctaInner:      { padding: 42, flex: 1 },
   ctaTopRow:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 30 },
   ctaEyebrow:    { fontSize: 9, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 10 },
-  ctaTitle:      { fontSize: 27, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2, maxWidth: 330 },
+  ctaTitle:      { fontSize: 27, fontFamily: 'Inter', fontWeight: 'bold', color: C.white, lineHeight: 1.2, maxWidth: 330 },
   ctaLogoImg:    { width: 100, height: 66 },
   ctaText:       { fontSize: 11.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, marginBottom: 28 },
 
   // Wertspannen-Recap — füllt die Seite und wiederholt die Kernbotschaft
   ctaValueBox:   { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', backgroundColor: '#0F4A33', paddingVertical: 24, paddingHorizontal: 28, alignItems: 'center', marginBottom: 34 },
   ctaValueLabel: { fontSize: 8.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 9 },
-  ctaValueRange: { fontSize: 23, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 7 },
+  ctaValueRange: { fontSize: 23, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold, marginBottom: 7 },
   ctaValueKonf:  { fontSize: 10, color: 'rgba(255,255,255,0.6)' },
 
   ctaServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 19 },
@@ -136,7 +139,7 @@ const s = StyleSheet.create({
   ctaContact:      { flexDirection: 'row', alignItems: 'center', marginTop: 34, padding: '18 20', backgroundColor: '#0C4A32', borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
   ctaPortraitWrap: { width: 72, height: 72, marginRight: 16, flexShrink: 0 },
   ctaPortrait:     { width: 72, height: 72, borderRadius: 36, objectFit: 'cover' },
-  ctaContactName:  { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 4 },
+  ctaContactName:  { fontSize: 13, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold, marginBottom: 4 },
   ctaContactInfo:  { fontSize: 10, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 },
 
   ctaDisclaimer:     { marginTop: 'auto', paddingTop: 14, borderTopWidth: 1, borderTopColor: '#163D2C', borderTopStyle: 'solid' },
@@ -387,7 +390,7 @@ export function BewertungPDF({ data }: {
                   </Svg>
                 </View>
                 <Text style={s.ctaServiceText}>
-                  <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{srv.title}</Text>
+                  <Text style={{ fontFamily: 'Inter', fontWeight: 'bold', color: C.white }}>{srv.title}</Text>
                   {' — '}{srv.desc}
                 </Text>
               </View>
