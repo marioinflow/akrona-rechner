@@ -17,6 +17,9 @@ import type {
   PrivatkreditEingaben,
 } from '@/types';
 import { translations } from '@/lib/translations';
+import { registerPdfFonts } from '@/lib/pdf-fonts';
+
+registerPdfFonts();
 
 // ─── Asset Paths ───────────────────────────────────────────
 const LOGO   = path.join(process.cwd(), 'public', 'akrona-logo-transparent.png');
@@ -68,8 +71,8 @@ function getValidUntil(lang: 'de' | 'ro'): string {
 
 // ─── Styles ───────────────────────────────────────────
 const s = StyleSheet.create({
-  page:     { fontFamily: 'Helvetica', backgroundColor: C.white, padding: 0 },
-  pageDark: { fontFamily: 'Helvetica', backgroundColor: C.darkGreen, padding: 0 },
+  page:     { fontFamily: 'Inter', backgroundColor: C.white, padding: 0 },
+  pageDark: { fontFamily: 'Inter', backgroundColor: C.darkGreen, padding: 0 },
 
   // ── Cover ── (nested View border, no absolute positioning)
   coverFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
@@ -85,7 +88,7 @@ const s = StyleSheet.create({
   coverOrnamentLine:    { width: 50, height: 1, backgroundColor: C.gold, opacity: 0.5 },
   coverOrnamentDiamond: { width: 6, height: 6, backgroundColor: C.gold, marginHorizontal: 10 },
   coverEyebrow:  { fontSize: 8, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 12, textAlign: 'center' },
-  coverTitle:    { fontSize: 26, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
+  coverTitle:    { fontSize: 26, fontFamily: 'Inter', fontWeight: 'bold', color: C.white, lineHeight: 1.25, marginBottom: 8, textAlign: 'center' },
   coverSubtitle: { fontSize: 10, color: 'rgba(255,255,255,0.45)', marginBottom: 16, letterSpacing: 0.5, textAlign: 'center' },
 
   coverTeamBorder: { borderWidth: 2, borderColor: '#B8973E', borderStyle: 'solid', alignItems: 'center' },
@@ -95,7 +98,7 @@ const s = StyleSheet.create({
   coverMetaRow:   { flexDirection: 'row', marginBottom: 10 },
   coverMetaItem:  { flex: 1 },
   coverMetaLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
-  coverMetaValue: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: C.white },
+  coverMetaValue: { fontSize: 12, fontFamily: 'Inter', fontWeight: 'bold', color: C.white },
 
   coverFooterText: { fontSize: 7.5, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 14 },
 
@@ -110,7 +113,7 @@ const s = StyleSheet.create({
   contentFooterText:    { fontSize: 7.5, color: '#aaa' },
 
   sectionEyebrow: { fontSize: 7.5, color: C.lightGreen, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 5 },
-  sectionTitle:   { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.darkGreen, marginBottom: 18 },
+  sectionTitle:   { fontSize: 20, fontFamily: 'Inter', fontWeight: 'bold', color: C.darkGreen, marginBottom: 18 },
 
   // Tables
   table:          { marginBottom: 16 },
@@ -118,33 +121,33 @@ const s = StyleSheet.create({
   tableRowAlt:    { backgroundColor: C.bg, paddingHorizontal: 6 },
   tableRowTotal:  { backgroundColor: C.darkGreen, paddingHorizontal: 6, paddingVertical: 9 },
   tableLabel:     { fontSize: 9.5, color: C.muted, flex: 1 },
-  tableValue:     { fontSize: 9.5, color: C.text, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
-  tableLabelTotal: { fontSize: 9.5, color: C.white, flex: 1, fontFamily: 'Helvetica-Bold' },
-  tableValueTotal: { fontSize: 9.5, color: C.gold, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
+  tableValue:     { fontSize: 9.5, color: C.text, fontFamily: 'Inter', fontWeight: 'bold', textAlign: 'right' },
+  tableLabelTotal: { fontSize: 9.5, color: C.white, flex: 1, fontFamily: 'Inter', fontWeight: 'bold' },
+  tableValueTotal: { fontSize: 9.5, color: C.gold, fontFamily: 'Inter', fontWeight: 'bold', textAlign: 'right' },
 
   // Result Cards
   resultsGrid:         { flexDirection: 'row', marginBottom: 16 },
   resultCardMain:      { flex: 1, backgroundColor: C.darkGreen, borderRadius: 8, padding: 14, marginRight: 8 },
   resultCardMainLabel: { fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  resultCardMainValue: { fontSize: 20, fontFamily: 'Helvetica-Bold', color: C.gold },
+  resultCardMainValue: { fontSize: 20, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold },
   resultCard:          { flex: 1, backgroundColor: C.bg, padding: 14, marginRight: 8, borderWidth: 1, borderColor: '#E8E2D9', borderStyle: 'solid' },
   resultCardLabel:     { fontSize: 8, color: C.muted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  resultCardValue:     { fontSize: 16, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
+  resultCardValue:     { fontSize: 16, fontFamily: 'Inter', fontWeight: 'bold', color: C.darkGreen },
 
   // Bonitäts Badge
   bonitaetBadge:  { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 16, borderWidth: 1, borderStyle: 'solid' },
   bonitaetDot:    { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-  bonitaetLabel:  { fontSize: 12, fontFamily: 'Helvetica-Bold' },
+  bonitaetLabel:  { fontSize: 12, fontFamily: 'Inter', fontWeight: 'bold' },
   bonitaetSub:    { fontSize: 8.5, color: C.muted, marginTop: 2 },
 
   // Tilgungsplan
   planHeader:          { flexDirection: 'row', backgroundColor: C.darkGreen, paddingVertical: 7, paddingHorizontal: 10, borderTopLeftRadius: 4, borderTopRightRadius: 4 },
-  planHeaderCell:      { fontSize: 8.5, color: C.white, fontFamily: 'Helvetica-Bold', flex: 1, textAlign: 'right' },
+  planHeaderCell:      { fontSize: 8.5, color: C.white, fontFamily: 'Inter', fontWeight: 'bold', flex: 1, textAlign: 'right' },
   planHeaderCellFirst: { textAlign: 'left' },
   planRow:             { flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 10, borderBottom: '1px solid #E8E2D9' },
   planRowAlt:          { backgroundColor: C.bg },
   planCell:            { fontSize: 8.5, color: C.text, flex: 1, textAlign: 'right' },
-  planCellFirst:       { color: C.darkGreen, fontFamily: 'Helvetica-Bold', textAlign: 'left' },
+  planCellFirst:       { color: C.darkGreen, fontFamily: 'Inter', fontWeight: 'bold', textAlign: 'left' },
 
   // ── Voucher Page ── (nested View border, no absolute positioning)
   voucherFrameOuter: { flex: 1, margin: 14, borderWidth: 1.5, borderColor: '#B8973E', borderStyle: 'solid' },
@@ -152,34 +155,34 @@ const s = StyleSheet.create({
 
   voucherTopRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
   voucherEyebrow: { fontSize: 8, color: C.gold, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 8 },
-  voucherTitle:   { fontSize: 22, fontFamily: 'Helvetica-Bold', color: C.white, lineHeight: 1.2 },
+  voucherTitle:   { fontSize: 22, fontFamily: 'Inter', fontWeight: 'bold', color: C.white, lineHeight: 1.2 },
   voucherLogoImg: { width: 90, height: 60 },
 
   voucherStep:        { flexDirection: 'row', marginBottom: 14, paddingBottom: 14 },
   voucherStepNum:     { width: 30, height: 30, borderRadius: 15, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 14, flexShrink: 0 },
-  voucherStepNumText: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.darkGreen },
-  voucherStepTitle:   { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.white, marginBottom: 3 },
+  voucherStepNumText: { fontSize: 11, fontFamily: 'Inter', fontWeight: 'bold', color: C.darkGreen },
+  voucherStepTitle:   { fontSize: 11, fontFamily: 'Inter', fontWeight: 'bold', color: C.white, marginBottom: 3 },
   voucherStepText:    { fontSize: 9, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 },
 
   voucherCert:         { borderWidth: 1.5, borderColor: '#D4AF37', borderStyle: 'solid', marginTop: 12 },
   voucherCertHeader:   { backgroundColor: '#1E5A3C', paddingVertical: 10, paddingHorizontal: 18, borderBottomWidth: 1, borderBottomColor: '#D4AF37', borderBottomStyle: 'solid' },
   voucherCertBody:     { backgroundColor: '#0F4A33', padding: 16 },
   voucherCertEyebrow:  { fontSize: 7.5, color: 'rgba(212,175,55,0.7)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 2 },
-  voucherCertTitle:    { fontSize: 17, fontFamily: 'Helvetica-Bold', color: C.gold },
+  voucherCertTitle:    { fontSize: 17, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold },
   voucherServiceRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 7 },
   voucherServiceCheck: { width: 16, height: 16, borderRadius: 8, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1, flexShrink: 0 },
   voucherServiceText:  { fontSize: 9.5, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.5 },
 
   voucherCodeRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#5A4A1A', borderTopStyle: 'solid' },
   voucherCodeLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
-  voucherCodeValue: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 2, backgroundColor: '#1E5A3C', paddingVertical: 5, paddingHorizontal: 10, borderWidth: 1, borderColor: '#D4AF37', borderStyle: 'solid' },
+  voucherCodeValue: { fontSize: 13, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold, letterSpacing: 2, backgroundColor: '#1E5A3C', paddingVertical: 5, paddingHorizontal: 10, borderWidth: 1, borderColor: '#D4AF37', borderStyle: 'solid' },
   voucherValidLabel: { fontSize: 7.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4, textAlign: 'right' },
-  voucherValidValue: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
+  voucherValidValue: { fontSize: 11, fontFamily: 'Inter', fontWeight: 'bold', color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
 
   voucherContact:     { flexDirection: 'row', alignItems: 'center', marginTop: 12, padding: '12 14', backgroundColor: '#0C4A32', borderLeftWidth: 3, borderLeftColor: '#C9A832', borderLeftStyle: 'solid' },
   voucherPortraitWrap: { width: 56, height: 56, marginRight: 14, flexShrink: 0 },
   voucherPortrait:     { width: 56, height: 56, borderRadius: 28, objectFit: 'cover' },
-  voucherContactName:  { fontSize: 11, fontFamily: 'Helvetica-Bold', color: C.gold, marginBottom: 3 },
+  voucherContactName:  { fontSize: 11, fontFamily: 'Inter', fontWeight: 'bold', color: C.gold, marginBottom: 3 },
   voucherContactInfo:  { fontSize: 8.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 },
 
   voucherDisclaimer:     { marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#163D2C', borderTopStyle: 'solid' },
@@ -589,7 +592,7 @@ function VoucherPage({ vorname, nachname, lang, t }: {
                   </Svg>
                 </View>
                 <Text style={s.voucherServiceText}>
-                  <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService1Title}</Text>
+                  <Text style={{ fontFamily: 'Inter', fontWeight: 'bold', color: C.white }}>{t.voucherService1Title}</Text>
                   {' — '}{t.voucherService1Desc}
                 </Text>
               </View>
@@ -601,7 +604,7 @@ function VoucherPage({ vorname, nachname, lang, t }: {
                   </Svg>
                 </View>
                 <Text style={s.voucherServiceText}>
-                  <Text style={{ fontFamily: 'Helvetica-Bold', color: C.white }}>{t.voucherService2Title}</Text>
+                  <Text style={{ fontFamily: 'Inter', fontWeight: 'bold', color: C.white }}>{t.voucherService2Title}</Text>
                   {' — '}{t.voucherService2Desc}
                 </Text>
               </View>
