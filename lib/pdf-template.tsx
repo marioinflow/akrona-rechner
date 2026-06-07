@@ -23,8 +23,8 @@ const LOGO   = path.join(process.cwd(), 'public', 'akrona-logo-transparent.png')
 const TEAM   = path.join(process.cwd(), 'public', 'akrona-team.jpeg');
 const ALPEREN = path.join(process.cwd(), 'public', 'alperen-akbal.jpeg');
 
-// ─── Colors ───────────────────────────────────────────
-const C = {
+// ─── Colors ─────────────────────────────────────────── (exportiert für weitere PDF-Templates)
+export const C = {
   darkGreen:  '#0A3D2C',
   lightGreen: '#0A5D3F',
   gold:       '#D4AF37',
