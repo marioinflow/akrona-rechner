@@ -8,6 +8,7 @@ import { PartnerLogos } from '@/components/ui/partner-logos';
 import Footer from '@/components/ui/Footer';
 import BaufinanzierungRechner from '@/components/rechner/BaufinanzierungRechner';
 import PrivatkreditRechner from '@/components/rechner/PrivatkreditRechner';
+import ImmobilienbewertungRechner from '@/components/rechner/ImmobilienbewertungRechner';
 import LeadModal from '@/components/rechner/LeadModal';
 import { useT } from '@/lib/language-context';
 import type {
@@ -45,7 +46,7 @@ export default function HomePageContent() {
   useEffect(() => {
     const handler = (e: Event) => {
       const tab = (e as CustomEvent).detail as RechnerTyp;
-      if (tab === 'baufinanzierung' || tab === 'privatkredit') {
+      if (tab === 'baufinanzierung' || tab === 'privatkredit' || tab === 'immobilienbewertung') {
         setActiveTab(tab);
       }
     };
@@ -444,7 +445,7 @@ export default function HomePageContent() {
                 boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
               }}
             >
-              {(['baufinanzierung', 'privatkredit'] as const).map((tab) => (
+              {(['baufinanzierung', 'privatkredit', 'immobilienbewertung'] as const).map((tab) => (
                 <button
                   key={tab}
                   className="rech-tab"
@@ -464,7 +465,7 @@ export default function HomePageContent() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {tab === 'baufinanzierung' ? t('mortgage') : t('personalLoan')}
+                  {tab === 'baufinanzierung' ? t('mortgage') : tab === 'privatkredit' ? t('personalLoan') : t('propertyValuation')}
                 </button>
               ))}
             </div>
@@ -476,12 +477,14 @@ export default function HomePageContent() {
                   handleLeadTrigger('baufinanzierung', ergebnis, eingaben)
                 }
               />
-            ) : (
+            ) : activeTab === 'privatkredit' ? (
               <PrivatkreditRechner
                 onLeadTrigger={(ergebnis, eingaben) =>
                   handleLeadTrigger('privatkredit', ergebnis, eingaben)
                 }
               />
+            ) : (
+              <ImmobilienbewertungRechner />
             )}
 
             <p style={{ textAlign: 'center', fontSize: '12px', color: '#6b6b6b', marginTop: '20px' }}>

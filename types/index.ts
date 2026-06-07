@@ -1,7 +1,63 @@
 export type BeschaeftigungsStatus = 'angestellt' | 'beamter' | 'selbststaendig' | 'rente';
 export type Verwendungszweck = 'kauf' | 'neubau' | 'anschlussfinanzierung';
 export type BonitaetLabel = 'Sehr gut' | 'Mittel' | 'Basis';
-export type RechnerTyp = 'baufinanzierung' | 'privatkredit';
+export type RechnerTyp = 'baufinanzierung' | 'privatkredit' | 'immobilienbewertung';
+
+// ── Immobilienbewertung ──
+export type ObjektArt = 'wohnung' | 'einfamilienhaus' | 'mehrfamilienhaus' | 'grundstueck';
+export type ObjektZustand = 'neuwertig' | 'gepflegt' | 'renovierungsbeduerftig';
+export type ObjektAusstattung = 'einfach' | 'standard' | 'gehoben';
+export type BewertungAnlass = 'verkauf' | 'kauf' | 'anschlussfinanzierung' | 'interesse';
+export type BewertungExtra = 'balkon' | 'garten' | 'garage' | 'keller' | 'aufzug';
+export type KonfidenzNote = 'Hoch' | 'Mittel' | 'Niedrig';
+
+export interface BewertungEingaben {
+  objektart: ObjektArt;
+  plz: string;
+  ort?: string;
+  bundesland: string;
+  /** Wohnfläche in m² — entfällt bei Grundstück */
+  wohnflaeche?: number;
+  zimmer?: number;
+  baujahr?: number;
+  /** Grundstücksfläche in m² — nur bei Haus/Grundstück */
+  grundstuecksflaeche?: number;
+  zustand?: ObjektZustand;
+  ausstattung?: ObjektAusstattung;
+  modernisierungsjahr?: number;
+  extras?: BewertungExtra[];
+  anlass?: BewertungAnlass;
+}
+
+export interface BewertungErgebnis {
+  /** Geschätzter Mittelwert (Vergleichswert-Näherung) */
+  wertMittel: number;
+  /** Untere Grenze der Spanne (−10 %) */
+  wertVon: number;
+  /** Obere Grenze der Spanne (+10 %) */
+  wertBis: number;
+  /** Verwendeter regionaler m²-Preis (nach Zone-Zuschlag) */
+  qmPreis: number;
+  /** Bodenwert-Anteil (nur Haus/Grundstück) */
+  bodenwert: number;
+  /** Summe der Extras-Zuschläge */
+  extrasZuschlag: number;
+  konfidenz: KonfidenzNote;
+}
+
+export interface BewertungLeadData {
+  vorname: string;
+  nachname: string;
+  email: string;
+  telefon: string;
+  lang?: 'de' | 'ro';
+  eingaben: BewertungEingaben;
+  consents: {
+    datenschutz: boolean;
+  };
+  /** Honeypot — muss leer sein, sonst Bot */
+  website?: string;
+}
 
 export interface BaufinanzierungEingaben {
   nettoeinkommen: number;
