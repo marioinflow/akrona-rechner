@@ -8,6 +8,8 @@ export type ObjektArt = 'wohnung' | 'einfamilienhaus' | 'mehrfamilienhaus' | 'gr
 export type ObjektZustand = 'neuwertig' | 'gepflegt' | 'renovierungsbeduerftig';
 export type ObjektAusstattung = 'einfach' | 'standard' | 'gehoben';
 export type BewertungAnlass = 'verkauf' | 'kauf' | 'anschlussfinanzierung' | 'interesse';
+export type VerkaufsZeitraum = 'schnellstmoeglich' | 'sechs_monate' | 'zwei_jahre' | 'spaeter';
+export type EigentuemerStatus = 'ja' | 'teileigentuemer' | 'angehoeriger' | 'nein';
 export type BewertungExtra = 'balkon' | 'garten' | 'garage' | 'keller' | 'aufzug';
 export type KonfidenzNote = 'Hoch' | 'Mittel' | 'Niedrig';
 
@@ -27,6 +29,10 @@ export interface BewertungEingaben {
   modernisierungsjahr?: number;
   extras?: BewertungExtra[];
   anlass?: BewertungAnlass;
+  /** Lead-Qualifizierung: geplanter Verkaufszeitraum */
+  verkaufszeitraum?: VerkaufsZeitraum;
+  /** Lead-Qualifizierung: Eigentümer-Status */
+  eigentuemer?: EigentuemerStatus;
 }
 
 export interface BewertungErgebnis {
