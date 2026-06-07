@@ -358,7 +358,7 @@ export default function ImmobilienbewertungRechner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
               <FieldLabel required>{t('bwZustand')}</FieldLabel>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {([
                   { value: 'neuwertig', label: t('bwNeuwertig') },
                   { value: 'gepflegt', label: t('bwGepflegt') },
@@ -371,7 +371,7 @@ export default function ImmobilienbewertungRechner() {
             </div>
             <div>
               <FieldLabel required>{t('bwAusstattung')}</FieldLabel>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              <div className="grid grid-cols-3 gap-2">
                 {([
                   { value: 'einfach', label: t('bwEinfach') },
                   { value: 'standard', label: t('bwStandard') },
@@ -426,7 +426,7 @@ export default function ImmobilienbewertungRechner() {
 
         {/* ── Schritt 5: Anlass (optional) ── */}
         {step === 5 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {([
               { value: 'verkauf', label: t('bwVerkauf') },
               { value: 'kauf', label: t('bwKauf') },
@@ -524,7 +524,7 @@ export default function ImmobilienbewertungRechner() {
           ) : (
             <button type="button" onClick={submit} disabled={loading} className="btn-gold"
               style={{
-                flex: 1, height: '48px',
+                flex: 1, minHeight: '48px', padding: '12px 16px',
                 backgroundColor: loading ? '#E8E2D9' : '#D4AF37',
                 color: loading ? '#6b6b6b' : '#0A3D2C',
                 border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700,

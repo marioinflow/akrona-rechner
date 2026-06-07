@@ -470,9 +470,9 @@ input[type="checkbox"] {
   /* ── Section padding ── */
   .sec-pad { padding-top: 48px !important; padding-bottom: 48px !important; }
 
-  /* ── Rechner tabs ── */
+  /* ── Rechner tabs (3 Tabs nebeneinander, kompakt) ── */
   .rech-tabs { display: flex !important; width: 100% !important; }
-  .rech-tab  { flex: 1 !important; text-align: center !important; padding: 9px 8px !important; }
+  .rech-tab  { flex: 1 !important; text-align: center !important; padding: 11px 8px !important; font-size: 12px !important; }
 
   /* ── Freistehender Berechnen-Button unter Form ausblenden ── */
   .rech-calc-btn { display: none !important; }
@@ -480,6 +480,15 @@ input[type="checkbox"] {
   /* ── Tilgungsplan nach Result-Card anzeigen (via order) ── */
   .rech-result-col  { order: 1; }
   .rech-tilgung-col { order: 2; margin: 0 8px; }
+}
+
+/* ─────────────────────────────────────────
+   Responsive — Schmale Phones (≤ 619px):
+   3 Tabs passen nicht nebeneinander ("Immobilienbewertung") → stacken
+───────────────────────────────────────── */
+@media (max-width: 619px) {
+  .rech-tabs { flex-direction: column !important; gap: 4px !important; }
+  .rech-tab  { white-space: normal !important; width: 100% !important; }
 }
 
 /* ─────────────────────────────────────────
