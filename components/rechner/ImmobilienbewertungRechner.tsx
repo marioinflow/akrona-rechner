@@ -294,10 +294,13 @@ export default function ImmobilienbewertungRechner() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h3 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: 800, color: '#fff', lineHeight: 1.35, margin: '0 0 12px', letterSpacing: '-0.02em' }}>
-            {t('bwSuccessTitle')}
+          <h3 style={{ fontSize: 'clamp(26px, 3.5vw, 34px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, margin: '0 0 14px', letterSpacing: '-0.02em', textAlign: 'center' }}>
+            {t('bwSuccessThanks')}
           </h3>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)', margin: 0 }}>
+          <p style={{ fontSize: '16px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: '0 0 10px', textAlign: 'center' }}>
+            {t('bwSuccessTitle')}
+          </p>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', margin: 0, textAlign: 'center' }}>
             {t('bwSuccessSub')}
           </p>
         </div>
