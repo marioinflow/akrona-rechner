@@ -29,13 +29,14 @@ function validateEmail(email: string): boolean {
 }
 
 function validatePhone(telefon: string): boolean {
-  return /[0-9]/.test(telefon) && telefon.replace(/\D/g, '').length >= 6;
+  const digits = telefon.replace(/\D/g, '');
+  return /^[+0-9][0-9\s/().-]*$/.test(telefon.trim()) && digits.length >= 7 && digits.length <= 15;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: BewertungLeadData = await request.json();
-    const { vorname, nachname, email, telefon, eingaben, consents } = body;
+    const { anrede, vorname, nachname, email, telefon, eingaben, consents } = body;
 
     // ── Honeypot: Bots füllen das versteckte Feld — still "erfolgreich" antworten ──
     if (body.website && body.website.trim() !== '') {
@@ -139,7 +140,10 @@ export async function POST(request: NextRequest) {
     const emailSubject = isRO
       ? 'Evaluarea imobilului dumneavoastră – Akrona'
       : 'Ihre Immobilien-Werteinschätzung – Akrona';
-    const emailGreeting = isRO ? `Bună ziua, ${vorname},` : `Guten Tag ${vorname},`;
+    // Förmliche Anrede mit Nachname (Sie-Form im Folgesatz)
+    const emailGreeting = isRO
+      ? `${anrede === 'frau' ? 'Stimată doamnă' : 'Stimate domnule'} ${nachname},`
+      : `${anrede === 'frau' ? 'Sehr geehrte Frau' : 'Sehr geehrter Herr'} ${nachname},`;
     const emailIntro = isRO
       ? `vă mulțumim pentru solicitare. Găsiți atașat <strong>evaluarea imobilului dumneavoastră în format PDF</strong> — cu intervalul estimat al valorii de piață, nivelul de încredere și o explicație a metodei.`
       : `vielen Dank für Ihre Anfrage. Anbei finden Sie Ihre <strong>Immobilien-Werteinschätzung als PDF</strong> — mit geschätzter Marktwertspanne, Konfidenznote und Erklärung der Methodik.`;
@@ -261,7 +265,7 @@ export async function POST(request: NextRequest) {
         html: `<div style="font-family:Arial,sans-serif;padding:24px;max-width:520px;">
           <h2 style="color:#0A3D2C;margin:0 0 16px;">Neuer Bewertungs-Lead eingegangen</h2>
           <table cellpadding="6" cellspacing="0" style="width:100%;">
-            <tr><td style="color:#6b6b6b;width:170px;">Name:</td><td><strong>${vorname} ${nachname}</strong></td></tr>
+            <tr><td style="color:#6b6b6b;width:170px;">Name:</td><td><strong>${anrede === 'frau' ? 'Frau' : 'Herr'} ${vorname} ${nachname}</strong></td></tr>
             <tr><td style="color:#6b6b6b;">E-Mail:</td><td><a href="mailto:${email}">${email}</a></td></tr>
             <tr><td style="color:#6b6b6b;">Telefon:</td><td>${telefon}</td></tr>
             <tr><td style="color:#6b6b6b;">Sprache:</td><td>${isRO ? 'Rumänisch' : 'Deutsch'}</td></tr>

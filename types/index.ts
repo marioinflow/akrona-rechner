@@ -10,6 +10,7 @@ export type ObjektAusstattung = 'einfach' | 'standard' | 'gehoben';
 export type BewertungAnlass = 'verkauf' | 'kauf' | 'anschlussfinanzierung' | 'interesse';
 export type VerkaufsZeitraum = 'schnellstmoeglich' | 'sechs_monate' | 'zwei_jahre' | 'spaeter';
 export type EigentuemerStatus = 'ja' | 'teileigentuemer' | 'angehoeriger' | 'nein';
+export type Anrede = 'herr' | 'frau';
 export type BewertungExtra = 'balkon' | 'garten' | 'garage' | 'keller' | 'aufzug';
 export type KonfidenzNote = 'Hoch' | 'Mittel' | 'Niedrig';
 
@@ -52,6 +53,7 @@ export interface BewertungErgebnis {
 }
 
 export interface BewertungLeadData {
+  anrede: Anrede;
   vorname: string;
   nachname: string;
   email: string;

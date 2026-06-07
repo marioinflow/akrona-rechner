@@ -15,6 +15,7 @@ import type {
   BewertungExtra,
   VerkaufsZeitraum,
   EigentuemerStatus,
+  Anrede,
 } from '@/types';
 
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
@@ -106,7 +107,9 @@ const DEFAULT: BewertungEingaben = {
 export default function ImmobilienbewertungRechner() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<BewertungEingaben>(DEFAULT);
-  const [kontakt, setKontakt] = useState({ vorname: '', nachname: '', email: '', telefon: '' });
+  const [kontakt, setKontakt] = useState<{ anrede: Anrede | ''; vorname: string; nachname: string; email: string; telefon: string }>({ anrede: '', vorname: '', nachname: '', email: '', telefon: '' });
+  const [touched, setTouched] = useState({ telefon: false, email: false });
+  const [plzLookup, setPlzLookup] = useState(false);
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
@@ -145,6 +148,30 @@ export default function ImmobilienbewertungRechner() {
     setError('');
   };
 
+  // PLZ → Ort + Bundesland automatisch auflösen (OpenPLZ API, kostenlos, CORS offen).
+  // Koppelt die Lage-Eingabe an die Region, die serverseitig in die Wertberechnung einfließt.
+  useEffect(() => {
+    const plz = form.plz.trim();
+    if (!/^\d{5}$/.test(plz)) return;
+    let cancelled = false;
+    setPlzLookup(true);
+    fetch(`https://openplzapi.org/de/Localities?postalCode=${plz}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (cancelled || !Array.isArray(data) || data.length === 0) return;
+        const loc = data[0];
+        const bl = loc?.federalState?.name as string | undefined;
+        setForm((prev) => ({
+          ...prev,
+          ort: loc?.name ?? prev.ort,
+          bundesland: bl && BUNDESLAENDER.includes(bl) ? bl : prev.bundesland,
+        }));
+      })
+      .catch(() => { /* offline / unbekannte PLZ → Felder bleiben manuell editierbar */ })
+      .finally(() => { if (!cancelled) setPlzLookup(false); });
+    return () => { cancelled = true; };
+  }, [form.plz]);
+
   const toggleExtra = (extra: BewertungExtra) => {
     setForm((prev) => ({
       ...prev,
@@ -158,7 +185,30 @@ export default function ImmobilienbewertungRechner() {
   const istHaus = form.objektart === 'einfamilienhaus' || form.objektart === 'mehrfamilienhaus';
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kontakt.email);
-  const phoneValid = /[0-9]/.test(kontakt.telefon) && kontakt.telefon.replace(/\D/g, '').length >= 6;
+  // Gültige Telefonnummer: nur Telefon-Zeichen, 7–15 echte Ziffern (E.164-Rahmen)
+  const phoneDigits = kontakt.telefon.replace(/\D/g, '');
+  const phoneValid =
+    /^[+0-9][0-9\s/().-]*$/.test(kontakt.telefon.trim()) &&
+    phoneDigits.length >= 7 &&
+    phoneDigits.length <= 15;
+
+  const canSubmitKontakt =
+    !!kontakt.anrede &&
+    kontakt.vorname.trim().length > 0 &&
+    kontakt.nachname.trim().length > 0 &&
+    emailValid &&
+    phoneValid &&
+    consent;
+
+  // Rot, sobald das Feld berührt wurde und ungültig ist
+  const onBlurField = (field: 'telefon' | 'email', valid: boolean) => (e: React.FocusEvent<HTMLInputElement>) => {
+    setTouched((p) => ({ ...p, [field]: true }));
+    e.currentTarget.style.borderColor = valid ? 'transparent' : '#ef4444';
+    e.currentTarget.style.backgroundColor = valid ? 'rgba(118,118,128,0.09)' : 'rgba(239,68,68,0.05)';
+    e.currentTarget.style.boxShadow = 'none';
+  };
+  const invalidStyle = (invalid: boolean): React.CSSProperties =>
+    invalid ? { borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)' } : {};
 
   // ── Validierung pro Schritt ──
   const validateStep = (): string => {
@@ -183,7 +233,8 @@ export default function ImmobilienbewertungRechner() {
         if (!form.eigentuemer) return t('bwErrorAuswahl');
         return '';
       case 8:
-        if (!kontakt.vorname.trim() || !kontakt.nachname.trim() || !emailValid || !phoneValid) return t('bwErrorKontakt');
+        if (!kontakt.anrede || !kontakt.vorname.trim() || !kontakt.nachname.trim() || !emailValid) return t('bwErrorKontakt');
+        if (!phoneValid) return t('bwErrorTelefon');
         if (!consent) return t('bwErrorConsent');
         return '';
       default:
@@ -380,8 +431,23 @@ export default function ImmobilienbewertungRechner() {
             </div>
             <div>
               <FieldLabel>{t('bwOrt')}</FieldLabel>
-              <input type="text" value={form.ort ?? ''} onChange={(e) => update('ort', e.target.value)}
-                placeholder="Stuttgart" style={IS} onFocus={onFocus} onBlur={onBlur} />
+              <div style={{ position: 'relative' }}>
+                <input type="text" value={form.ort ?? ''} onChange={(e) => update('ort', e.target.value)}
+                  placeholder={plzLookup ? '…' : 'Stuttgart'} style={{ ...IS, paddingRight: plzLookup ? '40px' : '14px' }} onFocus={onFocus} onBlur={onBlur} />
+                {plzLookup && (
+                  <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                    <circle cx="12" cy="12" r="10" stroke="#E8E2D9" strokeWidth="3" />
+                    <path d="M12 2 a 10 10 0 0 1 10 10" stroke="#0A5D3F" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                )}
+              </div>
+              {form.plz.length === 5 && !plzLookup && form.ort && (
+                <p style={{ fontSize: '11px', color: '#0A5D3F', margin: '5px 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <svg width="11" height="11" fill="none" stroke="#0A5D3F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
+                  {t('bwOrtAuto')}
+                </p>
+              )}
             </div>
             <div className="sm:col-span-2">
               <FieldLabel required>{t('federalState')}</FieldLabel>
@@ -562,26 +628,48 @@ export default function ImmobilienbewertungRechner() {
         {/* ── Schritt 8: Kontaktdaten (Pflicht-Gate) ── */}
         {step === 8 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Anrede — bestimmt die Briefanrede in PDF & E-Mail */}
+            <div>
+              <FieldLabel required>{t('bwAnrede')}</FieldLabel>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {([
+                  { value: 'herr', label: t('bwHerr') },
+                  { value: 'frau', label: t('bwFrau') },
+                ] as { value: Anrede; label: string }[]).map((opt) => {
+                  const active = kontakt.anrede === opt.value;
+                  return (
+                    <button key={opt.value} type="button"
+                      onClick={() => { setKontakt({ ...kontakt, anrede: opt.value }); setError(''); }}
+                      style={{ height: '44px', border: `1.5px solid ${active ? '#0A5D3F' : '#E8E2D9'}`, borderRadius: '10px', backgroundColor: active ? '#0A3D2C' : '#F7F5F0', color: active ? '#fff' : '#1a1a1a', fontSize: '13px', fontWeight: 700, cursor: 'pointer', transition: 'border-color 0.15s, background-color 0.15s' }}>
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <FieldLabel required>{t('firstName')}</FieldLabel>
-                <input type="text" value={kontakt.vorname} onChange={(e) => setKontakt({ ...kontakt, vorname: e.target.value })}
+                <input type="text" value={kontakt.vorname} onChange={(e) => { setKontakt({ ...kontakt, vorname: e.target.value }); setError(''); }}
                   placeholder="Max" style={IS} onFocus={onFocus} onBlur={onBlur} />
               </div>
               <div>
                 <FieldLabel required>{t('lastName')}</FieldLabel>
-                <input type="text" value={kontakt.nachname} onChange={(e) => setKontakt({ ...kontakt, nachname: e.target.value })}
+                <input type="text" value={kontakt.nachname} onChange={(e) => { setKontakt({ ...kontakt, nachname: e.target.value }); setError(''); }}
                   placeholder="Mustermann" style={IS} onFocus={onFocus} onBlur={onBlur} />
               </div>
               <div>
                 <FieldLabel required>{t('phoneNumber')}</FieldLabel>
-                <input type="tel" value={kontakt.telefon} onChange={(e) => setKontakt({ ...kontakt, telefon: e.target.value })}
-                  placeholder="+49 123 456789" style={IS} onFocus={onFocus} onBlur={onBlur} />
+                <input type="tel" value={kontakt.telefon} onChange={(e) => { setKontakt({ ...kontakt, telefon: e.target.value }); setError(''); }}
+                  placeholder="+49 123 456789" style={{ ...IS, ...invalidStyle(touched.telefon && !phoneValid) }} onFocus={onFocus} onBlur={onBlurField('telefon', phoneValid)} />
+                {touched.telefon && !phoneValid && kontakt.telefon.trim() !== '' && (
+                  <p style={{ fontSize: '11px', color: '#ef4444', margin: '5px 0 0' }}>{t('bwErrorTelefon')}</p>
+                )}
               </div>
               <div>
                 <FieldLabel required>{t('emailAddress')}</FieldLabel>
-                <input type="email" value={kontakt.email} onChange={(e) => setKontakt({ ...kontakt, email: e.target.value })}
-                  placeholder="max@example.de" style={IS} onFocus={onFocus} onBlur={onBlur} />
+                <input type="email" value={kontakt.email} onChange={(e) => { setKontakt({ ...kontakt, email: e.target.value }); setError(''); }}
+                  placeholder="max@example.de" style={{ ...IS, ...invalidStyle(touched.email && !emailValid) }} onFocus={onFocus} onBlur={onBlurField('email', emailValid)} />
               </div>
             </div>
 
@@ -642,13 +730,13 @@ export default function ImmobilienbewertungRechner() {
               {t('bwNext')}
             </button>
           ) : (
-            <button type="button" onClick={submit} disabled={loading} className="btn-gold"
+            <button type="button" onClick={submit} disabled={loading || !canSubmitKontakt} className="btn-gold"
               style={{
                 flex: 1, minHeight: '48px', padding: '12px 16px',
-                backgroundColor: loading ? '#E8E2D9' : '#D4AF37',
-                color: loading ? '#6b6b6b' : '#0A3D2C',
+                backgroundColor: (loading || !canSubmitKontakt) ? '#E8E2D9' : '#D4AF37',
+                color: (loading || !canSubmitKontakt) ? '#6b6b6b' : '#0A3D2C',
                 border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700,
-                cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '0.02em',
+                cursor: (loading || !canSubmitKontakt) ? 'not-allowed' : 'pointer', letterSpacing: '0.02em',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
               }}>
               {loading && <ButtonLoader />}
