@@ -235,6 +235,18 @@ export async function POST(request: NextRequest) {
       anschlussfinanzierung: 'Anschlussfinanzierung',
       interesse: 'Nur Interesse',
     };
+    const verkaufszeitraumMap: Record<string, string> = {
+      schnellstmoeglich: 'Schnellstmöglich',
+      sechs_monate: 'In den nächsten 6 Monaten',
+      zwei_jahre: 'In den nächsten 2 Jahren',
+      spaeter: 'Später',
+    };
+    const eigentuemerMap: Record<string, string> = {
+      ja: 'Ja, Eigentümer',
+      teileigentuemer: 'Teil-Eigentümer',
+      angehoeriger: 'Angehöriger',
+      nein: 'Nein',
+    };
     const objektartMap: Record<string, string> = {
       wohnung: 'Eigentumswohnung',
       einfamilienhaus: 'Einfamilienhaus',
@@ -268,6 +280,8 @@ export async function POST(request: NextRequest) {
             <tr><td style="color:#6b6b6b;">Wertspanne:</td><td><strong>${fEuro(ergebnis.wertVon)} – ${fEuro(ergebnis.wertBis)}</strong></td></tr>
             <tr><td style="color:#6b6b6b;">Konfidenz:</td><td>${ergebnis.konfidenz}</td></tr>
             <tr><td style="color:#6b6b6b;">Anlass:</td><td><strong>${eingaben.anlass ? (anlassMap[eingaben.anlass] ?? eingaben.anlass) : 'Keine Angabe'}</strong></td></tr>
+            <tr><td style="color:#6b6b6b;">Verkaufszeitraum:</td><td><strong>${eingaben.verkaufszeitraum ? (verkaufszeitraumMap[eingaben.verkaufszeitraum] ?? eingaben.verkaufszeitraum) : 'Keine Angabe'}</strong></td></tr>
+            <tr><td style="color:#6b6b6b;">Eigentümer:</td><td><strong>${eingaben.eigentuemer ? (eigentuemerMap[eingaben.eigentuemer] ?? eingaben.eigentuemer) : 'Keine Angabe'}</strong></td></tr>
             <tr><td style="color:#6b6b6b;">Zeitpunkt:</td><td>${new Date().toLocaleString('de-DE')}</td></tr>
           </table>
         </div>`,

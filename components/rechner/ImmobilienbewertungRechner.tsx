@@ -13,10 +13,12 @@ import type {
   ObjektAusstattung,
   BewertungAnlass,
   BewertungExtra,
+  VerkaufsZeitraum,
+  EigentuemerStatus,
 } from '@/types';
 
 const BUNDESLAENDER = Object.keys(GRUNDERWERBSTEUER).sort();
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 8;
 
 // Trust-Botschaften während des Berechnungs-Zwischenschritts (rotieren nacheinander)
 const CALC_MSG_KEYS = ['bwCalcMsg1', 'bwCalcMsg2', 'bwCalcMsg3', 'bwCalcMsg4'] as const;
@@ -124,7 +126,7 @@ export default function ImmobilienbewertungRechner() {
     }, CALC_MSG_DURATION);
     const timeout = setTimeout(() => {
       setCalculating(false);
-      setStep(6);
+      setStep(8);
     }, CALC_MSG_KEYS.length * CALC_MSG_DURATION + 400);
     return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [calculating]);
@@ -175,6 +177,12 @@ export default function ImmobilienbewertungRechner() {
         if (istHaus && (!form.grundstuecksflaeche || form.grundstuecksflaeche <= 0)) return t('bwErrorGrundstueck');
         return '';
       case 6:
+        if (!form.verkaufszeitraum) return t('bwErrorAuswahl');
+        return '';
+      case 7:
+        if (!form.eigentuemer) return t('bwErrorAuswahl');
+        return '';
+      case 8:
         if (!kontakt.vorname.trim() || !kontakt.nachname.trim() || !emailValid || !phoneValid) return t('bwErrorKontakt');
         if (!consent) return t('bwErrorConsent');
         return '';
@@ -189,8 +197,8 @@ export default function ImmobilienbewertungRechner() {
     setError('');
     // Grundstück: Schritt 4 (Zustand & Ausstattung) überspringen
     if (step === 3 && istGrundstueck) { setStep(5); return; }
-    // Nach der letzten Sach-Frage: Berechnungs-Zwischenschritt, dann Kontakt-Gate
-    if (step === 5) {
+    // Nach der letzten Frage (Eigentümer): Berechnungs-Zwischenschritt, dann Kontakt-Gate
+    if (step === 7) {
       setCalculating(true);
       return;
     }
@@ -314,7 +322,9 @@ export default function ImmobilienbewertungRechner() {
     3: { title: t('bwStepEckdaten'), subtitle: t('bwStepEckdatenSub') },
     4: { title: t('bwStepZustand'), subtitle: t('bwStepZustandSub') },
     5: { title: t('bwStepAnlass'), subtitle: t('bwStepAnlassSub') },
-    6: { title: t('bwStepKontakt'), subtitle: t('bwStepKontaktSub') },
+    6: { title: t('bwStepVerkaufszeitraum'), subtitle: t('bwStepVerkaufszeitraumSub') },
+    7: { title: t('bwStepEigentuemer'), subtitle: t('bwStepEigentuemerSub') },
+    8: { title: t('bwStepKontakt'), subtitle: t('bwStepKontaktSub') },
   };
 
   return (
@@ -519,8 +529,38 @@ export default function ImmobilienbewertungRechner() {
           </div>
         )}
 
-        {/* ── Schritt 6: Kontaktdaten (Pflicht-Gate) ── */}
+        {/* ── Schritt 6: Verkaufszeitraum (Lead-Qualifizierung) ── */}
         {step === 6 && (
+          <div className="grid grid-cols-1 gap-2.5">
+            {([
+              { value: 'schnellstmoeglich', label: t('bwVkSchnell') },
+              { value: 'sechs_monate', label: t('bwVk6Monate') },
+              { value: 'zwei_jahre', label: t('bwVk2Jahre') },
+              { value: 'spaeter', label: t('bwVkSpaeter') },
+            ] as { value: VerkaufsZeitraum; label: string }[]).map((opt) => (
+              <OptionButton key={opt.value} active={form.verkaufszeitraum === opt.value} label={opt.label}
+                onClick={() => update('verkaufszeitraum', opt.value)} />
+            ))}
+          </div>
+        )}
+
+        {/* ── Schritt 7: Eigentümer-Status (Lead-Qualifizierung) ── */}
+        {step === 7 && (
+          <div className="grid grid-cols-1 gap-2.5">
+            {([
+              { value: 'ja', label: t('bwEigJa') },
+              { value: 'teileigentuemer', label: t('bwEigTeil') },
+              { value: 'angehoeriger', label: t('bwEigAngehoeriger') },
+              { value: 'nein', label: t('bwEigNein') },
+            ] as { value: EigentuemerStatus; label: string }[]).map((opt) => (
+              <OptionButton key={opt.value} active={form.eigentuemer === opt.value} label={opt.label}
+                onClick={() => update('eigentuemer', opt.value)} />
+            ))}
+          </div>
+        )}
+
+        {/* ── Schritt 8: Kontaktdaten (Pflicht-Gate) ── */}
+        {step === 8 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -617,7 +657,7 @@ export default function ImmobilienbewertungRechner() {
           )}
         </div>
 
-        {step === 6 && (
+        {step === 8 && (
           <p style={{ fontSize: '11px', textAlign: 'center', color: '#6b6b6b', margin: '14px 0 0', lineHeight: 1.5 }}>
             {t('dataProtectionInfo')}
           </p>
