@@ -41,7 +41,7 @@ export default function ImpresumRomania() {
             <Section title={t('infoAccordingToTmg')}>
               <p>
                 {t('companyNameLabel')} Akrona GmbH<br />
-                {t('businessAddressLabel')} Esslingen Str. 9, 73207 Plochingen<br />
+                {t('businessAddressLabel')} Esslinger Str. 9, 73207 Plochingen<br />
                 {t('representedByLabel')} Alperen Akbal ({t('managingDirector')})
               </p>
             </Section>

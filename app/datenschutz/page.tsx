@@ -63,7 +63,7 @@ export default function Datenschutz() {
               <p>
                 Name: Akrona GmbH<br />
                 Vertreten durch: Alperen Akbal (Geschäftsführer)<br />
-                Geschäftsadresse: Esslingen Str. 9, 73207 Plochingen<br />
+                Geschäftsadresse: Esslinger Str. 9, 73207 Plochingen<br />
                 Registergericht: Amtsgericht Stuttgart<br />
                 Registernummer: HRB 804639<br />
                 E-Mail: <a href="mailto:info@akrona.de" style={{ color: '#0A3D2C' }}>info@akrona.de</a><br />
@@ -220,7 +220,7 @@ export default function Datenschutz() {
               <p className="mt-3">Zur Ausübung Ihrer Rechte wenden Sie sich bitte an:</p>
               <p className="mt-2" style={{ color: '#6b6b6b' }}>
                 E-Mail: <a href="mailto:info@akrona.de" style={{ color: '#0A3D2C' }}>info@akrona.de</a><br />
-                Post: Akrona GmbH, Esslingen Str. 9, 73207 Plochingen
+                Post: Akrona GmbH, Esslinger Str. 9, 73207 Plochingen
               </p>
             </Section>
 

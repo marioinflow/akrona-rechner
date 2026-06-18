@@ -38,7 +38,7 @@ export default function Impressum() {
             <Section title="Angaben gemäß § 5 TMG">
               <p>
                 Firmenname: Akrona GmbH<br />
-                Geschäftsadresse: Esslingen Str. 9, 73207 Plochingen<br />
+                Geschäftsadresse: Esslinger Str. 9, 73207 Plochingen<br />
                 Vertreten durch: Alperen Akbal (Geschäftsführer)
               </p>
             </Section>
