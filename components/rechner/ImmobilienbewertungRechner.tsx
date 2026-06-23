@@ -134,12 +134,21 @@ export default function ImmobilienbewertungRechner() {
     return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [calculating]);
 
-  // Bei jedem Schritt-/Statuswechsel zum Wizard-Anfang scrollen —
-  // sonst bleibt der Viewport beim kürzeren Folgeschritt in der nächsten Section hängen.
+  // Bei jedem Schritt-/Statuswechsel zum Wizard-Anfang scrollen — sonst bleibt der
+  // Viewport beim kürzeren Folgeschritt in der nächsten Section hängen. Den INITIALEN
+  // Mount (Tab öffnen) bewusst NICHT scrollen: dort bestimmt der Header-Klick den
+  // Landepunkt (#rechner-Top), exakt wie bei Baufinanzierung/Privatkredit. Ein
+  // Wert-Vergleich statt didMount-Bool, damit React-StrictMode (Dev) den Effekt beim
+  // Doppel-Mount nicht fälschlich auslöst und den Header-Scroll überschreibt.
   const wizardRef = useRef<HTMLDivElement>(null);
-  const didMount = useRef(false);
+  const lastNavKey = useRef<string | null>(null);
   useEffect(() => {
-    if (!didMount.current) { didMount.current = true; return; }
+    const key = `${step}|${calculating}|${success}`;
+    if (lastNavKey.current === null || lastNavKey.current === key) {
+      lastNavKey.current = key;
+      return;
+    }
+    lastNavKey.current = key;
     wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [step, calculating, success]);
 

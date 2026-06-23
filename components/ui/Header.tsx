@@ -6,6 +6,9 @@ import { useState, useEffect } from 'react';
 import AkronaAnimatedButton from '@/components/ui/animated-generate-button';
 import { useLanguage, useT } from '@/lib/language-context';
 
+const NAV_TABS = ['baufinanzierung', 'privatkredit', 'immobilienbewertung'] as const;
+type NavTab = (typeof NAV_TABS)[number];
+
 function FlagLink({ lang, current }: { lang: 'de' | 'ro'; current: string }) {
   const flag = lang === 'de' ? '🇩🇪' : '🇷🇴';
   const href = lang === 'de' ? '/' : '/romania';
@@ -38,7 +41,7 @@ function FlagLink({ lang, current }: { lang: 'de' | 'ro'; current: string }) {
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<NavTab>('baufinanzierung');
   const { lang } = useLanguage();
   const t = useT();
 
@@ -48,14 +51,34 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const scrollToSection = (id: string, tab?: string) => {
-    if (tab) {
-      window.dispatchEvent(new CustomEvent('akrona:set-tab', { detail: tab }));
-    }
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setActiveSection(tab ?? id);
+  // Keep the segment highlight in sync when the tab is switched elsewhere
+  // (e.g. the calculator's own tabs further down the page).
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tab = (e as CustomEvent).detail as string;
+      if ((NAV_TABS as readonly string[]).includes(tab)) {
+        setActiveSection(tab as NavTab);
+      }
+    };
+    window.addEventListener('akrona:set-tab', handler);
+    return () => window.removeEventListener('akrona:set-tab', handler);
+  }, []);
+
+  const goToTab = (tab: NavTab) => {
+    window.dispatchEvent(new CustomEvent('akrona:set-tab', { detail: tab }));
+    setActiveSection(tab);
+    // Scroll the whole calculator section to the same anchor for every tab.
+    // #rechner sits above the tabs, so its offset is identical regardless of which
+    // calculator renders below — all three options land at the same point.
+    document.getElementById('rechner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  const labelFor = (tab: NavTab) =>
+    tab === 'baufinanzierung'
+      ? t('mortgage')
+      : tab === 'privatkredit'
+        ? t('personalLoan')
+        : t('propertyValuation');
 
   return (
     <header
@@ -63,123 +86,127 @@ export default function Header() {
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 50,
-        height: '64px',
-        backgroundColor: scrolled ? 'rgba(247,245,240,0.95)' : 'rgba(247,245,240,0.82)',
-        backdropFilter: 'blur(24px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-        borderBottom: scrolled
-          ? '0.5px solid rgba(232,226,217,0.9)'
-          : '0.5px solid rgba(232,226,217,0.5)',
-        boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.06)' : 'none',
-        transition: 'background-color 0.3s, border-color 0.3s, box-shadow 0.3s',
+        display: 'flex',
+        justifyContent: 'center',
+        paddingTop: '14px',
+        pointerEvents: 'none',
       }}
     >
+      {/* ── Floating island ── */}
       <div
-        className="hdr-grid"
+        className="hdr-island"
         style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '0 24px',
-          height: '100%',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto 1fr',
-          alignItems: 'center',
-          gap: '12px',
+          pointerEvents: 'auto',
+          width: 'min(1200px, calc(100% - 48px))',
+          height: '64px',
+          backgroundColor: scrolled ? 'rgba(247,245,240,0.95)' : 'rgba(247,245,240,0.85)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          border: '0.5px solid rgba(232,226,217,0.9)',
+          borderRadius: '22px',
+          boxShadow: scrolled
+            ? '0 8px 30px rgba(10,61,44,0.12), 0 1px 3px rgba(0,0,0,0.04)'
+            : '0 4px 22px rgba(10,61,44,0.08)',
+          transition: 'background-color 0.3s, box-shadow 0.3s',
         }}
       >
-        {/* ── Zone 1: Logo + Nav links (left) ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Link
-            href={lang === 'ro' ? '/romania' : '/'}
-            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', marginRight: '12px', flexShrink: 0 }}
-          >
-            <Image
-              src="/akrona-logo.png"
-              alt="Akrona GmbH"
-              width={180}
-              height={58}
-              priority
-              style={{ height: '46px', width: 'auto', objectFit: 'contain' }}
-            />
-          </Link>
-
-          {/* Nav links */}
-          <div className="hdr-nav" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {(['baufinanzierung', 'privatkredit'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => scrollToSection('rechner', tab)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '9999px',
-                border: activeSection === tab ? '1.5px solid rgba(10,61,44,0.30)' : '1.5px solid rgba(10,61,44,0.18)',
-                background: activeSection === tab ? 'rgba(10,61,44,0.10)' : 'transparent',
-                color: activeSection === tab ? '#0A3D2C' : '#444',
-                fontSize: '13px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'background 150ms, color 150ms, border-color 150ms',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                if (activeSection !== tab) {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(10,61,44,0.07)';
-                  (e.currentTarget as HTMLButtonElement).style.color = '#0A3D2C';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,61,44,0.28)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeSection !== tab) {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLButtonElement).style.color = '#444';
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(10,61,44,0.18)';
-                }
-              }}
-            >
-              {tab === 'baufinanzierung' ? t('mortgage') : t('personalLoan')}
-            </button>
-          ))}
-          </div>
-        </div>
-
-        {/* ── Zone 2: IHK Badge (center, auto width) ── */}
         <div
-          className="hdr-badge"
+          className="hdr-grid"
           style={{
+            height: '100%',
+            padding: '0 14px 0 18px',
             display: 'flex',
             alignItems: 'center',
-            gap: '7px',
-            padding: '5px 13px',
-            borderRadius: '9999px',
-            backgroundColor: 'rgba(10,61,44,0.07)',
-            border: '1px solid rgba(10,61,44,0.12)',
-            whiteSpace: 'nowrap',
+            justifyContent: 'space-between',
+            gap: '12px',
           }}
         >
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#0A5D3F', flexShrink: 0 }} />
-          <span style={{ fontSize: '11px', fontWeight: 600, color: '#0A3D2C', letterSpacing: '0.04em' }}>
-            § 34i GewO · IHK Stuttgart
-          </span>
-        </div>
+          {/* ── Left group: Logo + segment menu (left-aligned) ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0 }}>
+            <Link
+              href={lang === 'ro' ? '/romania' : '/'}
+              style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}
+            >
+              <Image
+                src="/akrona-logo.png"
+                alt="Akrona GmbH"
+                width={180}
+                height={58}
+                priority
+                style={{ height: '52px', width: 'auto', objectFit: 'contain' }}
+              />
+            </Link>
 
-        {/* ── Zone 3: Language switcher + CTA button (right) ── */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
-          {/* Flag links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <FlagLink lang="de" current={lang} />
-            <FlagLink lang="ro" current={lang} />
+            {/* Segment menu */}
+            <nav
+              className="hdr-nav"
+            aria-label={lang === 'ro' ? 'Calculatoare' : 'Rechner'}
+            style={{
+              display: 'inline-flex',
+              gap: '2px',
+              padding: '4px',
+              borderRadius: '9999px',
+              background: 'rgba(10,61,44,0.06)',
+              border: '1px solid rgba(10,61,44,0.10)',
+            }}
+          >
+            {NAV_TABS.map((tab) => {
+              const active = activeSection === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => goToTab(tab)}
+                  aria-current={active ? 'true' : undefined}
+                  style={{
+                    padding: '7px 16px',
+                    borderRadius: '9999px',
+                    border: 'none',
+                    background: active ? '#0A3D2C' : 'transparent',
+                    color: active ? '#fff' : '#444',
+                    fontSize: '13px',
+                    fontWeight: active ? 700 : 600,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    whiteSpace: 'nowrap',
+                    transition: 'background 160ms, color 160ms',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.background = 'rgba(10,61,44,0.08)';
+                      (e.currentTarget as HTMLButtonElement).style.color = '#0A3D2C';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                      (e.currentTarget as HTMLButtonElement).style.color = '#444';
+                    }
+                  }}
+                >
+                  {labelFor(tab)}
+                </button>
+              );
+            })}
+            </nav>
           </div>
 
-          <div className="hdr-cta">
-            <AkronaAnimatedButton
-              label={t('calculateNow')}
-              size="sm"
-              onClick={() => {
-                const el = document.getElementById('rechner');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-            />
+          {/* ── Right group: Language switcher + CTA button ── */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+              <FlagLink lang="de" current={lang} />
+              <FlagLink lang="ro" current={lang} />
+            </div>
+
+            <div className="hdr-cta">
+              <AkronaAnimatedButton
+                label={t('calculateNow')}
+                size="sm"
+                onClick={() => {
+                  const el = document.getElementById('rechner');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

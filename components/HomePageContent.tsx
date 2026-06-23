@@ -154,7 +154,7 @@ export default function HomePageContent() {
         <section
           className="hero-section"
           style={{
-            paddingTop: '64px',
+            paddingTop: '88px',
             backgroundColor: '#F7F5F0',
             overflow: 'hidden',
             minHeight: 'min(100vh, 760px)',
@@ -417,6 +417,7 @@ export default function HomePageContent() {
             padding: '80px 0 96px',
             backgroundColor: '#F7F5F0',
             borderTop: '1px solid #E8E2D9',
+            scrollMarginTop: '90px',
           }}
         >
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
@@ -449,7 +450,10 @@ export default function HomePageContent() {
                 <button
                   key={tab}
                   className="rech-tab"
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => {
+                    setActiveTab(tab);
+                    window.dispatchEvent(new CustomEvent('akrona:set-tab', { detail: tab }));
+                  }}
                   style={{
                     padding: '9px 24px',
                     border: 'none',
