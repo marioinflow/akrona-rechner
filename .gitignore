@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Claude Code local settings (per-machine, nicht versioniert)
 .claude/settings.local.json
+
+# Lokale MCP-Config (Repo public)
+.mcp.json
