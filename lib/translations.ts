@@ -24,11 +24,17 @@ export const translations = {
     avgFinancingFrame: "Ø Finanzierungsrahmen",
     atIncomeExample: "bei 3.500 € Nettoeinkommen",
 
+    // Hero — Variante Immobilienbewertung
+    heroTitleBewertung: "Was ist Ihre Immobilie wert?",
+    heroSubtitleBewertung: "Ermitteln Sie den Marktwert Ihrer Immobilie in wenigen Minuten — kostenlos, unverbindlich und ohne Termin vor Ort.",
+
     ourPartnerBanks: "Unsere Partnerbanken",
 
     // Calculator Section
     calculatorEyebrow: "Finanzierungsrechner",
     calculatorTitle: "Ihren Kreditrahmen berechnen",
+    calculatorEyebrowBewertung: "Immobilienbewertung",
+    calculatorTitleBewertung: "Ihren Immobilienwert ermitteln",
     calculatorDisclaimer: "Unverbindliche Ersteinschätzung — keine Bankzusage. Alle Angaben ohne Gewähr.",
 
     // Form Common
@@ -505,11 +511,17 @@ export const translations = {
     avgFinancingFrame: "Ø Plafon maxim de finanțare",
     atIncomeExample: "la un venit net lunar de 3.500 €",
 
+    // Hero — Variante Immobilienbewertung
+    heroTitleBewertung: "Cât valorează imobilul dumneavoastră?",
+    heroSubtitleBewertung: "Aflați valoarea de piață a imobilului dumneavoastră în câteva minute — gratuit, fără obligații și fără vizită la fața locului.",
+
     ourPartnerBanks: "Băncile noastre partenere",
 
     // Calculator Section
     calculatorEyebrow: "Calculator de credit",
     calculatorTitle: "Calculați suma maximă la care vă încadrați",
+    calculatorEyebrowBewertung: "Evaluare imobiliară",
+    calculatorTitleBewertung: "Calculați valoarea imobilului dumneavoastră",
     calculatorDisclaimer: "Calcul orientativ — nu reprezintă o ofertă sau o aprobare fermă de credit din partea băncii.",
 
     // Form Common

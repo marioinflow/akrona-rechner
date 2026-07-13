@@ -242,8 +242,9 @@ export default function HomePageContent() {
                 </span>
               </div>
 
-              {/* H1 */}
+              {/* H1 — wechselt mit aktivem Rechner-Tab; key remountet für Fade-Replay */}
               <h1
+                key={`h1-${activeTab}`}
                 className="fade-in-up"
                 style={{ animationDelay: '0.08s',
                   fontSize: 'clamp(38px, 4.5vw, 60px)',
@@ -255,11 +256,12 @@ export default function HomePageContent() {
                   maxWidth: '580px',
                 }}
               >
-                {t('heroTitle')}
+                {activeTab === 'immobilienbewertung' ? t('heroTitleBewertung') : t('heroTitle')}
               </h1>
 
               {/* Subtext */}
               <p
+                key={`sub-${activeTab}`}
                 className="fade-in-up"
                 style={{ animationDelay: '0.16s',
                   fontSize: '17px',
@@ -270,7 +272,7 @@ export default function HomePageContent() {
                   margin: '0 0 36px',
                 }}
               >
-                {t('heroSubtitle')}
+                {activeTab === 'immobilienbewertung' ? t('heroSubtitleBewertung') : t('heroSubtitle')}
               </p>
 
               {/* Mobile-only: kleines Mockup-Bild */}
@@ -425,10 +427,10 @@ export default function HomePageContent() {
             {/* Section Header */}
             <div className="scroll-reveal" style={{ marginBottom: '40px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#0A5D3F', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
-                {t('calculatorEyebrow')}
+                {activeTab === 'immobilienbewertung' ? t('calculatorEyebrowBewertung') : t('calculatorEyebrow')}
               </span>
               <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: '#0A3D2C', lineHeight: 1.15, letterSpacing: '-0.025em', margin: '8px 0 0' }}>
-                {t('calculatorTitle')}
+                {activeTab === 'immobilienbewertung' ? t('calculatorTitleBewertung') : t('calculatorTitle')}
               </h2>
             </div>
 
