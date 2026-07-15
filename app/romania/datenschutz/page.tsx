@@ -60,7 +60,7 @@ export default function DatenschutzRomania() {
               <p>
                 {t('companyNameLabel')} Akrona GmbH<br />
                 {t('representedByLabel')} Alperen Akbal ({t('managingDirector')})<br />
-                {t('businessAddressLabel')} Esslinger Str. 9, 73207 Plochingen<br />
+                {t('businessAddressLabel')} Burgstr. 24, 73207 Plochingen<br />
                 Instanța de înregistrare: Amtsgericht Stuttgart<br />
                 Număr de înregistrare: HRB 804639<br />
                 {t('emailLabel')} <a href="mailto:info@akrona.de" style={{ color: '#0A3D2C' }}>info@akrona.de</a><br />
@@ -145,7 +145,7 @@ export default function DatenschutzRomania() {
               <p className="mt-3">{t('exerciseRights')}</p>
               <p className="mt-2" style={{ color: '#6b6b6b' }}>
                 {t('emailLabel')} <a href="mailto:info@akrona.de" style={{ color: '#0A3D2C' }}>info@akrona.de</a><br />
-                {t('postLabel')} Akrona GmbH, Esslinger Str. 9, 73207 Plochingen
+                {t('postLabel')} Akrona GmbH, Burgstr. 24, 73207 Plochingen
               </p>
             </Section>
 

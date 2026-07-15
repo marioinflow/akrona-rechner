@@ -19,7 +19,7 @@
 ## Schritt 3 — Structured Data (JSON-LD)
 
 - [ ] `FAQPage`-Schema aus den 6 FAQ-Einträgen (`lib/translations.ts` faqQ1–6) — DE auf `/`, RO auf `/romania`
-- [ ] `FinancialService`-Schema: Akrona GmbH, Alperen Akbal, Esslinger Str. 9, § 34c/34i GewO, IHK Stuttgart, `sameAs: https://akrona.de`
+- [ ] `FinancialService`-Schema: Akrona GmbH, Alperen Akbal, Burgstr. 24, § 34c/34i GewO, IHK Stuttgart, `sameAs: https://akrona.de`
 - [ ] Als `<script type="application/ld+json">` im Layout/Page rendern
 
 ## Schritt 4 — Analytics (Entscheidung Mario/Alperen nötig)

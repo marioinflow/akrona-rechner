@@ -38,7 +38,7 @@ export default function Impressum() {
             <Section title="Angaben gemäß § 5 TMG">
               <p>
                 Firmenname: Akrona GmbH<br />
-                Geschäftsadresse: Esslinger Str. 9, 73207 Plochingen<br />
+                Geschäftsadresse: Burgstr. 24, 73207 Plochingen<br />
                 Vertreten durch: Alperen Akbal (Geschäftsführer)
               </p>
             </Section>
@@ -60,7 +60,7 @@ export default function Impressum() {
 
             <Section title="Umsatzsteuer-Identifikationsnummer">
               <p>
-                Die Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz wird nach Zuteilung durch das zuständige Finanzamt an dieser Stelle bekannt gegeben.
+                Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: DE462844405
               </p>
             </Section>
 
